@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "infeng.vscode-react-typescript",
+        "burkeholland.simple-react-snippets",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode"
+    ]
+}
