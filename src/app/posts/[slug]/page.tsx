@@ -2,7 +2,8 @@
 
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import MarkdownPreview from '@/components/MarkdownPreview'
+import ContentRenderer from '@/components/ContentRenderer'
+import SocialShare from '@/components/SocialShare'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -24,6 +25,7 @@ type Post = {
 export default function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
+  const [postUrl, setPostUrl] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -44,6 +46,11 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
         const data = await response.json()
         setPost(data)
+
+        // Set the full URL for sharing
+        if (typeof window !== 'undefined') {
+          setPostUrl(window.location.href)
+        }
       } catch (error) {
         console.error('Error fetching post:', error)
         router.push('/posts')
@@ -81,8 +88,8 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
         </div>
 
         <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{post.title}</h1>
-        
-        <div className="flex items-center justify-between flex-wrap gap-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
+
+        <div className="flex items-center justify-between flex-wrap gap-4 text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
           <div className="flex items-center space-x-4">
             <span>By {post.author.name || 'Anonymous'}</span>
             <span>•</span>
@@ -90,7 +97,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
             <span>•</span>
             <span>{post.views} views</span>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {post.categories.map((category) => (
               <span
@@ -107,6 +114,12 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
             ))}
           </div>
         </div>
+
+        {postUrl && (
+          <div className="pb-6 mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+            <SocialShare url={postUrl} title={post.title} />
+          </div>
+        )}
       </header>
 
       {post.excerpt && (
@@ -116,7 +129,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
       )}
 
       <div className="mb-8">
-        <MarkdownPreview content={post.content} />
+        <ContentRenderer content={post.content} />
       </div>
 
       <footer className="pt-8" style={{ borderTop: '1px solid var(--border)' }}>

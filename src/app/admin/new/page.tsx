@@ -4,17 +4,17 @@ import { useSession } from 'next-auth/react'
 import { useState, FormEvent, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import MarkdownPreview from '@/components/MarkdownPreview'
+import { PlateEditor, plateValueToMarkdown } from '@/components/PlateEditor'
 import { Role } from '@prisma/client'
+import type { Value } from 'platejs'
 
 export default function NewPostPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [showPreview, setShowPreview] = useState(false)
+  const [editorValue, setEditorValue] = useState<Value>([{type: 'p', children: [{text: ''}]}])
   const [formData, setFormData] = useState({
     title: '',
-    content: '',
     excerpt: '',
     tags: '',
     categories: '',
@@ -40,6 +40,7 @@ export default function NewPostPage() {
         },
         body: JSON.stringify({
           ...formData,
+          content: plateValueToMarkdown(editorValue),
           tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
           categories: formData.categories.split(',').map(cat => cat.trim()).filter(Boolean),
         }),
@@ -131,37 +132,17 @@ export default function NewPostPage() {
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Content (Markdown supported)
-            </label>
-            <button
-              type="button"
-              onClick={() => setShowPreview(!showPreview)}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-            >
-              {showPreview ? 'Edit' : 'Preview'}
-            </button>
-          </div>
-          {showPreview ? (
-            <div className="border border-gray-300 dark:border-gray-600 rounded-md p-4 min-h-[300px] bg-gray-50 dark:bg-gray-700">
-              {formData.content ? (
-                <MarkdownPreview content={formData.content} />
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400 italic">Nothing to preview</p>
-              )}
-            </div>
-          ) : (
-            <textarea
-              id="content"
-              rows={12}
-              required
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              placeholder="Write your post content here..."
-            />
-          )}
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Content
+          </label>
+          <PlateEditor
+            onChange={setEditorValue}
+            placeholder="Write your post content here..."
+            className="rounded-md overflow-hidden"
+            style={{
+              border: '1px solid var(--input-border)'
+            }}
+          />
         </div>
 
         <div>

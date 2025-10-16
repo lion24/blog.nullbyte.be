@@ -4,7 +4,8 @@ import { useSession } from 'next-auth/react'
 import { useState, useEffect, FormEvent, use, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import MarkdownPreview from '@/components/MarkdownPreview'
+import { PlateEditor, plateValueToMarkdown } from '@/components/PlateEditor'
+import type { Value } from 'platejs'
 
 type Post = {
   id: string
@@ -23,10 +24,10 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [fetchingPost, setFetchingPost] = useState(true)
-  const [showPreview, setShowPreview] = useState(false)
+  const [editorValue, setEditorValue] = useState<Value>([{type: 'p', children: [{text: ''}]}])
+  const [markdownContent, setMarkdownContent] = useState<string>('')
   const [formData, setFormData] = useState({
     title: '',
-    content: '',
     excerpt: '',
     tags: '',
     categories: '',
@@ -43,12 +44,14 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       
       setFormData({
         title: post.title,
-        content: post.content,
         excerpt: post.excerpt || '',
         tags: post.tags.map(t => t.name).join(', '),
         categories: post.categories.map(c => c.name).join(', '),
         published: post.published,
       })
+      
+      // Set markdown content directly - PlateEditor will handle conversion
+      setMarkdownContent(post.content)
     } catch (error) {
       console.error('Error fetching post:', error)
       alert('Failed to load post')
@@ -80,6 +83,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         },
         body: JSON.stringify({
           ...formData,
+          content: plateValueToMarkdown(editorValue),
           tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
           categories: formData.categories.split(',').map(cat => cat.trim()).filter(Boolean),
         }),
@@ -192,46 +196,18 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         </div>
 
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="content" className="block text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-              Content (Markdown supported)
-            </label>
-            <button
-              type="button"
-              onClick={() => setShowPreview(!showPreview)}
-              className="text-sm transition-colors"
-              style={{ color: 'var(--primary)' }}
-            >
-              {showPreview ? 'Edit' : 'Preview'}
-            </button>
-          </div>
-          {showPreview ? (
-            <div className="rounded-md p-4 min-h-[300px]" style={{
-              backgroundColor: 'var(--background-tertiary)',
-              border: '1px solid var(--border)'
-            }}>
-              {formData.content ? (
-                <MarkdownPreview content={formData.content} />
-              ) : (
-                <p className="italic" style={{ color: 'var(--text-tertiary)' }}>Nothing to preview</p>
-              )}
-            </div>
-          ) : (
-            <textarea
-              id="content"
-              rows={12}
-              required
-              className="w-full px-3 py-2 rounded-md focus:outline-none font-mono text-sm transition-colors"
-              style={{
-                backgroundColor: 'var(--input-background)',
-                border: '1px solid var(--input-border)',
-                color: 'var(--text-primary)'
-              }}
-              value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              placeholder="Write your post content here..."
-            />
-          )}
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
+            Content
+          </label>
+          <PlateEditor
+            initialValue={markdownContent}
+            onChange={setEditorValue}
+            placeholder="Write your post content here..."
+            className="rounded-md overflow-hidden"
+            style={{
+              border: '1px solid var(--input-border)'
+            }}
+          />
         </div>
 
         <div>

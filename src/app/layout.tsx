@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import Navigation from "@/components/Navigation";
+import { Analytics } from '@vercel/analytics/next';
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { GoogleTagManager } from '@next/third-parties/google'
 
@@ -33,6 +34,7 @@ export default function RootLayout({
       >
         <GoogleTagManager gtmId="GTM-MNVQRFQH" />
         <GoogleAnalytics gaId="G-E7TZNGYFDS" />
+        <Analytics />
         <Providers>
           <Navigation />
           <main className="min-h-screen" style={{ backgroundColor: 'var(--background)' }}>
