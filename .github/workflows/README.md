@@ -18,21 +18,24 @@ Runs on all pushes and pull requests to `dev`, `staging`, and `main` branches.
      - Generate Prisma client
      - Run ESLint
      - Run TypeScript type checking
-     - Run tests (when configured)
+     - Run tests
 
-2. **`ci/build`** (Required for main branch only)
-   - Runs on: main branch PRs and pushes only
+2. **`ci/build`** (Required for all branches)
+   - Runs on: dev, staging, main (all branches that deploy)
    - Steps:
      - Install dependencies
      - Generate Prisma client
      - Build Next.js application
      - Verify build output
+   - **Why for all branches?** Ensures preview deployments don't fail due to build errors
 
 #### Branch Protection Alignment
 
-- **dev**: Requires `ci/tests` status check
-- **staging**: Requires `ci/tests` status check + 1 approval
-- **main**: Requires `ci/tests` + `ci/build` status checks (strict) + 2 approvals
+- **dev**: Requires `ci/tests` + `ci/build` status checks
+- **staging**: Requires `ci/tests` + `ci/build` status checks + 1 approval
+- **main**: Requires `ci/tests` + `ci/build` status checks (strict mode) + 2 approvals
+
+**Note:** All branches run both tests and build to ensure preview deployments succeed.
 
 #### Environment Variables Required
 
