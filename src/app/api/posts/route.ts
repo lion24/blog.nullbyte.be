@@ -20,9 +20,13 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(posts)
-  } catch {
-    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 })
+    // Return empty array if no posts found (this is valid, not an error)
+    return NextResponse.json(posts || [])
+  } catch (error) {
+    console.error('Error fetching posts:', error)
+    // Return empty array instead of error to prevent homepage from breaking
+    // This handles cases where database might not be fully set up yet
+    return NextResponse.json([])
   }
 }
 
