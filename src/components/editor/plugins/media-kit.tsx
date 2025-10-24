@@ -22,7 +22,11 @@ import { VideoElement } from '@/components/ui/media-video-node';
 
 export const MediaKit = [
   ImagePlugin.configure({
-    options: { disableUploadInsert: true },
+    options: {
+      // Note: disableUploadInsert prevents automatic upload on paste/drop
+      // We rely on PlaceholderPlugin for manual uploads via toolbar
+      disableUploadInsert: true,
+    },
     render: { afterEditable: MediaPreviewDialog, node: ImageElement },
   }),
   MediaEmbedPlugin.withComponent(MediaEmbedElement),

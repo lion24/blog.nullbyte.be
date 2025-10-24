@@ -1,7 +1,9 @@
 import { put } from '@vercel/blob';
 import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = 'edge';
+// Switch to Node runtime for larger file uploads (Edge runtime has 4.5MB limit)
+// Node runtime supports the bodySizeLimit configured in next.config.mjs
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
