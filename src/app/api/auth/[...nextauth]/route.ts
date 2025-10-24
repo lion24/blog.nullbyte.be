@@ -37,8 +37,6 @@ export const authOptions: AuthOptions = {
   },
   session: {
     strategy: 'jwt',
-    // JWT session expires after 1 hour - users must re-authenticate
-    maxAge: 60 * 60, // 3600 seconds = 1 hour
   },
   secret: process.env.NEXTAUTH_SECRET,
 }
