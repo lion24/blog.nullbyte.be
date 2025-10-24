@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 
 interface Post {
   id: string
@@ -29,18 +30,56 @@ interface TagResponse {
 }
 
 async function getPostsByTag(slug: string): Promise<TagResponse> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/tags/${slug}`, {
-    cache: 'no-store'
+  // First, check if the tag exists
+  const tag = await prisma.tag.findUnique({
+    where: { slug },
   })
-  
-  if (!res.ok) {
-    if (res.status === 404) {
-      notFound()
-    }
-    throw new Error('Failed to fetch posts')
+
+  if (!tag) {
+    notFound()
   }
-  
-  return res.json()
+
+  // Get all posts with this tag
+  const posts = await prisma.post.findMany({
+    where: {
+      published: true,
+      tags: {
+        some: {
+          slug: slug
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true
+        }
+      },
+      tags: true,
+      categories: true,
+    },
+  })
+
+  // Serialize dates for client
+  const serializedPosts = posts.map(post => ({
+    ...post,
+    createdAt: post.createdAt.toISOString(),
+    updatedAt: post.updatedAt.toISOString(),
+  }))
+
+  return {
+    tag: {
+      id: tag.id,
+      name: tag.name,
+      slug: tag.slug
+    },
+    posts: serializedPosts,
+    count: serializedPosts.length
+  }
 }
 
 export default async function TagPage({ params }: { params: Promise<{ slug: string }> }) {
