@@ -81,6 +81,7 @@
     "@udecode/plate-markdown": "^48.0.2",
     "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "^2.0.0",
+    "@vercel/speed-insights": "^1.2.0",
     "ai": "^5.0.28",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
