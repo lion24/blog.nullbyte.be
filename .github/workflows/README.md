@@ -62,8 +62,8 @@ npm install --save-dev jest @types/jest ts-jest
 
 ## Deployment
 
-Vercel handles deployments automatically:
-- **Preview**: Automatic on every commit/PR
-- **Production**: Automatic on main branch pushes
+Deployments are triggered by the CI/CD pipeline (GitHub Actions) after all required checks pass:
+- **Preview**: Triggered by the workflow on every commit/PR to dev, staging, or main
+- **Production**: Triggered by the workflow on main branch pushes after checks and approvals
 
-The CI workflow focuses only on quality checks (lint/test/build).
+Automatic deployments by Vercel are disabled in `vercel.json`; all deployments are managed by the workflow.
