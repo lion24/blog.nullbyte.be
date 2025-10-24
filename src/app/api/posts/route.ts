@@ -6,17 +6,20 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const published = searchParams.get('published')
-    
+    const limitParam = searchParams.get('limit')
+    const limit = limitParam ? parseInt(limitParam, 10) : undefined
+
     const posts = await prisma.post.findMany({
       where: published === 'false' ? {} : { published: true },
       orderBy: { createdAt: 'desc' },
+      take: limit,
       include: {
         author: true,
         tags: true,
         categories: true,
       },
     })
-    
+
     return NextResponse.json(posts)
   } catch {
     return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 })
@@ -41,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json()
-    const { title, content, excerpt, published, tags, categories } = body
+    const { title, content, excerpt, featuredImage, published, tags, categories } = body
     
     // Generate slug from title
     const slug = title
@@ -55,6 +58,7 @@ export async function POST(request: NextRequest) {
         slug,
         content,
         excerpt,
+        featuredImage: featuredImage || null,
         published: published ?? false,
         authorId: user.id,
         tags: {

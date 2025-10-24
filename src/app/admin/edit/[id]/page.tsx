@@ -4,14 +4,17 @@ import { useSession } from 'next-auth/react'
 import { useState, useEffect, FormEvent, use, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { PlateEditor, plateValueToMarkdown } from '@/components/PlateEditor'
 import type { Value } from 'platejs'
+import { useUploadFile } from '@/hooks/use-upload-file'
 
 type Post = {
   id: string
   title: string
   content: string
   excerpt: string | null
+  featuredImage: string | null
   published: boolean
   tags: Array<{ name: string }>
   categories: Array<{ name: string }>
@@ -29,9 +32,15 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
+    featuredImage: '',
     tags: '',
     categories: '',
     published: false,
+  })
+  const { uploadFile, isUploading, uploadedFile } = useUploadFile({
+    onUploadComplete: (file) => {
+      setFormData({ ...formData, featuredImage: file.url })
+    },
   })
 
   const fetchPost = useCallback(async () => {
@@ -45,6 +54,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       setFormData({
         title: post.title,
         excerpt: post.excerpt || '',
+        featuredImage: post.featuredImage || '',
         tags: post.tags.map(t => t.name).join(', '),
         categories: post.categories.map(c => c.name).join(', '),
         published: post.published,
@@ -193,6 +203,51 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
             placeholder="Brief description of your post..."
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
+            Featured Image (Optional)
+          </label>
+          <div className="space-y-2">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  uploadFile(file)
+                }
+              }}
+              disabled={isUploading}
+              className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold"
+              style={{
+                color: 'var(--text-secondary)'
+              }}
+            />
+            {isUploading && (
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Uploading image...</p>
+            )}
+            {(formData.featuredImage || uploadedFile) && (
+              <div className="relative w-full h-48 rounded-md overflow-hidden" style={{ border: '1px solid var(--border)' }}>
+                <Image
+                  src={formData.featuredImage || uploadedFile?.url || ''}
+                  alt="Featured image preview"
+                  fill
+                  className="object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, featuredImage: '' })}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div>

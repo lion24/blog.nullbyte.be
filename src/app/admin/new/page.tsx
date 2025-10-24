@@ -4,9 +4,11 @@ import { useSession } from 'next-auth/react'
 import { useState, FormEvent, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { PlateEditor, plateValueToMarkdown } from '@/components/PlateEditor'
 import { Role } from '@prisma/client'
 import type { Value } from 'platejs'
+import { useUploadFile } from '@/hooks/use-upload-file'
 
 export default function NewPostPage() {
   const { data: session, status } = useSession()
@@ -16,9 +18,15 @@ export default function NewPostPage() {
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
+    featuredImage: '',
     tags: '',
     categories: '',
     published: false,
+  })
+  const { uploadFile, isUploading, uploadedFile } = useUploadFile({
+    onUploadComplete: (file) => {
+      setFormData({ ...formData, featuredImage: file.url })
+    },
   })
 
   useEffect(() => {
@@ -129,6 +137,55 @@ export default function NewPostPage() {
             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
             placeholder="Brief description of your post..."
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Featured Image (Optional)
+          </label>
+          <div className="space-y-2">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) {
+                  uploadFile(file)
+                }
+              }}
+              disabled={isUploading}
+              className="block w-full text-sm text-gray-500 dark:text-gray-400
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100
+                dark:file:bg-gray-700 dark:file:text-gray-300
+                dark:hover:file:bg-gray-600"
+            />
+            {isUploading && (
+              <p className="text-sm text-gray-500 dark:text-gray-400">Uploading image...</p>
+            )}
+            {(formData.featuredImage || uploadedFile) && (
+              <div className="relative w-full h-48 rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
+                <Image
+                  src={formData.featuredImage || uploadedFile?.url || ''}
+                  alt="Featured image preview"
+                  fill
+                  className="object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, featuredImage: '' })}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div>

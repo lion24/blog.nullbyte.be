@@ -2,6 +2,7 @@
 
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
 import { useEffect, useState } from 'react'
@@ -12,6 +13,7 @@ type Post = {
   title: string
   content: string
   excerpt: string | null
+  featuredImage: string | null
   published: boolean
   views: number
   createdAt: string
@@ -121,6 +123,20 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
           </div>
         )}
       </header>
+
+      {post.featuredImage && (
+        <div className="mb-8 -mx-4 md:mx-0">
+          <div className="relative w-full h-[400px] md:h-[500px] md:rounded-lg overflow-hidden">
+            <Image
+              src={post.featuredImage}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        </div>
+      )}
 
       {post.excerpt && (
         <div className="text-xl mb-8 italic" style={{ color: 'var(--text-secondary)' }}>

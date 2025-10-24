@@ -49,7 +49,7 @@ export async function PUT(
     }
     
     const body = await request.json()
-    const { title, content, excerpt, published, tags, categories } = body
+    const { title, content, excerpt, featuredImage, published, tags, categories } = body
     
     // Generate slug from title
     const slug = title
@@ -74,6 +74,7 @@ export async function PUT(
         slug,
         content,
         excerpt,
+        featuredImage: featuredImage || null,
         published,
         tags: {
           connectOrCreate: tags?.map((tag: string) => ({
@@ -109,7 +110,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {

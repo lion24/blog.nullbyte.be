@@ -20,8 +20,14 @@ export default function HomePage() {
   const [latestPosts, setLatestPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
 
+  const truncateExcerpt = (text: string | null, maxLength: number = 115): string => {
+    if (!text) return ''
+    if (text.length <= maxLength) return text
+    return text.slice(0, maxLength).trim() + '...'
+  }
+
   useEffect(() => {
-    fetch('/api/posts?published=true&limit=5')
+    fetch('/api/posts?published=true&limit=3')
       .then(res => res.json())
       .then(data => {
         setLatestPosts(data)
@@ -98,32 +104,30 @@ export default function HomePage() {
             <p style={{ color: 'var(--text-tertiary)' }}>No posts yet. Check back soon!</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {latestPosts.map((post) => (
-              <article key={post.id} className="p-6 rounded-lg transition-all" style={{
-                backgroundColor: 'var(--background-secondary)',
-                boxShadow: 'var(--shadow-sm)',
-                border: '1px solid var(--border)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-                e.currentTarget.style.borderColor = 'var(--border-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-                e.currentTarget.style.borderColor = 'var(--border)';
-              }}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                      By {post.author.name || 'Anonymous'}
-                    </span>
-                    <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>•</span>
-                    <time className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                      {new Date(post.createdAt).toLocaleDateString()}
-                    </time>
-                  </div>
-                  <div className="flex items-center space-x-2">
+              <article
+                key={post.id}
+                className="p-6 rounded-lg transition-all flex flex-col"
+                style={{
+                  backgroundColor: 'var(--background-secondary)',
+                  boxShadow: 'var(--shadow-sm)',
+                  border: '1px solid var(--border)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-md)';
+                  e.currentTarget.style.borderColor = 'var(--border-hover)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
+                  e.currentTarget.style.borderColor = 'var(--border)';
+                }}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <time className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    {new Date(post.createdAt).toLocaleDateString()}
+                  </time>
+                  <div className="flex items-center space-x-1">
                     {post.categories.map((category) => (
                       <span
                         key={category.id}
@@ -139,23 +143,28 @@ export default function HomePage() {
                     ))}
                   </div>
                 </div>
-                
-                <h3 className="text-2xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-                  <Link href={`/posts/${post.slug}`} className="transition-colors"
+
+                <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                  <Link
+                    href={`/posts/${post.slug}`}
+                    className="transition-colors"
                     style={{ color: 'inherit' }}
                     onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
-                    onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}>
+                    onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+                  >
                     {post.title}
                   </Link>
                 </h3>
-                
+
                 {post.excerpt && (
-                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>{post.excerpt}</p>
+                  <p className="mb-4 flex-1" style={{ color: 'var(--text-secondary)' }}>
+                    {truncateExcerpt(post.excerpt)}
+                  </p>
                 )}
-                
-                <div className="flex items-center justify-between">
+
+                <div className="flex items-center justify-between mt-auto">
                   <div className="flex items-center space-x-2">
-                    {post.tags.map((tag) => (
+                    {post.tags.slice(0, 3).map((tag) => (
                       <Link
                         key={tag.id}
                         href={`/tags/${tag.slug}`}
@@ -167,15 +176,18 @@ export default function HomePage() {
                         #{tag.name}
                       </Link>
                     ))}
+                    {post.tags.length > 3 && (
+                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>+{post.tags.length - 3}</span>
+                    )}
                   </div>
                   <Link
                     href={`/posts/${post.slug}`}
-                    className="font-medium text-sm transition-colors"
+                    className="text-sm font-medium transition-colors"
                     style={{ color: 'var(--primary)' }}
                     onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-hover)'}
                     onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
                   >
-                    Read more →
+                    Read →
                   </Link>
                 </div>
               </article>
