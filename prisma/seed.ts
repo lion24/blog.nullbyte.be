@@ -13,14 +13,6 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Starting database seeding...')
 
-  // Clean database (optional - comment out if you want to keep existing data)
-  console.log('🧹 Cleaning database...')
-  await prisma.post.deleteMany()
-  await prisma.category.deleteMany()
-  await prisma.tag.deleteMany()
-  await prisma.account.deleteMany()
-  await prisma.user.deleteMany()
-
   // Create tags
   console.log('🏷️  Creating tags...')
   const tags = await Promise.all(
