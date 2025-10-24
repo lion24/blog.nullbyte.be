@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { upload } from '@vercel/blob/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -33,52 +34,30 @@ export function useUploadFile({
     setProgress(0);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // Simulate progress tracking with XMLHttpRequest
-      const xhr = new XMLHttpRequest();
-
-      const uploadPromise = new Promise<UploadedFile>((resolve, reject) => {
-        xhr.upload.addEventListener('progress', (e) => {
-          if (e.lengthComputable) {
-            const percentComplete = Math.min((e.loaded / e.total) * 100, 100);
-            setProgress(percentComplete);
-            onUploadProgress?.(percentComplete);
-          }
-        });
-
-        xhr.addEventListener('load', () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            try {
-              const response = JSON.parse(xhr.responseText);
-              resolve(response);
-            } catch {
-              reject(new Error('Invalid response from server'));
-            }
-          } else {
-            try {
-              const errorResponse = JSON.parse(xhr.responseText);
-              reject(new Error(errorResponse.error || 'Upload failed'));
-            } catch {
-              reject(new Error('Upload failed'));
-            }
-          }
-        });
-
-        xhr.addEventListener('error', () => {
-          reject(new Error('Network error during upload'));
-        });
-
-        xhr.addEventListener('abort', () => {
-          reject(new Error('Upload cancelled'));
-        });
-
-        xhr.open('POST', '/api/upload');
-        xhr.send(formData);
+      // Client-side direct upload to Vercel Blob
+      // This bypasses the 4.5MB serverless function limit
+      // Files are uploaded directly from browser to Vercel Blob (supports up to 5TB)
+      const blob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload',
+        clientPayload: JSON.stringify({
+          originalName: file.name,
+          size: file.size,
+          type: file.type,
+        }),
+        onUploadProgress: ({ percentage }) => {
+          setProgress(percentage);
+          onUploadProgress?.(percentage);
+        },
       });
 
-      const result = await uploadPromise;
+      const result: UploadedFile = {
+        url: blob.url,
+        pathname: blob.pathname,
+        contentType: blob.contentType || file.type,
+        size: file.size,
+        name: file.name,
+      };
 
       setUploadedFile(result);
       onUploadComplete?.(result);
@@ -95,33 +74,7 @@ export function useUploadFile({
       toast.error(message);
       onUploadError?.(err);
 
-      // Mock upload fallback for development
-      const mockUploadedFile: UploadedFile = {
-        pathname: `mock/${file.name}`,
-        name: file.name,
-        size: file.size,
-        contentType: file.type,
-        url: URL.createObjectURL(file),
-      };
-
-      // Simulate upload progress
-      let mockProgress = 0;
-
-      const simulateProgress = async () => {
-        while (mockProgress < 100) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-          mockProgress += 2;
-          const currentProgress = Math.min(mockProgress, 100);
-          setProgress(currentProgress);
-          onUploadProgress?.(currentProgress);
-        }
-      };
-
-      await simulateProgress();
-
-      setUploadedFile(mockUploadedFile);
-
-      return mockUploadedFile;
+      throw err; // Re-throw to prevent further processing
     } finally {
       setProgress(0);
       setIsUploading(false);

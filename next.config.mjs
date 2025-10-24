@@ -19,10 +19,6 @@ const nextConfig = {
       },
     ],
   },
-  // Increase body size limit for API routes to support large image uploads (GIFs)
-  experimental: {
-    bodySizeLimit: '50mb',
-  },
 }
 
 export default nextConfig
