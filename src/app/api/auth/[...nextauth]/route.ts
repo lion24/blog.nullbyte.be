@@ -6,14 +6,7 @@ import { Adapter } from "next-auth/adapters"
 
 const prisma = new PrismaClient()
 
-// Get the base URL for callbacks
-const getBaseUrl = () => {
-  if (process.env.NEXTAUTH_URL) return process.env.NEXTAUTH_URL
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-  return 'http://localhost:3000'
-}
-
-export const authOptions: AuthOptions = {
+const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     GitHubProvider({
