@@ -17,6 +17,11 @@ const nextConfig = {
         hostname: 'blob.vercel-storage.com',
         pathname: '/**',
       },
+      { // For placeholder images in the editor (test/dev purposes)
+        protocol: 'https',
+        hostname: 'placekittens.com',
+        pathname: '/**',
+      },
     ],
   },
 }

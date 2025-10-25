@@ -87,6 +87,7 @@ async function main() {
         published: true,
         authorId: author.id,
         views: Math.floor(Math.random() * 500),
+        featuredImage: `https://placekittens.com/${800 + (i * 100)}/600`,
         tags: {
           connect: randomTags.map(tag => ({ id: tag.id }))
         },
@@ -101,13 +102,14 @@ async function main() {
   console.log('📄 Creating draft posts...')
   for (let i = 0; i < 5; i++) {
     const author = allUsers[Math.floor(Math.random() * allUsers.length)]
-    
+
     await prisma.post.create({
       data: createPost(author.id, {
         title: `Draft Post ${i + 1}`,
         slug: `draft-post-${i + 1}`,
         published: false,
-        excerpt: 'This is a draft post that is not yet published.'
+        excerpt: 'This is a draft post that is not yet published.',
+        featuredImage: `https://placekittens.com/${600 + (i * 50)}/400`
       })
     })
   }
@@ -129,7 +131,8 @@ async function main() {
         ...createPost(author.id, {
           title: `Blog Post ${i + 1}: ${['Tips', 'Guide', 'Tutorial', 'Review'][i % 4]}`,
           slug: `blog-post-${i + 1}`,
-          createdAt: new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000) // Random date within last 60 days
+          createdAt: new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000), // Random date within last 60 days
+          featuredImage: `https://placekittens.com/${700 + (i * 80)}/500`
         }),
         tags: {
           connect: randomTags.map(tag => ({ id: tag.id }))
