@@ -139,41 +139,59 @@ jobs:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
     needs: [status-check]
-    # Only deploy on pushes (not PRs) after all checks pass
-    if: github.event_name == 'push' && needs.status-check.result == 'success'
+    # Deploy after all checks pass (both pushes and PRs)
+    if: needs.status-check.result == 'success'
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Deploy to Vercel (Production)
-        if: github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-comment: false
           scope: ${{ secrets.VERCEL_ORG_ID }}
 
       - name: Deploy to Vercel (Preview - Staging)
-        if: github.ref == 'refs/heads/staging'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/staging'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-comment: false
           scope: ${{ secrets.VERCEL_ORG_ID }}
-        env:
-          VERCEL_ENV: preview
 
       - name: Deploy to Vercel (Preview - Dev)
-        if: github.ref == 'refs/heads/dev'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-comment: false
           scope: ${{ secrets.VERCEL_ORG_ID }}
-        env:
-          VERCEL_ENV: preview
+
+      - name: Deploy to Vercel (PR Preview)
+        if: github.event_name == 'pull_request'
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-comment: true
+          scope: ${{ secrets.VERCEL_ORG_ID }}

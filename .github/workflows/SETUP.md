@@ -63,6 +63,8 @@ Add these 3 secrets:
 | `VERCEL_ORG_ID` | `team_xxxxx` or `user_xxxxx` | `.vercel/project.json` → `orgId` |
 | `VERCEL_PROJECT_ID` | `prj_xxxxx` | `.vercel/project.json` → `projectId` |
 
+**Note:** The `VERCEL_ORG_ID` is used both for the org ID and the scope parameter in the deployment action.
+
 ### 3. Disable Automatic Vercel Deployments
 
 The `vercel.json` file in this repo already disables automatic deployments:
