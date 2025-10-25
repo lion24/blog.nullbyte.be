@@ -61,11 +61,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.createdAt.toISOString(),
       authors: [post.author?.name || 'Anonymous'],
       tags: post.tags?.map((tag) => tag.name),
+      ...(post.featuredImage && {
+        images: [
+          {
+            url: post.featuredImage,
+            alt: post.title,
+          },
+        ],
+      }),
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt || post.title,
+      ...(post.featuredImage && {
+        images: [post.featuredImage],
+      }),
     },
   }
 }
