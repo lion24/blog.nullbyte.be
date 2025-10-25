@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { getFullUrl } from '@/lib/url'
 
 interface Post {
   id: string
@@ -171,16 +172,29 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   try {
     const { slug } = await params
-    const { tag } = await getPostsByTag(slug)
-    
+    const { tag, count } = await getPostsByTag(slug)
+    const tagUrl = getFullUrl(`/tags/${slug}`)
+
     return {
       title: `Posts tagged with "${tag.name}"`,
-      description: `Browse all blog posts tagged with ${tag.name}`
+      description: `Browse ${count} blog ${count === 1 ? 'post' : 'posts'} tagged with ${tag.name}. Discover articles about ${tag.name} and related topics.`,
+      keywords: [tag.name, 'blog posts', 'articles', 'tutorials'],
+      openGraph: {
+        type: 'website',
+        title: `Posts tagged with "${tag.name}"`,
+        description: `Browse ${count} blog ${count === 1 ? 'post' : 'posts'} tagged with ${tag.name}. Discover articles about ${tag.name} and related topics.`,
+        url: tagUrl,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `Posts tagged with "${tag.name}"`,
+        description: `Browse ${count} blog ${count === 1 ? 'post' : 'posts'} tagged with ${tag.name}.`,
+      },
     }
   } catch {
     return {
       title: 'Tag not found',
-      description: 'The requested tag could not be found'
+      description: 'The requested tag could not be found',
     }
   }
 }
