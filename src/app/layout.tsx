@@ -8,6 +8,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { GoogleTagManager } from '@next/third-parties/google'
+import { getBaseUrl } from '@/lib/url'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,8 +21,38 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tech Blog",
-  description: "A tech blog sharing development journeys and insights",
+  metadataBase: new URL(getBaseUrl()),
+  title: {
+    default: 'NullByte - Tech Blog',
+    template: '%s | NullByte',
+  },
+  description: 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.',
+  keywords: ['programming', 'web development', 'software engineering', 'tech blog', 'coding tutorials', 'javascript', 'typescript', 'react', 'nextjs'],
+  authors: [{ name: 'Lionel H' }],
+  creator: 'Lionel H',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    siteName: 'NullByte',
+    title: 'NullByte - Tech Blog',
+    description: 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NullByte - Tech Blog',
+    description: 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
