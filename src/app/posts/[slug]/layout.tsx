@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
+import { getFullUrl } from '@/lib/url'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -41,12 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
-  // Construct base URL: use VERCEL_URL for Vercel deployments, NEXTAUTH_URL if set, or localhost for dev
-  const vercelUrl = process.env.VERCEL_URL
-  const baseUrl = vercelUrl
-    ? `https://${vercelUrl}`
-    : (process.env.NEXTAUTH_URL || 'http://localhost:3000')
-  const postUrl = `${baseUrl}/posts/${slug}`
+  const postUrl = getFullUrl(`/posts/${slug}`)
 
   return {
     title: post.title,

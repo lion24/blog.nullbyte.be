@@ -1,16 +1,13 @@
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
+import { getBaseUrl } from '@/lib/url'
 
 // Force dynamic generation (not static at build time)
 export const dynamic = 'force-dynamic'
 export const revalidate = 3600 // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Construct base URL
-  const vercelUrl = process.env.VERCEL_URL
-  const baseUrl = vercelUrl
-    ? `https://${vercelUrl}`
-    : (process.env.NEXTAUTH_URL || 'http://localhost:3000')
+  const baseUrl = getBaseUrl()
 
   // Fetch all published posts
   const posts = await prisma.post.findMany({

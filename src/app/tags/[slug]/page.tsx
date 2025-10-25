@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { getFullUrl } from '@/lib/url'
 
 interface Post {
   id: string
@@ -172,12 +173,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   try {
     const { slug } = await params
     const { tag, count } = await getPostsByTag(slug)
-
-    const vercelUrl = process.env.VERCEL_URL
-    const baseUrl = vercelUrl
-      ? `https://${vercelUrl}`
-      : (process.env.NEXTAUTH_URL || 'http://localhost:3000')
-    const tagUrl = `${baseUrl}/tags/${slug}`
+    const tagUrl = getFullUrl(`/tags/${slug}`)
 
     return {
       title: `Posts tagged with "${tag.name}"`,

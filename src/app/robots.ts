@@ -1,11 +1,8 @@
 import { MetadataRoute } from 'next'
+import { getBaseUrl } from '@/lib/url'
 
 export default function robots(): MetadataRoute.Robots {
-  // Construct base URL
-  const vercelUrl = process.env.VERCEL_URL
-  const baseUrl = vercelUrl
-    ? `https://${vercelUrl}`
-    : (process.env.NEXTAUTH_URL || 'http://localhost:3000')
+  const baseUrl = getBaseUrl()
 
   return {
     rules: [

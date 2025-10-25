@@ -8,6 +8,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { GoogleTagManager } from '@next/third-parties/google'
+import { getBaseUrl } from '@/lib/url'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,11 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : process.env.NEXTAUTH_URL || 'http://localhost:3000'
-  ),
+  metadataBase: new URL(getBaseUrl()),
   title: {
     default: 'NullByte - Tech Blog',
     template: '%s | NullByte',
