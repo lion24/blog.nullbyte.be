@@ -25,11 +25,11 @@ export async function GET(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
 
-    // Increment view count
-    await prisma.post.update({
+    // Increment view count asynchronously (non-blocking)
+    prisma.post.update({
       where: { id: post.id },
       data: { views: post.views + 1 },
-    })
+    }).catch(err => console.error('Failed to update view count:', err))
 
     return NextResponse.json({
       ...post,

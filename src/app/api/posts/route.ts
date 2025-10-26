@@ -13,10 +13,39 @@ export async function GET(request: NextRequest) {
       where: published === 'false' ? {} : { published: true },
       orderBy: { createdAt: 'desc' },
       take: limit,
-      include: {
-        author: true,
-        tags: true,
-        categories: true,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        featuredImage: true,
+        published: true,
+        createdAt: true,
+        updatedAt: true,
+        views: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        // Explicitly exclude 'content' field for performance
       },
     })
 
