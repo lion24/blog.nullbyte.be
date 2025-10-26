@@ -17,7 +17,7 @@ export default function Icon() {
         
         <path d="M16 2L6 6v7c0 6.2 4.3 12 10 13.5 5.7-1.5 10-7.3 10-13.5V6L16 2z" 
                 stroke="#3b9dd8" 
-                stroke-width="1.5" 
+                strokeWidth="1.5" 
                 fill="none"/>
 
         <rect x="14" y="13.5" width="4" height="4" rx="0.5" fill="#ff5e5e"/>
@@ -27,23 +27,23 @@ export default function Icon() {
         
         <path d="M15 13.5v-1.5a1 1 0 0 1 2 0v1.5" 
                 stroke="#ff5e5e" 
-                stroke-width="1.2" 
+                strokeWidth="1.2" 
                 fill="none" 
-                stroke-linecap="round"/>
+                strokeLinecap="round"/>
         
         <path d="M11 13l-2 2 2 2" 
                 stroke="#ff5e5e" 
-                stroke-width="1.5" 
+                strokeWidth="1.5" 
                 fill="none" 
-                stroke-linecap="round" 
-                stroke-linejoin="round"/>
+                strokeLinecap="round" 
+                strokeLinejoin="round"/>
         
         <path d="M21 13l2 2-2 2" 
                 stroke="#ff5e5e" 
-                stroke-width="1.5" 
+                strokeWidth="1.5" 
                 fill="none" 
-                stroke-linecap="round" 
-                stroke-linejoin="round"/>
+                strokeLinecap="round" 
+                strokeLinejoin="round"/>
     </svg>
     ),
     // ImageResponse options
