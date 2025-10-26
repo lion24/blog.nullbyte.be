@@ -17,7 +17,7 @@ export default function AppleIcon() {
 
         <path d="M90 20L40 35v40c0 35 24 67 50 75 32-8 50-40 50-75V35L90 20z"
               stroke="#3b9dd8"
-              stroke-width="8"
+              strokeWidth="8"
               fill="none"/>
 
         <rect x="80" y="80" width="20" height="20" rx="2" fill="#ff5e5e"/>
@@ -27,23 +27,23 @@ export default function AppleIcon() {
 
         <path d="M84 80v-8a6 6 0 0 1 12 0v8"
               stroke="#ff5e5e"
-              stroke-width="6"
+              strokeWidth="6"
               fill="none"
-              stroke-linecap="round"/>
+              strokeLinecap="round"/>
 
         <path d="M60 75l-10 10 10 10"
               stroke="#ff5e5e"
-              stroke-width="8"
+              strokeWidth="8"
               fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"/>
+              strokeLinecap="round"
+              strokeLinejoin="round"/>
 
         <path d="M120 75l10 10-10 10"
               stroke="#ff5e5e"
-              stroke-width="8"
+              strokeWidth="8"
               fill="none"
-              stroke-linecap="round"
-              stroke-linejoin="round"/>
+              strokeLinecap="round"
+              strokeLinejoin="round"/>
       </svg>
     ),
     // ImageResponse options
