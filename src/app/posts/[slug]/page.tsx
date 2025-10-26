@@ -7,6 +7,7 @@ import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { formatReadingTime } from '@/lib/reading-time'
 
 type Post = {
   id: string
@@ -16,6 +17,7 @@ type Post = {
   featuredImage: string | null
   published: boolean
   views: number
+  readingTime: number
   createdAt: string
   author: {
     name: string | null
@@ -96,6 +98,8 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
             <span>By {post.author.name || 'Anonymous'}</span>
             <span>•</span>
             <time>{new Date(post.createdAt).toLocaleDateString()}</time>
+            <span>•</span>
+            <span>{formatReadingTime(post.readingTime)}</span>
             <span>•</span>
             <span>{post.views} views</span>
           </div>

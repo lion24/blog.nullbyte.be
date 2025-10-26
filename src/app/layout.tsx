@@ -36,11 +36,20 @@ export const metadata: Metadata = {
     siteName: 'NullByte',
     title: 'NullByte - Tech Blog',
     description: 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.',
+    images: [
+      {
+        url: '/logo.png',
+        width: 1024,
+        height: 1024,
+        alt: 'NullByte Logo',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'NullByte - Tech Blog',
     description: 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.',
+    images: ['/logo.png'],
   },
   robots: {
     index: true,
@@ -65,9 +74,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <GoogleTagManager gtmId="GTM-MNVQRFQH" />
-        <GoogleAnalytics gaId="G-E7TZNGYFDS" />
-        <Analytics />
         <Providers>
           <div className="flex flex-col min-h-screen">
             <Navigation />
@@ -77,6 +83,10 @@ export default function RootLayout({
             <Footer />
           </div>
         </Providers>
+        {/* Analytics scripts loaded after content - already optimized with deferred loading */}
+        <GoogleTagManager gtmId="GTM-MNVQRFQH" />
+        <GoogleAnalytics gaId="G-E7TZNGYFDS" />
+        <Analytics />
         <SpeedInsights />
       </body>
     </html>

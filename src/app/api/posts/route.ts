@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin } from '@/lib/auth'
+import { calculateReadingTime } from '@/lib/reading-time'
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,15 +14,53 @@ export async function GET(request: NextRequest) {
       where: published === 'false' ? {} : { published: true },
       orderBy: { createdAt: 'desc' },
       take: limit,
-      include: {
-        author: true,
-        tags: true,
-        categories: true,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        featuredImage: true,
+        published: true,
+        createdAt: true,
+        updatedAt: true,
+        views: true,
+        content: true, // Need content to calculate reading time
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
       },
     })
 
+    // Add reading time and remove content before sending response
+    const postsWithReadingTime = posts.map(post => {
+      const { content, ...postWithoutContent } = post
+      return {
+        ...postWithoutContent,
+        readingTime: calculateReadingTime(content),
+      }
+    })
+
     // Return empty array if no posts found (this is valid, not an error)
-    return NextResponse.json(posts || [])
+    return NextResponse.json(postsWithReadingTime || [])
   } catch (error) {
     console.error('Error fetching posts:', error)
     // Return empty array instead of error to prevent homepage from breaking

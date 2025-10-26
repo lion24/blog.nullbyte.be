@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { calculateReadingTime } from '@/lib/reading-time'
 
 export async function GET(
   request: NextRequest,
@@ -25,15 +26,16 @@ export async function GET(
       return NextResponse.json({ error: 'Post not found' }, { status: 404 })
     }
 
-    // Increment view count
-    await prisma.post.update({
+    // Increment view count atomically and asynchronously (non-blocking)
+    prisma.post.update({
       where: { id: post.id },
-      data: { views: post.views + 1 },
-    })
+      data: { views: { increment: 1 } },
+    }).catch(err => console.error('Failed to update view count:', err))
 
     return NextResponse.json({
       ...post,
       views: post.views + 1, // Return updated view count
+      readingTime: calculateReadingTime(post.content),
     })
   } catch (error) {
     console.error('Error fetching post:', error)

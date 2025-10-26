@@ -51,6 +51,10 @@ model Post {
   author        User       @relation(fields: [authorId], references: [id])
   categories    Category[] @relation("CategoryToPost")
   tags          Tag[]      @relation("PostToTag")
+
+  @@index([published])
+  @@index([createdAt])
+  @@index([published, createdAt])
 }
 
 model Tag {

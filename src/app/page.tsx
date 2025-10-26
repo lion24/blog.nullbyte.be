@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { formatReadingTime } from '@/lib/reading-time'
 
 type Post = {
   id: string
@@ -9,6 +11,7 @@ type Post = {
   slug: string
   excerpt: string | null
   createdAt: string
+  readingTime: number
   author: {
     name: string | null
   }
@@ -41,47 +44,75 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <section className="text-center py-16">
-        <h1 className="text-5xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-          Welcome to My Tech Blog
-        </h1>
-        <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
-          Sharing my development journey, insights, and discoveries in the world of technology
-        </p>
-        <div className="flex justify-center space-x-4">
-          <Link
-            href="/posts"
-            className="px-6 py-3 rounded-lg transition-colors inline-block"
+      <section className="relative text-center py-16 mb-8 rounded-2xl overflow-hidden">
+        {/* Background Image - 16:9 aspect ratio */}
+        <div className="absolute inset-0 w-full h-full">
+          <Image
+            src="/hero.jpg"
+            alt="Hero background"
+            fill
+            className="object-cover opacity-30"
+            priority
+          />
+          {/* Theme-aware overlay for better text readability */}
+          <div
+            className="absolute inset-0"
             style={{
-              backgroundColor: 'var(--primary)',
-              color: 'var(--text-inverse)'
+              backgroundColor: 'var(--background)',
+              opacity: 0.6
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
+          />
+        </div>
+
+        {/* Content - positioned above background */}
+        <div className="relative z-10 px-4 py-12">
+          <h1
+            className="text-5xl font-bold mb-4"
+            style={{ color: 'var(--text-primary)' }}
           >
-            Browse All Posts
-          </Link>
-          <Link
-            href="https://github.com/lion24"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 rounded-lg transition-colors inline-block"
-            style={{
-              backgroundColor: 'var(--background-secondary)',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--background-tertiary)';
-              e.currentTarget.style.borderColor = 'var(--border-hover)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
-              e.currentTarget.style.borderColor = 'var(--border)';
-            }}
+            Welcome to My Tech Blog
+          </h1>
+          <p
+            className="text-xl mb-8 max-w-2xl mx-auto"
+            style={{ color: 'var(--text-secondary)' }}
           >
-            GitHub Profile
-          </Link>
+            Sharing my development journey, insights, and discoveries in the world of technology
+          </p>
+          <div className="flex justify-center space-x-4 flex-wrap gap-4">
+            <Link
+              href="/posts"
+              className="px-6 py-3 rounded-lg transition-colors inline-block shadow-lg"
+              style={{
+                backgroundColor: 'var(--primary)',
+                color: 'var(--text-inverse)'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
+            >
+              Browse All Posts
+            </Link>
+            <Link
+              href="https://github.com/lion24"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 rounded-lg transition-colors inline-block shadow-lg"
+              style={{
+                backgroundColor: 'var(--background-secondary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--background-tertiary)';
+                e.currentTarget.style.borderColor = 'var(--border-hover)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
+                e.currentTarget.style.borderColor = 'var(--border)';
+              }}
+            >
+              GitHub Profile
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -124,9 +155,11 @@ export default function HomePage() {
                 }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <time className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </time>
+                  <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    <time>{new Date(post.createdAt).toLocaleDateString()}</time>
+                    <span>•</span>
+                    <span>{formatReadingTime(post.readingTime)}</span>
+                  </div>
                   <div className="flex items-center space-x-1">
                     {post.categories.map((category) => (
                       <span

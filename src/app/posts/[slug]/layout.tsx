@@ -13,7 +13,10 @@ async function getPost(slug: string) {
       where: { slug },
       include: {
         author: {
-          select: { name: true },
+          select: {
+            name: true,
+            email: true,
+          },
         },
         tags: {
           select: { name: true },
@@ -77,6 +80,55 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function PostLayout({ children }: Props) {
-  return children
+export default async function PostLayout({ children, params }: Props) {
+  const { slug } = await params
+  const post = await getPost(slug)
+
+  if (!post) {
+    return children
+  }
+
+  const postUrl = getFullUrl(`/posts/${slug}`)
+
+  // Build JSON-LD structured data for Article
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    datePublished: post.createdAt.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    author: {
+      '@type': 'Person',
+      name: post.author?.name || 'Anonymous',
+    },
+    ...(post.featuredImage && {
+      image: [post.featuredImage],
+    }),
+    ...(post.excerpt && {
+      description: post.excerpt,
+    }),
+    url: postUrl,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': postUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'NullByte',
+      logo: {
+        '@type': 'ImageObject',
+        url: getFullUrl('/logo.png'), // You can update this to your actual logo
+      },
+    },
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {children}
+    </>
+  )
 }
