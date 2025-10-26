@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+import { formatReadingTime } from '@/lib/reading-time'
 
 type Post = {
   id: string
@@ -10,6 +11,7 @@ type Post = {
   slug: string
   excerpt: string | null
   createdAt: string
+  readingTime: number
   author: {
     name: string | null
   }
@@ -153,9 +155,11 @@ export default function HomePage() {
                 }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <time className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </time>
+                  <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    <time>{new Date(post.createdAt).toLocaleDateString()}</time>
+                    <span>•</span>
+                    <span>{formatReadingTime(post.readingTime)}</span>
+                  </div>
                   <div className="flex items-center space-x-1">
                     {post.categories.map((category) => (
                       <span

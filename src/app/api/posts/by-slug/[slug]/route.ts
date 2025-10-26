@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { calculateReadingTime } from '@/lib/reading-time'
 
 export async function GET(
   request: NextRequest,
@@ -34,6 +35,7 @@ export async function GET(
     return NextResponse.json({
       ...post,
       views: post.views + 1, // Return updated view count
+      readingTime: calculateReadingTime(post.content),
     })
   } catch (error) {
     console.error('Error fetching post:', error)
