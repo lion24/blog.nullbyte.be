@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: '/logo.png',
-        width: 1024,
+        width: 1536,
         height: 1024,
         alt: 'NullByte Logo',
       },
