@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { calculateReadingTime } from '@/lib/reading-time'
+import { ErrorCode, createErrorResponse } from '@/lib/errors'
 
 export async function GET(request: NextRequest) {
   try {
@@ -79,7 +80,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json(
+        createErrorResponse(ErrorCode.USER_NOT_FOUND, 'User not found'),
+        { status: 404 }
+      )
     }
 
     const body = await request.json()
@@ -130,13 +134,22 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     // Handle authentication/authorization errors
     if (error instanceof UnauthorizedError) {
-      return NextResponse.json({ error: error.message }, { status: 401 })
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 401 }
+      )
     }
     if (error instanceof ForbiddenError) {
-      return NextResponse.json({ error: error.message }, { status: 403 })
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 403 }
+      )
     }
 
     console.error('Error creating post:', error)
-    return NextResponse.json({ error: 'Failed to create post' }, { status: 500 })
+    return NextResponse.json(
+      createErrorResponse(ErrorCode.INTERNAL_ERROR, 'Failed to create post'),
+      { status: 500 }
+    )
   }
 }

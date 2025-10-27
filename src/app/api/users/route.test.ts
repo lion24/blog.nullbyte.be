@@ -3,6 +3,7 @@ import { GET, PATCH } from './route'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { Role } from '@prisma/client'
+import { ErrorCode } from '@/lib/errors'
 
 // Mock dependencies
 jest.mock('@/lib/prisma', () => ({
@@ -14,21 +15,26 @@ jest.mock('@/lib/prisma', () => ({
   },
 }))
 
-jest.mock('@/lib/auth', () => ({
-  requireAdmin: jest.fn(),
-  UnauthorizedError: class UnauthorizedError extends Error {
-    constructor(message = 'Unauthorized - Authentication required') {
-      super(message)
-      this.name = 'UnauthorizedError'
-    }
-  },
-  ForbiddenError: class ForbiddenError extends Error {
-    constructor(message = 'Forbidden - Insufficient permissions') {
-      super(message)
-      this.name = 'ForbiddenError'
-    }
-  },
-}))
+jest.mock('@/lib/auth', () => {
+  const { ErrorCode } = jest.requireActual('@/lib/errors')
+  return {
+    requireAdmin: jest.fn(),
+    UnauthorizedError: class UnauthorizedError extends Error {
+      code = ErrorCode.UNAUTHORIZED
+      constructor(message = 'Unauthorized - Authentication required') {
+        super(message)
+        this.name = 'UnauthorizedError'
+      }
+    },
+    ForbiddenError: class ForbiddenError extends Error {
+      code = ErrorCode.FORBIDDEN
+      constructor(message = 'Forbidden - Insufficient permissions') {
+        super(message)
+        this.name = 'ForbiddenError'
+      }
+    },
+  }
+})
 
 const mockRequireAdmin = requireAdmin as jest.MockedFunction<typeof requireAdmin>
 const mockPrismaUserFindMany = prisma.user.findMany as jest.MockedFunction<typeof prisma.user.findMany>
@@ -105,7 +111,8 @@ describe('GET /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(401)
-    expect(data.error).toBe('Unauthorized - Authentication required')
+    expect(data.error.code).toBe(ErrorCode.UNAUTHORIZED)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaUserFindMany).not.toHaveBeenCalled()
   })
 
@@ -116,7 +123,8 @@ describe('GET /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(403)
-    expect(data.error).toBe('Required role: ADMIN')
+    expect(data.error.code).toBe(ErrorCode.FORBIDDEN)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaUserFindMany).not.toHaveBeenCalled()
   })
 
@@ -128,7 +136,8 @@ describe('GET /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(500)
-    expect(data.error).toBe('Failed to fetch users')
+    expect(data.error.code).toBe(ErrorCode.INTERNAL_ERROR)
+    expect(data.error.message).toBeDefined()
   })
 })
 
@@ -203,7 +212,8 @@ describe('PATCH /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(401)
-    expect(data.error).toBe('Unauthorized - Authentication required')
+    expect(data.error.code).toBe(ErrorCode.UNAUTHORIZED)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaUserUpdate).not.toHaveBeenCalled()
   })
 
@@ -219,7 +229,8 @@ describe('PATCH /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(403)
-    expect(data.error).toBe('Required role: ADMIN')
+    expect(data.error.code).toBe(ErrorCode.FORBIDDEN)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaUserUpdate).not.toHaveBeenCalled()
   })
 
@@ -234,7 +245,8 @@ describe('PATCH /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('User ID and role are required')
+    expect(data.error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaUserUpdate).not.toHaveBeenCalled()
   })
 
@@ -249,7 +261,8 @@ describe('PATCH /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('User ID and role are required')
+    expect(data.error.code).toBe(ErrorCode.MISSING_REQUIRED_FIELD)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaUserUpdate).not.toHaveBeenCalled()
   })
 
@@ -265,7 +278,8 @@ describe('PATCH /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(400)
-    expect(data.error).toBe('Invalid role')
+    expect(data.error.code).toBe(ErrorCode.INVALID_ROLE)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaUserUpdate).not.toHaveBeenCalled()
   })
 
@@ -301,6 +315,7 @@ describe('PATCH /api/users', () => {
     const data = await response.json()
 
     expect(response.status).toBe(500)
-    expect(data.error).toBe('Failed to update user role')
+    expect(data.error.code).toBe(ErrorCode.INTERNAL_ERROR)
+    expect(data.error.message).toBeDefined()
   })
 })

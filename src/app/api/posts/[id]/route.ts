@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
+import { ErrorCode, createErrorResponse } from '@/lib/errors'
 
 export async function GET(
   request: NextRequest,
@@ -18,12 +19,18 @@ export async function GET(
     })
     
     if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+      return NextResponse.json(
+        createErrorResponse(ErrorCode.POST_NOT_FOUND, 'Post not found'),
+        { status: 404 }
+      )
     }
-    
+
     return NextResponse.json(post)
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch post' }, { status: 500 })
+    return NextResponse.json(
+      createErrorResponse(ErrorCode.INTERNAL_ERROR, 'Failed to fetch post'),
+      { status: 500 }
+    )
   }
 }
 
@@ -42,7 +49,10 @@ export async function PUT(
     })
 
     if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+      return NextResponse.json(
+        createErrorResponse(ErrorCode.POST_NOT_FOUND, 'Post not found'),
+        { status: 404 }
+      )
     }
 
     const body = await request.json()
@@ -103,14 +113,23 @@ export async function PUT(
   } catch (error) {
     // Handle authentication/authorization errors
     if (error instanceof UnauthorizedError) {
-      return NextResponse.json({ error: error.message }, { status: 401 })
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 401 }
+      )
     }
     if (error instanceof ForbiddenError) {
-      return NextResponse.json({ error: error.message }, { status: 403 })
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 403 }
+      )
     }
 
     console.error('Error updating post:', error)
-    return NextResponse.json({ error: 'Failed to update post' }, { status: 500 })
+    return NextResponse.json(
+      createErrorResponse(ErrorCode.INTERNAL_ERROR, 'Failed to update post'),
+      { status: 500 }
+    )
   }
 }
 
@@ -129,7 +148,10 @@ export async function DELETE(
     })
 
     if (!post) {
-      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+      return NextResponse.json(
+        createErrorResponse(ErrorCode.POST_NOT_FOUND, 'Post not found'),
+        { status: 404 }
+      )
     }
 
     await prisma.post.delete({
@@ -140,13 +162,22 @@ export async function DELETE(
   } catch (error) {
     // Handle authentication/authorization errors
     if (error instanceof UnauthorizedError) {
-      return NextResponse.json({ error: error.message }, { status: 401 })
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 401 }
+      )
     }
     if (error instanceof ForbiddenError) {
-      return NextResponse.json({ error: error.message }, { status: 403 })
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 403 }
+      )
     }
 
     console.error('Error deleting post:', error)
-    return NextResponse.json({ error: 'Failed to delete post' }, { status: 500 })
+    return NextResponse.json(
+      createErrorResponse(ErrorCode.INTERNAL_ERROR, 'Failed to delete post'),
+      { status: 500 }
+    )
   }
 }

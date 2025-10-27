@@ -1,11 +1,14 @@
 import { getServerSession } from "next-auth"
 import { Role } from "@prisma/client"
 import { authOptions } from "@/lib/auth-options"
+import { ErrorCode } from "@/lib/errors"
 
 /**
  * Custom error for unauthorized access (401)
  */
 export class UnauthorizedError extends Error {
+  public readonly code = ErrorCode.UNAUTHORIZED
+
   constructor(message: string = 'Unauthorized - Authentication required') {
     super(message)
     this.name = 'UnauthorizedError'
@@ -16,6 +19,8 @@ export class UnauthorizedError extends Error {
  * Custom error for forbidden access (403)
  */
 export class ForbiddenError extends Error {
+  public readonly code = ErrorCode.FORBIDDEN
+
   constructor(message: string = 'Forbidden - Insufficient permissions') {
     super(message)
     this.name = 'ForbiddenError'

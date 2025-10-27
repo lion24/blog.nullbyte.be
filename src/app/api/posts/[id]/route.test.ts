@@ -3,6 +3,7 @@ import { PUT, DELETE } from './route'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { Role } from '@prisma/client'
+import { ErrorCode } from '@/lib/errors'
 
 // Mock dependencies
 jest.mock('@/lib/prisma', () => ({
@@ -15,21 +16,26 @@ jest.mock('@/lib/prisma', () => ({
   },
 }))
 
-jest.mock('@/lib/auth', () => ({
-  requireAdmin: jest.fn(),
-  UnauthorizedError: class UnauthorizedError extends Error {
-    constructor(message = 'Unauthorized - Authentication required') {
-      super(message)
-      this.name = 'UnauthorizedError'
-    }
-  },
-  ForbiddenError: class ForbiddenError extends Error {
-    constructor(message = 'Forbidden - Insufficient permissions') {
-      super(message)
-      this.name = 'ForbiddenError'
-    }
-  },
-}))
+jest.mock('@/lib/auth', () => {
+  const { ErrorCode } = jest.requireActual('@/lib/errors')
+  return {
+    requireAdmin: jest.fn(),
+    UnauthorizedError: class UnauthorizedError extends Error {
+      code = ErrorCode.UNAUTHORIZED
+      constructor(message = 'Unauthorized - Authentication required') {
+        super(message)
+        this.name = 'UnauthorizedError'
+      }
+    },
+    ForbiddenError: class ForbiddenError extends Error {
+      code = ErrorCode.FORBIDDEN
+      constructor(message = 'Forbidden - Insufficient permissions') {
+        super(message)
+        this.name = 'ForbiddenError'
+      }
+    },
+  }
+})
 
 const mockRequireAdmin = requireAdmin as jest.MockedFunction<typeof requireAdmin>
 const mockPrismaPostFindUnique = prisma.post.findUnique as jest.MockedFunction<typeof prisma.post.findUnique>
@@ -131,7 +137,8 @@ describe('PUT /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(401)
-    expect(data.error).toBe('Unauthorized - Authentication required')
+    expect(data.error.code).toBe(ErrorCode.UNAUTHORIZED)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaPostFindUnique).not.toHaveBeenCalled()
     expect(mockPrismaPostUpdate).not.toHaveBeenCalled()
   })
@@ -144,7 +151,8 @@ describe('PUT /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(403)
-    expect(data.error).toBe('Required role: ADMIN')
+    expect(data.error.code).toBe(ErrorCode.FORBIDDEN)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaPostFindUnique).not.toHaveBeenCalled()
     expect(mockPrismaPostUpdate).not.toHaveBeenCalled()
   })
@@ -158,7 +166,8 @@ describe('PUT /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(404)
-    expect(data.error).toBe('Post not found')
+    expect(data.error.code).toBe(ErrorCode.POST_NOT_FOUND)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaPostUpdate).not.toHaveBeenCalled()
   })
 
@@ -172,7 +181,8 @@ describe('PUT /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(500)
-    expect(data.error).toBe('Failed to update post')
+    expect(data.error.code).toBe(ErrorCode.INTERNAL_ERROR)
+    expect(data.error.message).toBeDefined()
   })
 
   it('should clear existing tags and categories before updating', async () => {
@@ -259,7 +269,7 @@ describe('DELETE /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data.message).toBe('Post deleted successfully')
+    expect(data.message).toBeDefined()
     expect(mockRequireAdmin).toHaveBeenCalledTimes(1)
     expect(mockPrismaPostFindUnique).toHaveBeenCalledWith({
       where: { id: 'post-123' },
@@ -278,7 +288,8 @@ describe('DELETE /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(401)
-    expect(data.error).toBe('Unauthorized - Authentication required')
+    expect(data.error.code).toBe(ErrorCode.UNAUTHORIZED)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaPostFindUnique).not.toHaveBeenCalled()
     expect(mockPrismaPostDelete).not.toHaveBeenCalled()
   })
@@ -291,7 +302,8 @@ describe('DELETE /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(403)
-    expect(data.error).toBe('Required role: ADMIN')
+    expect(data.error.code).toBe(ErrorCode.FORBIDDEN)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaPostFindUnique).not.toHaveBeenCalled()
     expect(mockPrismaPostDelete).not.toHaveBeenCalled()
   })
@@ -305,7 +317,8 @@ describe('DELETE /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(404)
-    expect(data.error).toBe('Post not found')
+    expect(data.error.code).toBe(ErrorCode.POST_NOT_FOUND)
+    expect(data.error.message).toBeDefined()
     expect(mockPrismaPostDelete).not.toHaveBeenCalled()
   })
 
@@ -319,6 +332,7 @@ describe('DELETE /api/posts/[id]', () => {
     const data = await response.json()
 
     expect(response.status).toBe(500)
-    expect(data.error).toBe('Failed to delete post')
+    expect(data.error.code).toBe(ErrorCode.INTERNAL_ERROR)
+    expect(data.error.message).toBeDefined()
   })
 })

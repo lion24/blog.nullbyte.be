@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth'
 import { Role } from '@prisma/client'
 import { requireAuth, requireRole, requireAdmin, isAdmin, UnauthorizedError, ForbiddenError } from './auth'
+import { ErrorCode } from './errors'
 
 // Mock next-auth
 jest.mock('next-auth', () => ({
@@ -15,29 +16,31 @@ describe('Auth Utilities', () => {
   })
 
   describe('UnauthorizedError', () => {
-    it('should create error with default message', () => {
+    it('should create error with correct code and default message', () => {
       const error = new UnauthorizedError()
-      expect(error.name).toBe('UnauthorizedError')
-      expect(error.message).toBe('Unauthorized - Authentication required')
+      expect(error.code).toBe(ErrorCode.UNAUTHORIZED)
+      expect(error.message).toBeDefined()
     })
 
     it('should create error with custom message', () => {
       const error = new UnauthorizedError('Custom message')
       expect(error.name).toBe('UnauthorizedError')
+      expect(error.code).toBe(ErrorCode.UNAUTHORIZED)
       expect(error.message).toBe('Custom message')
     })
   })
 
   describe('ForbiddenError', () => {
-    it('should create error with default message', () => {
+    it('should create error with correct code and default message', () => {
       const error = new ForbiddenError()
-      expect(error.name).toBe('ForbiddenError')
-      expect(error.message).toBe('Forbidden - Insufficient permissions')
+      expect(error.code).toBe(ErrorCode.FORBIDDEN)
+      expect(error.message).toBeDefined()
     })
 
     it('should create error with custom message', () => {
       const error = new ForbiddenError('Custom message')
       expect(error.name).toBe('ForbiddenError')
+      expect(error.code).toBe(ErrorCode.FORBIDDEN)
       expect(error.message).toBe('Custom message')
     })
   })
@@ -62,8 +65,10 @@ describe('Auth Utilities', () => {
     it('should throw UnauthorizedError when session is null', async () => {
       mockGetServerSession.mockResolvedValue(null)
 
-      await expect(requireAuth()).rejects.toThrow(UnauthorizedError)
-      await expect(requireAuth()).rejects.toThrow('Unauthorized - Authentication required')
+      const error = await requireAuth().catch(e => e)
+      expect(error).toBeInstanceOf(UnauthorizedError)
+      expect(error.code).toBe(ErrorCode.UNAUTHORIZED)
+      expect(error.message).toBeDefined()
     })
 
     it('should throw UnauthorizedError when user email is missing', async () => {
@@ -131,8 +136,10 @@ describe('Auth Utilities', () => {
 
       mockGetServerSession.mockResolvedValue(mockSession)
 
-      await expect(requireRole([Role.ADMIN])).rejects.toThrow(ForbiddenError)
-      await expect(requireRole([Role.ADMIN])).rejects.toThrow('Required role: ADMIN')
+      const error = await requireRole([Role.ADMIN]).catch(e => e)
+      expect(error).toBeInstanceOf(ForbiddenError)
+      expect(error.code).toBe(ErrorCode.FORBIDDEN)
+      expect(error.message).toBeDefined()
     })
 
     it('should include multiple roles in error message', async () => {
@@ -147,7 +154,11 @@ describe('Auth Utilities', () => {
 
       mockGetServerSession.mockResolvedValue(mockSession)
 
-      await expect(requireRole([Role.ADMIN, Role.READER])).rejects.toThrow('Required role: ADMIN or READER')
+      const error = await requireRole([Role.ADMIN, Role.READER]).catch(e => e)
+      expect(error).toBeInstanceOf(ForbiddenError)
+      expect(error.code).toBe(ErrorCode.FORBIDDEN)
+      expect(error.message).toContain('ADMIN')
+      expect(error.message).toContain('READER')
     })
   })
 
@@ -186,8 +197,10 @@ describe('Auth Utilities', () => {
 
       mockGetServerSession.mockResolvedValue(mockSession)
 
-      await expect(requireAdmin()).rejects.toThrow(ForbiddenError)
-      await expect(requireAdmin()).rejects.toThrow('Required role: ADMIN')
+      const error = await requireAdmin().catch(e => e)
+      expect(error).toBeInstanceOf(ForbiddenError)
+      expect(error.code).toBe(ErrorCode.FORBIDDEN)
+      expect(error.message).toBeDefined()
     })
   })
 

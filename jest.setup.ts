@@ -61,7 +61,10 @@ jest.mock('next/server', () => {
     ...actual,
     NextResponse: {
       json: (data: any, init?: ResponseInit) => ({
-        json: async () => data,
+        json: async () => {
+          // Return the data as-is (it's already in the correct format from createErrorResponse)
+          return data
+        },
         status: init?.status || 200,
         headers: new Map(),
       }),
