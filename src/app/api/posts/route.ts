@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAdmin } from '@/lib/auth'
+import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { calculateReadingTime } from '@/lib/reading-time'
 
 export async function GET(request: NextRequest) {
@@ -71,30 +71,26 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if user is admin
-    const authResult = await requireAdmin()
-    if (authResult instanceof NextResponse) {
-      return authResult
-    }
-    const session = authResult
-    
+    // Check if user is admin (throws UnauthorizedError or ForbiddenError if not)
+    const session = await requireAdmin()
+
     const user = await prisma.user.findUnique({
       where: { email: session.user.email! }
     })
-    
+
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
-    
+
     const body = await request.json()
     const { title, content, excerpt, featuredImage, published, tags, categories } = body
-    
+
     // Generate slug from title
     const slug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '')
-    
+
     const post = await prisma.post.create({
       data: {
         title,
@@ -107,7 +103,7 @@ export async function POST(request: NextRequest) {
         tags: {
           connectOrCreate: tags?.map((tag: string) => ({
             where: { name: tag },
-            create: { 
+            create: {
               name: tag,
               slug: tag.toLowerCase().replace(/[^a-z0-9]+/g, '-')
             }
@@ -116,7 +112,7 @@ export async function POST(request: NextRequest) {
         categories: {
           connectOrCreate: categories?.map((category: string) => ({
             where: { name: category },
-            create: { 
+            create: {
               name: category,
               slug: category.toLowerCase().replace(/[^a-z0-9]+/g, '-')
             }
@@ -129,9 +125,17 @@ export async function POST(request: NextRequest) {
         categories: true,
       }
     })
-    
+
     return NextResponse.json(post)
   } catch (error) {
+    // Handle authentication/authorization errors
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json({ error: error.message }, { status: 401 })
+    }
+    if (error instanceof ForbiddenError) {
+      return NextResponse.json({ error: error.message }, { status: 403 })
+    }
+
     console.error('Error creating post:', error)
     return NextResponse.json({ error: 'Failed to create post' }, { status: 500 })
   }

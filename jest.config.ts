@@ -43,6 +43,11 @@ const config: Config = {
     }],
   },
 
+  // Transform ES modules from node_modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(@auth|next-auth)/)',
+  ],
+
   // Ignore patterns
   testPathIgnorePatterns: [
     '/node_modules/',

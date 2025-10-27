@@ -1,0 +1,270 @@
+import { NextRequest } from 'next/server'
+import { POST } from './route'
+import { prisma } from '@/lib/prisma'
+import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
+import { Role } from '@prisma/client'
+
+// Mock dependencies
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+    },
+    post: {
+      create: jest.fn(),
+    },
+  },
+}))
+
+jest.mock('@/lib/auth', () => ({
+  requireAdmin: jest.fn(),
+  UnauthorizedError: class UnauthorizedError extends Error {
+    constructor(message = 'Unauthorized - Authentication required') {
+      super(message)
+      this.name = 'UnauthorizedError'
+    }
+  },
+  ForbiddenError: class ForbiddenError extends Error {
+    constructor(message = 'Forbidden - Insufficient permissions') {
+      super(message)
+      this.name = 'ForbiddenError'
+    }
+  },
+}))
+
+const mockRequireAdmin = requireAdmin as jest.MockedFunction<typeof requireAdmin>
+const mockPrismaUserFindUnique = prisma.user.findUnique as jest.MockedFunction<typeof prisma.user.findUnique>
+const mockPrismaPostCreate = prisma.post.create as jest.MockedFunction<typeof prisma.post.create>
+
+describe('POST /api/posts', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  const createMockRequest = (body: any) => {
+    return {
+      json: jest.fn().mockResolvedValue(body),
+      nextUrl: {
+        searchParams: new URLSearchParams(),
+      },
+    } as unknown as NextRequest
+  }
+
+  const mockSession = {
+    user: {
+      id: 'user-123',
+      email: 'admin@example.com',
+      name: 'Admin User',
+      role: Role.ADMIN,
+    },
+    expires: '2024-12-31',
+  }
+
+  const mockUser = {
+    id: 'user-123',
+    email: 'admin@example.com',
+    name: 'Admin User',
+    role: Role.ADMIN,
+  }
+
+  const mockPostData = {
+    title: 'Test Post',
+    content: 'This is test content',
+    excerpt: 'Test excerpt',
+    featuredImage: 'https://example.com/image.jpg',
+    published: true,
+    tags: ['tag1', 'tag2'],
+    categories: ['category1'],
+  }
+
+  const mockCreatedPost = {
+    id: 'post-123',
+    slug: 'test-post',
+    ...mockPostData,
+    authorId: 'user-123',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    views: 0,
+    author: mockUser,
+    tags: [
+      { id: 'tag-1', name: 'tag1', slug: 'tag1' },
+      { id: 'tag-2', name: 'tag2', slug: 'tag2' },
+    ],
+    categories: [{ id: 'cat-1', name: 'category1', slug: 'category1' }],
+  }
+
+  it('should create a post successfully when user is admin', async () => {
+    mockRequireAdmin.mockResolvedValue(mockSession)
+    mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
+    mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
+
+    const request = createMockRequest(mockPostData)
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data.id).toBe('post-123')
+    expect(data.slug).toBe('test-post')
+    expect(mockRequireAdmin).toHaveBeenCalledTimes(1)
+    expect(mockPrismaUserFindUnique).toHaveBeenCalledWith({
+      where: { email: 'admin@example.com' },
+    })
+    expect(mockPrismaPostCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          title: 'Test Post',
+          slug: 'test-post',
+          content: 'This is test content',
+          authorId: 'user-123',
+        }),
+      })
+    )
+  })
+
+  it('should generate correct slug from title', async () => {
+    mockRequireAdmin.mockResolvedValue(mockSession)
+    mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
+    mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
+
+    const postDataWithComplexTitle = {
+      ...mockPostData,
+      title: 'Hello World! This is a Test Post #123',
+    }
+
+    const request = createMockRequest(postDataWithComplexTitle)
+    await POST(request)
+
+    expect(mockPrismaPostCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          slug: 'hello-world-this-is-a-test-post-123',
+        }),
+      })
+    )
+  })
+
+  it('should return 401 when user is not authenticated', async () => {
+    mockRequireAdmin.mockRejectedValue(new UnauthorizedError())
+
+    const request = createMockRequest(mockPostData)
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(401)
+    expect(data.error).toBe('Unauthorized - Authentication required')
+    expect(mockPrismaUserFindUnique).not.toHaveBeenCalled()
+    expect(mockPrismaPostCreate).not.toHaveBeenCalled()
+  })
+
+  it('should return 403 when user is not admin', async () => {
+    mockRequireAdmin.mockRejectedValue(new ForbiddenError('Required role: ADMIN'))
+
+    const request = createMockRequest(mockPostData)
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(403)
+    expect(data.error).toBe('Required role: ADMIN')
+    expect(mockPrismaUserFindUnique).not.toHaveBeenCalled()
+    expect(mockPrismaPostCreate).not.toHaveBeenCalled()
+  })
+
+  it('should return 404 when user is not found in database', async () => {
+    mockRequireAdmin.mockResolvedValue(mockSession)
+    mockPrismaUserFindUnique.mockResolvedValue(null)
+
+    const request = createMockRequest(mockPostData)
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(404)
+    expect(data.error).toBe('User not found')
+    expect(mockPrismaPostCreate).not.toHaveBeenCalled()
+  })
+
+  it('should return 500 when database operation fails', async () => {
+    mockRequireAdmin.mockResolvedValue(mockSession)
+    mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
+    mockPrismaPostCreate.mockRejectedValue(new Error('Database error'))
+
+    const request = createMockRequest(mockPostData)
+    const response = await POST(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.error).toBe('Failed to create post')
+  })
+
+  it('should handle posts without featured image', async () => {
+    mockRequireAdmin.mockResolvedValue(mockSession)
+    mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
+    mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
+
+    const postDataWithoutImage = {
+      ...mockPostData,
+      featuredImage: undefined,
+    }
+
+    const request = createMockRequest(postDataWithoutImage)
+    await POST(request)
+
+    expect(mockPrismaPostCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          featuredImage: null,
+        }),
+      })
+    )
+  })
+
+  it('should handle posts with published=false', async () => {
+    mockRequireAdmin.mockResolvedValue(mockSession)
+    mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
+    mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
+
+    const draftPost = {
+      ...mockPostData,
+      published: false,
+    }
+
+    const request = createMockRequest(draftPost)
+    await POST(request)
+
+    expect(mockPrismaPostCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          published: false,
+        }),
+      })
+    )
+  })
+
+  it('should handle posts without tags and categories', async () => {
+    mockRequireAdmin.mockResolvedValue(mockSession)
+    mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
+    mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
+
+    const postWithoutTaxonomy = {
+      title: 'Test Post',
+      content: 'Content',
+      excerpt: 'Excerpt',
+      published: true,
+    }
+
+    const request = createMockRequest(postWithoutTaxonomy)
+    await POST(request)
+
+    expect(mockPrismaPostCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          tags: {
+            connectOrCreate: [],
+          },
+          categories: {
+            connectOrCreate: [],
+          },
+        }),
+      })
+    )
+  })
+})
