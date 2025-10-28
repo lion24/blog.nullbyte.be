@@ -132,9 +132,7 @@ describe('POST /api/posts', () => {
 
   it('should generate correct slug from title', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
 
     const postDataWithComplexTitle = {
@@ -198,7 +196,6 @@ describe('POST /api/posts', () => {
 
   it('should return 500 when database operation fails', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
     mockPrismaPostCreate.mockRejectedValue(new Error('Database error'))
 
@@ -213,9 +210,7 @@ describe('POST /api/posts', () => {
 
   it('should handle posts without featured image', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
 
     const postDataWithoutImage = {
@@ -237,9 +232,7 @@ describe('POST /api/posts', () => {
 
   it('should handle posts with published=false', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
 
     const draftPost = {
@@ -261,9 +254,7 @@ describe('POST /api/posts', () => {
 
   it('should handle posts without tags and categories', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaUserFindUnique.mockResolvedValue(mockUser as any)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostCreate.mockResolvedValue(mockCreatedPost as any)
 
     const postWithoutTaxonomy = {

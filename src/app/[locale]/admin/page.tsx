@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
 import { Role } from '@prisma/client'
 
 type Post = {
@@ -26,6 +27,8 @@ export default function AdminPage() {
   const router = useRouter()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
+  const t = useTranslations()
+  const locale = useLocale()
 
   useEffect(() => {
     if (status === 'loading') return
@@ -57,7 +60,7 @@ export default function AdminPage() {
   if (status === 'loading' || loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <div style={{ color: 'var(--text-secondary)' }}>Loading...</div>
+        <div style={{ color: 'var(--text-secondary)' }}>{t('common.loading')}</div>
       </div>
     )
   }
@@ -66,10 +69,10 @@ export default function AdminPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center" style={{ color: 'var(--text-secondary)' }}>
-          <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Access Denied</h1>
-          <p>You need administrator privileges to access this page.</p>
-          <Link 
-            href="/"
+          <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{t('auth.accessDenied')}</h1>
+          <p>{t('auth.accessDeniedMessage')}</p>
+          <Link
+            href={`/${locale}`}
             className="inline-block mt-4 px-4 py-2 rounded-lg transition-colors"
             style={{
               backgroundColor: 'var(--primary)',
@@ -78,7 +81,7 @@ export default function AdminPage() {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
           >
-            Go Home
+            {t('common.goHome')}
           </Link>
         </div>
       </div>
@@ -88,10 +91,10 @@ export default function AdminPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t('admin.dashboard')}</h1>
         <div className="flex gap-3">
           <Link
-            href="/admin/users"
+            href={`/${locale}/admin/users`}
             className="px-4 py-2 rounded-lg transition-colors"
             style={{
               backgroundColor: 'var(--background-tertiary)',
@@ -107,10 +110,10 @@ export default function AdminPage() {
               e.currentTarget.style.backgroundColor = 'var(--background-tertiary)';
             }}
           >
-            Manage Users
+            {t('admin.manageUsers')}
           </Link>
           <Link
-            href="/admin/new"
+            href={`/${locale}/admin/new`}
             className="px-4 py-2 rounded-lg transition-colors"
             style={{
               backgroundColor: 'var(--primary)',
@@ -119,7 +122,7 @@ export default function AdminPage() {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
           >
-            New Post
+            {t('admin.newPost')}
           </Link>
         </div>
       </div>
@@ -130,9 +133,9 @@ export default function AdminPage() {
         border: '1px solid var(--border)'
       }}>
         <div className="p-6">
-          <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>All Posts</h2>
+          <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>{t('admin.allPosts')}</h2>
           {posts.length === 0 ? (
-            <p style={{ color: 'var(--text-tertiary)' }}>No posts yet. Create your first post!</p>
+            <p style={{ color: 'var(--text-tertiary)' }}>{t('admin.noPostsYet')}</p>
           ) : (
             <div className="space-y-4">
               {posts.map((post) => (
@@ -158,11 +161,11 @@ export default function AdminPage() {
                         {post.title}
                       </h3>
                       <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                        {new Date(post.createdAt).toLocaleDateString()} • 
+                        {new Date(post.createdAt).toLocaleDateString()} •
                         {post.published ? (
-                          <span className="ml-1" style={{ color: 'var(--success)' }}>Published</span>
+                          <span className="ml-1" style={{ color: 'var(--success)' }}>{t('admin.published')}</span>
                         ) : (
-                          <span className="ml-1" style={{ color: 'var(--warning)' }}>Draft</span>
+                          <span className="ml-1" style={{ color: 'var(--warning)' }}>{t('admin.draft')}</span>
                         )}
                       </p>
                       <div className="flex gap-2 mt-2">
@@ -196,22 +199,22 @@ export default function AdminPage() {
                     </div>
                     <div className="flex gap-2 ml-4">
                       <Link
-                        href={`/admin/edit/${post.id}`}
+                        href={`/${locale}/admin/edit/${post.id}`}
                         className="text-sm transition-colors"
                         style={{ color: 'var(--primary)' }}
                         onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-hover)'}
                         onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
                       >
-                        Edit
+                        {t('common.edit')}
                       </Link>
                       <Link
-                        href={`/posts/${post.slug}`}
+                        href={`/${locale}/posts/${post.slug}`}
                         className="text-sm transition-colors"
                         style={{ color: 'var(--text-secondary)' }}
                         onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
                         onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                       >
-                        View
+                        {t('common.view')}
                       </Link>
                     </div>
                   </div>

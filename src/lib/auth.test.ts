@@ -79,6 +79,7 @@ describe('Auth Utilities', () => {
         expires: '2024-12-31',
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       mockGetServerSession.mockResolvedValue(mockSession as any)
 
       await expect(requireAuth()).rejects.toThrow(UnauthorizedError)

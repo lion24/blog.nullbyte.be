@@ -3,11 +3,13 @@
 import { useSession } from 'next-auth/react'
 import { useState, FormEvent, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
 import { PlateEditor, plateValueToMarkdown } from '@/components/PlateEditor'
 import { Role } from '@prisma/client'
 import type { Value } from 'platejs'
+
 import { useUploadFile } from '@/hooks/use-upload-file'
 
 export default function NewPostPage() {
@@ -15,6 +17,8 @@ export default function NewPostPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [editorValue, setEditorValue] = useState<Value>([{type: 'p', children: [{text: ''}]}])
+  const t = useTranslations()
+  const locale = useLocale()
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
@@ -56,7 +60,7 @@ export default function NewPostPage() {
 
       if (response.ok) {
         await response.json()
-        router.push(`/admin`)
+        router.push(`/${locale}/admin`)
       } else {
         console.error('Failed to create post')
       }
@@ -70,7 +74,7 @@ export default function NewPostPage() {
   if (status === 'loading') {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <div style={{ color: 'var(--text-secondary)' }}>Loading...</div>
+        <div style={{ color: 'var(--text-secondary)' }}>{t('common.loading')}</div>
       </div>
     )
   }
@@ -79,10 +83,10 @@ export default function NewPostPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center" style={{ color: 'var(--text-secondary)' }}>
-          <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Access Denied</h1>
-          <p>You need administrator privileges to create posts.</p>
-          <Link 
-            href="/"
+          <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{t('auth.accessDenied')}</h1>
+          <p>{t('auth.accessDeniedCreatePost')}</p>
+          <Link
+            href={`/${locale}`}
             className="inline-block mt-4 px-4 py-2 rounded-lg transition-colors"
             style={{
               backgroundColor: 'var(--primary)',
@@ -91,7 +95,7 @@ export default function NewPostPage() {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
           >
-            Go Home
+            {t('common.goHome')}
           </Link>
         </div>
       </div>
@@ -101,19 +105,19 @@ export default function NewPostPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Create New Post</h1>
+        <h1 className="text-3xl font-bold">{t('admin.createNewPost')}</h1>
         <Link
-          href="/admin"
+          href={`/${locale}/admin`}
           className="text-blue-600 dark:text-blue-400 hover:underline"
         >
-          Back to Admin
+          {t('admin.backToAdmin')}
         </Link>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Title
+            {t('admin.title')}
           </label>
           <input
             type="text"
@@ -127,7 +131,7 @@ export default function NewPostPage() {
 
         <div>
           <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Excerpt
+            {t('admin.excerpt')}
           </label>
           <textarea
             id="excerpt"
@@ -135,13 +139,13 @@ export default function NewPostPage() {
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             value={formData.excerpt}
             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-            placeholder="Brief description of your post..."
+            placeholder={t('admin.excerptPlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Featured Image (Optional)
+            {t('admin.featuredImageOptional')}
           </label>
           <div className="space-y-2">
             <input
@@ -164,7 +168,7 @@ export default function NewPostPage() {
                 dark:hover:file:bg-gray-600"
             />
             {isUploading && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">Uploading image...</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('admin.uploadingImage')}</p>
             )}
             {(formData.featuredImage || uploadedFile) && (
               <div className="relative w-full h-48 rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
@@ -190,11 +194,11 @@ export default function NewPostPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Content
+            {t('admin.content')}
           </label>
           <PlateEditor
             onChange={setEditorValue}
-            placeholder="Write your post content here..."
+            placeholder={t('admin.contentPlaceholder')}
             className="rounded-md overflow-hidden"
             style={{
               border: '1px solid var(--input-border)'
@@ -204,7 +208,7 @@ export default function NewPostPage() {
 
         <div>
           <label htmlFor="categories" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Categories (comma-separated)
+            {t('admin.categoriesLabel')}
           </label>
           <input
             type="text"
@@ -212,13 +216,13 @@ export default function NewPostPage() {
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             value={formData.categories}
             onChange={(e) => setFormData({ ...formData, categories: e.target.value })}
-            placeholder="e.g., Web Development, JavaScript"
+            placeholder={t('admin.categoriesPlaceholder')}
           />
         </div>
 
         <div>
           <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Tags (comma-separated)
+            {t('admin.tagsLabel')}
           </label>
           <input
             type="text"
@@ -226,7 +230,7 @@ export default function NewPostPage() {
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
             value={formData.tags}
             onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-            placeholder="e.g., nextjs, react, typescript"
+            placeholder={t('admin.tagsPlaceholder')}
           />
         </div>
 
@@ -239,7 +243,7 @@ export default function NewPostPage() {
             onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
           />
           <label htmlFor="published" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-            Publish immediately
+            {t('admin.publishImmediately')}
           </label>
         </div>
 
@@ -249,13 +253,13 @@ export default function NewPostPage() {
             disabled={loading}
             className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
           >
-            {loading ? 'Creating...' : 'Create Post'}
+            {loading ? t('admin.creating') : t('admin.createPost')}
           </button>
           <Link
-            href="/admin"
+            href={`/${locale}/admin`}
             className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
           >
-            Cancel
+            {t('admin.cancel')}
           </Link>
         </div>
       </form>

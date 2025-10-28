@@ -78,6 +78,7 @@ describe('GET /api/users', () => {
 
   it('should return all users when user is admin', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaUserFindMany.mockResolvedValue(mockUsers as any)
 
     const response = await GET()
@@ -146,6 +147,7 @@ describe('PATCH /api/users', () => {
     jest.clearAllMocks()
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const createMockRequest = (body: any) => {
     return {
       json: jest.fn().mockResolvedValue(body),
@@ -174,6 +176,7 @@ describe('PATCH /api/users', () => {
 
   it('should update user role successfully when user is admin', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaUserUpdate.mockResolvedValue(mockUpdatedUser as any)
 
     const request = createMockRequest({
@@ -288,6 +291,7 @@ describe('PATCH /api/users', () => {
     mockPrismaUserUpdate.mockResolvedValue({
       ...mockUpdatedUser,
       role: Role.READER,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any)
 
     const request = createMockRequest({

@@ -2,12 +2,16 @@
 
 import Link from 'next/link'
 import { useSession, signIn, signOut } from 'next-auth/react'
+import { useTranslations, useLocale } from 'next-intl'
 import Image from 'next/image'
 import ThemeToggle from './ThemeToggle'
+import LanguageSwitcher from './LanguageSwitcher'
 import { Role } from '@prisma/client'
 
 export default function Navigation() {
   const { data: session } = useSession()
+  const t = useTranslations('common')
+  const locale = useLocale()
 
   return (
     <nav style={{
@@ -18,43 +22,44 @@ export default function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
-              Tech Blog
+            <Link href={`/${locale}`} className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              {t('blog')}
             </Link>
             <div className="hidden md:flex space-x-4">
-              <Link 
-                href="/" 
+              <Link
+                href={`/${locale}`}
                 className="transition-colors"
                 style={{ color: 'var(--text-secondary)' }}
                 onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
               >
-                Home
+                {t('home')}
               </Link>
-              <Link 
-                href="/posts" 
+              <Link
+                href={`/${locale}/posts`}
                 className="transition-colors"
                 style={{ color: 'var(--text-secondary)' }}
                 onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
               >
-                All Posts
+                {t('posts')}
               </Link>
               {session && session.user.role === Role.ADMIN && (
-                <Link 
-                  href="/admin" 
+                <Link
+                  href={`/${locale}/admin`}
                   className="transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
-                  Admin
+                  {t('admin')}
                 </Link>
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
             <ThemeToggle />
             {session ? (
               <>
@@ -85,7 +90,7 @@ export default function Navigation() {
                     e.currentTarget.style.backgroundColor = 'var(--background-tertiary)';
                   }}
                 >
-                  Sign Out
+                  {t('signOut')}
                 </button>
               </>
             ) : (
@@ -103,7 +108,7 @@ export default function Navigation() {
                   e.currentTarget.style.backgroundColor = 'var(--text-primary)';
                 }}
               >
-                Sign In with GitHub
+                {t('signIn')}
               </button>
             )}
           </div>

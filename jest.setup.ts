@@ -2,10 +2,12 @@ import '@testing-library/jest-dom'
 
 // Mock Next.js Web APIs
 if (typeof Request === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   global.Request = class Request {} as any
 }
 if (typeof Response === 'undefined') {
   global.Response = class Response {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static json(data: any, init?: ResponseInit) {
       return {
         json: async () => data,
@@ -13,9 +15,11 @@ if (typeof Response === 'undefined') {
         headers: new Map(),
       }
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any
 }
 if (typeof Headers === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   global.Headers = class Headers {} as any
 }
 
@@ -60,6 +64,7 @@ jest.mock('next/server', () => {
   return {
     ...actual,
     NextResponse: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       json: (data: any, init?: ResponseInit) => ({
         json: async () => {
           // Return the data as-is (it's already in the correct format from createErrorResponse)

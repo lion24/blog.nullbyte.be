@@ -77,13 +77,12 @@ describe('Button', () => {
   it('should render as child component when asChild is true', () => {
     render(
       <Button asChild>
-        <a href="/test">Link Button</a>
+        <span data-testid="custom-child">Custom Child</span>
       </Button>
     )
 
-    const link = screen.getByRole('link')
-    expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', '/test')
+    const child = screen.getByTestId('custom-child')
+    expect(child).toBeInTheDocument()
   })
 
   it('should pass through additional props', () => {

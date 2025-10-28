@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { getFullUrl } from '@/lib/url'
 
@@ -83,25 +84,26 @@ async function getPostsByTag(slug: string): Promise<TagResponse> {
   }
 }
 
-export default async function TagPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params
+export default async function TagPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
+  const { slug, locale } = await params
   const { tag, posts, count } = await getPostsByTag(slug)
-  
+  const t = await getTranslations()
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
-          Posts tagged with &ldquo;{tag.name}&rdquo;
+          {t('posts.taggedWith', { tag: tag.name })}
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Found {count} {count === 1 ? 'post' : 'posts'}
+          {t('posts.foundCount', { count })}
         </p>
       </div>
-      
+
       <div className="space-y-6">
         {posts.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-            No posts found with this tag.
+            {t('posts.noPostsWithTag')}
           </p>
         ) : (
           posts.map((post) => (
@@ -109,21 +111,21 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
               key={post.id}
               className="border-b border-gray-200 dark:border-gray-700 pb-6"
             >
-              <Link href={`/posts/${post.slug}`}>
+              <Link href={`/${locale}/posts/${post.slug}`}>
                 <h2 className="text-2xl font-semibold mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   {post.title}
                 </h2>
               </Link>
-              
+
               {post.excerpt && (
                 <p className="text-gray-600 dark:text-gray-400 mb-3">
                   {post.excerpt}
                 </p>
               )}
-              
+
               <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                 <span>
-                  By {post.author.name || post.author.email}
+                  {t('posts.byAuthor', { author: post.author.name || post.author.email || t('admin.anonymous') })}
                 </span>
                 <span>•</span>
                 <time dateTime={post.createdAt}>
@@ -134,13 +136,13 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
                   })}
                 </time>
               </div>
-              
+
               {post.tags.length > 0 && (
                 <div className="flex gap-2 mt-3">
                   {post.tags.map((t) => (
                     <Link
                       key={t.id}
-                      href={`/tags/${t.slug}`}
+                      href={`/${locale}/tags/${t.slug}`}
                       className={`text-xs px-2 py-1 rounded-md transition-colors ${
                         t.slug === tag.slug
                           ? 'bg-blue-600 text-white'
@@ -159,10 +161,10 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
       
       <div className="mt-8">
         <Link
-          href="/posts"
+          href={`/${locale}/posts`}
           className="text-blue-600 dark:text-blue-400 hover:underline"
         >
-          ← Back to all posts
+          {t('common.backToAllPosts')}
         </Link>
       </div>
     </div>

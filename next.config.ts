@@ -1,7 +1,32 @@
-import type { NextConfig } from "next";
+import {NextConfig} from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
-const nextConfig: NextConfig = {
-  /* config options here */
+const config: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'blob.vercel-storage.com',
+        pathname: '/**',
+      },
+      { // For placeholder images in the editor (test/dev purposes)
+        protocol: 'https',
+        hostname: 'placekittens.com',
+        pathname: '/**',
+      },
+    ],
+  }
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin();
+export default withNextIntl(config);

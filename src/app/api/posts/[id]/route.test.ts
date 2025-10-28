@@ -47,6 +47,7 @@ describe('PUT /api/posts/[id]', () => {
     jest.clearAllMocks()
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const createMockRequest = (body: any) => {
     return {
       json: jest.fn().mockResolvedValue(body),
@@ -110,7 +111,9 @@ describe('PUT /api/posts/[id]', () => {
 
   it('should update a post successfully when user is admin', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostFindUnique.mockResolvedValue(mockPost as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostUpdate.mockResolvedValue(mockUpdatedPost as any)
 
     const request = createMockRequest(updateData)
@@ -173,6 +176,7 @@ describe('PUT /api/posts/[id]', () => {
 
   it('should return 500 when database operation fails', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostFindUnique.mockResolvedValue(mockPost as any)
     mockPrismaPostUpdate.mockRejectedValue(new Error('Database error'))
 
@@ -187,7 +191,9 @@ describe('PUT /api/posts/[id]', () => {
 
   it('should clear existing tags and categories before updating', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostFindUnique.mockResolvedValue(mockPost as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostUpdate.mockResolvedValue(mockUpdatedPost as any)
 
     const request = createMockRequest(updateData)
@@ -261,7 +267,9 @@ describe('DELETE /api/posts/[id]', () => {
 
   it('should delete a post successfully when user is admin', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostFindUnique.mockResolvedValue(mockPost as any)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostDelete.mockResolvedValue(mockPost as any)
 
     const request = createMockRequest()
@@ -324,6 +332,7 @@ describe('DELETE /api/posts/[id]', () => {
 
   it('should return 500 when database operation fails', async () => {
     mockRequireAdmin.mockResolvedValue(mockSession)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockPrismaPostFindUnique.mockResolvedValue(mockPost as any)
     mockPrismaPostDelete.mockRejectedValue(new Error('Database error'))
 

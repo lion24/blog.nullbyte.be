@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Role } from '@prisma/client'
@@ -25,6 +26,8 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState<string | null>(null)
+  const t = useTranslations()
+  const locale = useLocale()
 
   useEffect(() => {
     if (status === 'loading') return
@@ -92,7 +95,7 @@ export default function UsersPage() {
   if (status === 'loading' || loading) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <div style={{ color: 'var(--text-secondary)' }}>Loading...</div>
+        <div style={{ color: 'var(--text-secondary)' }}>{t('common.loading')}</div>
       </div>
     )
   }
@@ -101,10 +104,10 @@ export default function UsersPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center" style={{ color: 'var(--text-secondary)' }}>
-          <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Access Denied</h1>
-          <p>You need administrator privileges to access this page.</p>
-          <Link 
-            href="/"
+          <h1 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{t('auth.accessDenied')}</h1>
+          <p>{t('auth.accessDeniedMessage')}</p>
+          <Link
+            href={`/${locale}`}
             className="inline-block mt-4 px-4 py-2 rounded-lg transition-colors"
             style={{
               backgroundColor: 'var(--primary)',
@@ -113,7 +116,7 @@ export default function UsersPage() {
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
           >
-            Go Home
+            {t('common.goHome')}
           </Link>
         </div>
       </div>
@@ -123,9 +126,9 @@ export default function UsersPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>User Management</h1>
+        <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>{t('admin.userManagement')}</h1>
         <Link
-          href="/admin"
+          href={`/${locale}/admin`}
           className="text-sm px-4 py-2 rounded-lg transition-colors"
           style={{
             backgroundColor: 'var(--background-tertiary)',
@@ -141,7 +144,7 @@ export default function UsersPage() {
             e.currentTarget.style.backgroundColor = 'var(--background-tertiary)';
           }}
         >
-          Back to Admin
+          {t('admin.backToAdmin')}
         </Link>
       </div>
 
@@ -152,15 +155,15 @@ export default function UsersPage() {
       }}>
         <table className="w-full">
           <thead>
-            <tr style={{ 
+            <tr style={{
               backgroundColor: 'var(--background-tertiary)',
               borderBottom: '1px solid var(--border)'
             }}>
-              <th className="text-left p-4" style={{ color: 'var(--text-primary)' }}>User</th>
-              <th className="text-left p-4" style={{ color: 'var(--text-primary)' }}>Email</th>
-              <th className="text-center p-4" style={{ color: 'var(--text-primary)' }}>Posts</th>
-              <th className="text-center p-4" style={{ color: 'var(--text-primary)' }}>Verified</th>
-              <th className="text-center p-4" style={{ color: 'var(--text-primary)' }}>Role</th>
+              <th className="text-left p-4" style={{ color: 'var(--text-primary)' }}>{t('admin.user')}</th>
+              <th className="text-left p-4" style={{ color: 'var(--text-primary)' }}>{t('admin.email')}</th>
+              <th className="text-center p-4" style={{ color: 'var(--text-primary)' }}>{t('admin.postsCount')}</th>
+              <th className="text-center p-4" style={{ color: 'var(--text-primary)' }}>{t('admin.verified')}</th>
+              <th className="text-center p-4" style={{ color: 'var(--text-primary)' }}>{t('admin.role')}</th>
             </tr>
           </thead>
           <tbody>
@@ -184,7 +187,7 @@ export default function UsersPage() {
                       />
                     )}
                     <span style={{ color: 'var(--text-primary)' }}>
-                      {user.name || 'Anonymous'}
+                      {user.name || t('admin.anonymous')}
                     </span>
                   </div>
                 </td>
@@ -215,12 +218,12 @@ export default function UsersPage() {
                       cursor: (updating === user.id || user.email === session.user.email) ? 'not-allowed' : 'pointer'
                     }}
                   >
-                    <option value={Role.READER}>Reader</option>
-                    <option value={Role.ADMIN}>Admin</option>
+                    <option value={Role.READER}>{t('admin.reader')}</option>
+                    <option value={Role.ADMIN}>{t('admin.admin')}</option>
                   </select>
                   {user.email === session.user.email && (
                     <div className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
-                      (You)
+                      {t('admin.currentUser')}
                     </div>
                   )}
                 </td>
@@ -230,7 +233,7 @@ export default function UsersPage() {
         </table>
         {users.length === 0 && (
           <div className="p-8 text-center" style={{ color: 'var(--text-tertiary)' }}>
-            No users found.
+            {t('admin.noUsers')}
           </div>
         )}
       </div>

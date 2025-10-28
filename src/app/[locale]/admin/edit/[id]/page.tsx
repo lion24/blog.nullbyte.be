@@ -3,6 +3,7 @@
 import { useSession } from 'next-auth/react'
 import { useState, useEffect, FormEvent, use, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
 import { PlateEditor, plateValueToMarkdown } from '@/components/PlateEditor'
@@ -29,6 +30,8 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [fetchingPost, setFetchingPost] = useState(true)
   const [editorValue, setEditorValue] = useState<Value>([{type: 'p', children: [{text: ''}]}])
   const [markdownContent, setMarkdownContent] = useState<string>('')
+  const t = useTranslations()
+  const locale = useLocale()
   const [formData, setFormData] = useState({
     title: '',
     excerpt: '',
@@ -100,7 +103,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       })
 
       if (response.ok) {
-        router.push('/admin')
+        router.push(`/${locale}/admin`)
       } else {
         const error = await response.json()
         alert(error.error || 'Failed to update post')
@@ -114,7 +117,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   }
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+    if (!confirm(t('admin.confirmDelete'))) {
       return
     }
 
@@ -125,7 +128,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       })
 
       if (response.ok) {
-        router.push('/admin')
+        router.push(`/${locale}/admin`)
       } else {
         const error = await response.json()
         alert(error.error || 'Failed to delete post')
@@ -141,7 +144,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   if (status === 'loading' || fetchingPost) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="text-secondary">Loading...</div>
+        <div className="text-secondary">{t('common.loading')}</div>
       </div>
     )
   }
@@ -153,12 +156,12 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Edit Post</h1>
+        <h1 className="text-3xl font-bold">{t('admin.editPost')}</h1>
         <Link
-          href="/admin"
+          href={`/${locale}/admin`}
           className="text-secondary hover:text-primary transition-colors"
         >
-          Back to Admin
+          {t('admin.backToAdmin')}
         </Link>
       </div>
 
@@ -169,7 +172,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       }}>
         <div>
           <label htmlFor="title" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-            Title
+            {t('admin.title')}
           </label>
           <input
             type="text"
@@ -188,7 +191,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
         <div>
           <label htmlFor="excerpt" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-            Excerpt
+            {t('admin.excerpt')}
           </label>
           <textarea
             id="excerpt"
@@ -201,13 +204,13 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             }}
             value={formData.excerpt}
             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-            placeholder="Brief description of your post..."
+            placeholder={t('admin.excerptPlaceholder')}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-            Featured Image (Optional)
+            {t('admin.featuredImageOptional')}
           </label>
           <div className="space-y-2">
             <input
@@ -226,7 +229,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
               }}
             />
             {isUploading && (
-              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Uploading image...</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('admin.uploadingImage')}</p>
             )}
             {(formData.featuredImage || uploadedFile) && (
               <div className="relative w-full h-48 rounded-md overflow-hidden" style={{ border: '1px solid var(--border)' }}>
@@ -252,12 +255,12 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
         <div>
           <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
-            Content
+            {t('admin.content')}
           </label>
           <PlateEditor
             initialValue={markdownContent}
             onChange={setEditorValue}
-            placeholder="Write your post content here..."
+            placeholder={t('admin.contentPlaceholder')}
             className="rounded-md overflow-hidden"
             style={{
               border: '1px solid var(--input-border)'
@@ -267,7 +270,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
         <div>
           <label htmlFor="categories" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-            Categories (comma-separated)
+            {t('admin.categoriesLabel')}
           </label>
           <input
             type="text"
@@ -280,13 +283,13 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             }}
             value={formData.categories}
             onChange={(e) => setFormData({ ...formData, categories: e.target.value })}
-            placeholder="e.g., Web Development, JavaScript"
+            placeholder={t('admin.categoriesPlaceholder')}
           />
         </div>
 
         <div>
           <label htmlFor="tags" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-            Tags (comma-separated)
+            {t('admin.tagsLabel')}
           </label>
           <input
             type="text"
@@ -299,7 +302,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             }}
             value={formData.tags}
             onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-            placeholder="e.g., nextjs, react, typescript"
+            placeholder={t('admin.tagsPlaceholder')}
           />
         </div>
 
@@ -316,7 +319,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
           />
           <label htmlFor="published" className="ml-2 block text-sm" style={{ color: 'var(--text-primary)' }}>
-            Published
+            {t('admin.published')}
           </label>
         </div>
 
@@ -333,10 +336,10 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
             >
-              {loading ? 'Updating...' : 'Update Post'}
+              {loading ? t('admin.updating') : t('admin.updatePost')}
             </button>
             <Link
-              href="/admin"
+              href={`/${locale}/admin`}
               className="px-6 py-2 rounded-md focus:outline-none transition-colors"
               style={{
                 backgroundColor: 'var(--background-tertiary)',
@@ -346,7 +349,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
               onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--border-hover)'}
               onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border)'}
             >
-              Cancel
+              {t('admin.cancel')}
             </Link>
           </div>
           <button
@@ -361,7 +364,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--danger-hover)'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--danger)'}
           >
-            {deleting ? 'Deleting...' : 'Delete Post'}
+            {deleting ? t('admin.deleting') : t('admin.deletePost')}
           </button>
         </div>
       </form>

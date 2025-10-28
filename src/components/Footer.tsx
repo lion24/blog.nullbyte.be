@@ -1,9 +1,11 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const t = useTranslations()
 
   return (
     <footer
@@ -18,17 +20,17 @@ export default function Footer() {
           {/* About Section */}
           <div>
             <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-              Tech Blog
+              {t('footer.techBlog')}
             </h3>
             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              Sharing development journeys, insights, and discoveries in the world of technology.
+              {t('footer.tagline')}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-              Quick Links
+              {t('footer.quickLinks')}
             </h3>
             <ul className="space-y-2">
               <li>
@@ -39,7 +41,7 @@ export default function Footer() {
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
-                  Home
+                  {t('footer.home')}
                 </Link>
               </li>
               <li>
@@ -50,7 +52,7 @@ export default function Footer() {
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
-                  All Posts
+                  {t('footer.allPosts')}
                 </Link>
               </li>
             </ul>
@@ -59,7 +61,7 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-              Connect
+              {t('footer.connect')}
             </h3>
             <ul className="space-y-2">
               <li>
@@ -70,7 +72,7 @@ export default function Footer() {
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
-                  Email
+                  {t('footer.email')}
                 </a>
               </li>
               <li>
@@ -83,7 +85,7 @@ export default function Footer() {
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
-                  GitHub
+                  {t('footer.github')}
                 </Link>
               </li>
             </ul>
@@ -98,7 +100,7 @@ export default function Footer() {
             color: 'var(--text-tertiary)',
           }}
         >
-          <p>© {currentYear} Tech Blog. All rights reserved.</p>
+          <p>{t('footer.copyright', { year: currentYear })}</p>
         </div>
       </div>
     </footer>

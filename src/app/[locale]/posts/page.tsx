@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { formatReadingTime } from '@/lib/reading-time'
+import { useTranslations, useLocale } from 'next-intl'
 
 type Post = {
   id: string
@@ -21,6 +21,8 @@ type Post = {
 export default function PostsPage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
+  const t = useTranslations()
+  const locale = useLocale()
 
   useEffect(() => {
     fetch('/api/posts?published=true')
@@ -37,15 +39,15 @@ export default function PostsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8" style={{ color: 'var(--text-primary)' }}>All Posts</h1>
-      
+      <h1 className="text-4xl font-bold mb-8" style={{ color: 'var(--text-primary)' }}>{t('posts.allPosts')}</h1>
+
       {loading ? (
         <div className="text-center py-12 rounded-lg" style={{
           backgroundColor: 'var(--background-secondary)',
           boxShadow: 'var(--shadow-sm)',
           border: '1px solid var(--border)'
         }}>
-          <p style={{ color: 'var(--text-secondary)' }}>Loading posts...</p>
+          <p style={{ color: 'var(--text-secondary)' }}>{t('posts.loadingPosts')}</p>
         </div>
       ) : posts.length === 0 ? (
         <div className="text-center py-12 rounded-lg" style={{
@@ -53,7 +55,7 @@ export default function PostsPage() {
           boxShadow: 'var(--shadow-sm)',
           border: '1px solid var(--border)'
         }}>
-          <p style={{ color: 'var(--text-tertiary)' }}>No posts published yet.</p>
+          <p style={{ color: 'var(--text-tertiary)' }}>{t('posts.noPostsPublished')}</p>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -79,7 +81,7 @@ export default function PostsPage() {
                 <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <time>{new Date(post.createdAt).toLocaleDateString()}</time>
                   <span>•</span>
-                  <span>{formatReadingTime(post.readingTime)}</span>
+                  <span>{t('common.readingTime', { minutes: post.readingTime })}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   {post.categories.map((category) => (
@@ -99,8 +101,8 @@ export default function PostsPage() {
               </div>
               
               <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
-                <Link 
-                  href={`/posts/${post.slug}`} 
+                <Link
+                  href={`/${locale}/posts/${post.slug}`}
                   className="transition-colors"
                   style={{ color: 'inherit' }}
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
@@ -119,7 +121,7 @@ export default function PostsPage() {
                   {post.tags.slice(0, 3).map((tag) => (
                     <Link
                       key={tag.id}
-                      href={`/tags/${tag.slug}`}
+                      href={`/${locale}/tags/${tag.slug}`}
                       className="text-xs transition-colors"
                       style={{ color: 'var(--text-tertiary)' }}
                       onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
@@ -133,13 +135,13 @@ export default function PostsPage() {
                   )}
                 </div>
                 <Link
-                  href={`/posts/${post.slug}`}
+                  href={`/${locale}/posts/${post.slug}`}
                   className="text-sm font-medium transition-colors"
                   style={{ color: 'var(--primary)' }}
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-hover)'}
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
                 >
-                  Read →
+                  {t('common.readMoreArrow')}
                 </Link>
               </div>
             </article>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import { formatReadingTime } from '@/lib/reading-time'
+import { useTranslations, useLocale } from 'next-intl'
 
 type Post = {
   id: string
@@ -22,6 +22,8 @@ type Post = {
 export default function HomePage() {
   const [latestPosts, setLatestPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
+  const t = useTranslations()
+  const locale = useLocale()
 
   const truncateExcerpt = (text: string | null, maxLength: number = 115): string => {
     if (!text) return ''
@@ -70,17 +72,17 @@ export default function HomePage() {
             className="text-5xl font-bold mb-4"
             style={{ color: 'var(--text-primary)' }}
           >
-            Welcome to My Tech Blog
+            {t('home.title')}
           </h1>
           <p
             className="text-xl mb-8 max-w-2xl mx-auto"
             style={{ color: 'var(--text-secondary)' }}
           >
-            Sharing my development journey, insights, and discoveries in the world of technology
+            {t('home.subtitle')}
           </p>
           <div className="flex justify-center space-x-4 flex-wrap gap-4">
             <Link
-              href="/posts"
+              href={`/${locale}/posts`}
               className="px-6 py-3 rounded-lg transition-colors inline-block shadow-lg"
               style={{
                 backgroundColor: 'var(--primary)',
@@ -89,7 +91,7 @@ export default function HomePage() {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
             >
-              Browse All Posts
+              {t('posts.allPosts')}
             </Link>
             <Link
               href="https://github.com/lion24"
@@ -110,21 +112,21 @@ export default function HomePage() {
                 e.currentTarget.style.borderColor = 'var(--border)';
               }}
             >
-              GitHub Profile
+              {t('home.githubProfile')}
             </Link>
           </div>
         </div>
       </section>
 
       <section className="py-16">
-        <h2 className="text-3xl font-bold mb-8" style={{ color: 'var(--text-primary)' }}>Latest Posts</h2>
+        <h2 className="text-3xl font-bold mb-8" style={{ color: 'var(--text-primary)' }}>{t('home.latestPosts')}</h2>
         {loading ? (
           <div className="text-center py-12 rounded-lg" style={{
             backgroundColor: 'var(--background-secondary)',
             boxShadow: 'var(--shadow-sm)',
             border: '1px solid var(--border)'
           }}>
-            <p style={{ color: 'var(--text-secondary)' }}>Loading posts...</p>
+            <p style={{ color: 'var(--text-secondary)' }}>{t('common.loading')}</p>
           </div>
         ) : latestPosts.length === 0 ? (
           <div className="text-center py-12 rounded-lg" style={{
@@ -132,7 +134,7 @@ export default function HomePage() {
             boxShadow: 'var(--shadow-sm)',
             border: '1px solid var(--border)'
           }}>
-            <p style={{ color: 'var(--text-tertiary)' }}>No posts yet. Check back soon!</p>
+            <p style={{ color: 'var(--text-tertiary)' }}>{t('home.noPosts')}</p>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -158,7 +160,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                     <time>{new Date(post.createdAt).toLocaleDateString()}</time>
                     <span>•</span>
-                    <span>{formatReadingTime(post.readingTime)}</span>
+                    <span>{t('common.readingTime', { minutes: post.readingTime })}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     {post.categories.map((category) => (
@@ -179,7 +181,7 @@ export default function HomePage() {
 
                 <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
                   <Link
-                    href={`/posts/${post.slug}`}
+                    href={`/${locale}/posts/${post.slug}`}
                     className="transition-colors"
                     style={{ color: 'inherit' }}
                     onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
@@ -200,7 +202,7 @@ export default function HomePage() {
                     {post.tags.slice(0, 3).map((tag) => (
                       <Link
                         key={tag.id}
-                        href={`/tags/${tag.slug}`}
+                        href={`/${locale}/tags/${tag.slug}`}
                         className="text-xs transition-colors"
                         style={{ color: 'var(--text-tertiary)' }}
                         onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
@@ -214,13 +216,13 @@ export default function HomePage() {
                     )}
                   </div>
                   <Link
-                    href={`/posts/${post.slug}`}
+                    href={`/${locale}/posts/${post.slug}`}
                     className="text-sm font-medium transition-colors"
                     style={{ color: 'var(--primary)' }}
                     onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-hover)'}
                     onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
                   >
-                    Read →
+                    {t('common.readMore')} →
                   </Link>
                 </div>
               </article>

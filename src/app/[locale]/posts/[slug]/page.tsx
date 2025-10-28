@@ -7,7 +7,7 @@ import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { formatReadingTime } from '@/lib/reading-time'
+import { useTranslations, useLocale } from 'next-intl'
 
 type Post = {
   id: string
@@ -26,11 +26,13 @@ type Post = {
   categories: Array<{ id: string; name: string }>
 }
 
-export default function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+export default function PostPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
   const [postUrl, setPostUrl] = useState('')
   const router = useRouter()
+  const t = useTranslations()
+  const locale = useLocale()
 
   useEffect(() => {
     async function fetchPost() {
@@ -70,7 +72,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex justify-center items-center min-h-[60vh]">
-          <div style={{ color: 'var(--text-secondary)' }}>Loading...</div>
+          <div style={{ color: 'var(--text-secondary)' }}>{t('common.loading')}</div>
         </div>
       </div>
     )
@@ -84,9 +86,9 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
     <article className="container mx-auto px-4 py-8 max-w-4xl">
       <header className="mb-8">
         <div className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link href={`/${locale}`} className="hover:text-primary transition-colors">{t('breadcrumb.home')}</Link>
           <span>→</span>
-          <Link href="/posts" className="hover:text-primary transition-colors">Posts</Link>
+          <Link href={`/${locale}/posts`} className="hover:text-primary transition-colors">{t('breadcrumb.posts')}</Link>
           <span>→</span>
           <span style={{ color: 'var(--text-primary)' }}>{post.title}</span>
         </div>
@@ -95,13 +97,13 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
         <div className="flex items-center justify-between flex-wrap gap-4 text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
           <div className="flex items-center space-x-4">
-            <span>By {post.author.name || 'Anonymous'}</span>
+            <span>{t('posts.byAuthor', { author: post.author.name || t('admin.anonymous') })}</span>
             <span>•</span>
             <time>{new Date(post.createdAt).toLocaleDateString()}</time>
             <span>•</span>
-            <span>{formatReadingTime(post.readingTime)}</span>
+            <span>{t('common.readingTime', { minutes: post.readingTime })}</span>
             <span>•</span>
-            <span>{post.views} views</span>
+            <span>{t('posts.viewCount', { count: post.views })}</span>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -154,11 +156,11 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
 
       <footer className="pt-8" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="flex items-center flex-wrap gap-2 mb-8">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Tags:</span>
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('posts.tagsLabel')}</span>
           {post.tags.map((tag) => (
             <Link
               key={tag.id}
-              href={`/tags/${tag.slug}`}
+              href={`/${locale}/tags/${tag.slug}`}
               className="text-sm transition-colors"
               style={{ color: 'var(--text-tertiary)' }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
@@ -170,13 +172,13 @@ export default function PostPage({ params }: { params: Promise<{ slug: string }>
         </div>
 
         <Link
-          href="/posts"
+          href={`/${locale}/posts`}
           className="inline-flex items-center transition-colors"
           style={{ color: 'var(--primary)' }}
           onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-hover)'}
           onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
         >
-          ← Back to all posts
+          {t('common.backToAllPosts')}
         </Link>
       </footer>
     </article>
