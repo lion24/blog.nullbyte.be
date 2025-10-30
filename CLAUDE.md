@@ -168,3 +168,222 @@ npm run db:studio
 2. Run `npm run db:migrate` to create and apply migration
 3. Update TypeScript types if needed (Prisma auto-generates most types)
 4. Update seed script if new fields/models added
+
+## Internationalization (i18n)
+
+This project uses a **strongly typed, fully server-side i18n system** built on top of `next-intl`. This approach provides:
+
+- **Type Safety**: Translation objects are fully typed with TypeScript classes
+- **Server-Side**: All translations happen on the server, reducing client bundle size
+- **Developer Experience**: No need for multiple `t()` calls - get structured translation objects
+- **Props Drilling**: Easy to pass typed translations down to client components
+
+### Translation System Architecture
+
+#### Translation Files
+
+Translation content is stored in TypeScript files (not JSON):
+
+- `messages/en.ts` - English translations
+- `messages/fr.ts` - French translations
+
+Each file exports a `FullTranslation` object with all namespaces.
+
+#### Namespace Classes
+
+Each translation namespace has a corresponding TypeScript class in `messages/types/`:
+
+- `CommonT` - Common UI text (buttons, navigation, etc.)
+- `HomeT` - Homepage content
+- `PostsT` - Post-related text
+- `AdminT` - Admin interface text
+- `AuthT` - Authentication messages
+- `FooterT` - Footer content
+- `ErrorsT` - Error messages
+- And more...
+
+These classes define the structure of translations and provide type safety.
+
+### Using Translations in Server Components
+
+Use the `localize()` function to get strongly typed translation objects:
+
+```typescript
+// app/[locale]/page.tsx
+import { localize } from '@/i18n/localize'
+import { HomeT, CommonT } from '@/messages/types'
+
+export default async function HomePage() {
+  // Get structured translation objects
+  const home = await localize(HomeT)
+  const common = await localize(CommonT)
+
+  return (
+    <div>
+      <h1>{home.title}</h1>
+      <p>{home.subtitle}</p>
+      <p>{home.latestPosts}</p>
+      
+      {/* Pass to child components */}
+      <Button translations={common} />
+    </div>
+  )
+}
+```
+
+### Using Translations in Client Components
+
+Client components receive translations as props from their parent server component:
+
+```typescript
+// components/MyButton.tsx
+'use client'
+
+import type { CommonT } from '@/messages/types'
+
+interface ButtonProps {
+  translations: CommonT  // Fully typed!
+}
+
+export function Button({ translations }: ButtonProps) {
+  return (
+    <button onClick={() => alert(translations.loading)}>
+      {translations.signIn}
+    </button>
+  )
+}
+```
+
+### Using Partial Translations (Subtypes)
+
+You can pass only part of a namespace using TypeScript's indexed access types:
+
+```typescript
+// Server component
+import { localize } from '@/i18n/localize'
+import { AdminT } from '@/messages/types'
+
+export default async function AdminPage() {
+  const admin = await localize(AdminT)
+  
+  // Pass only the needed subset
+  return <PostForm buttonLabels={admin} />
+}
+
+// Client component with partial translations
+'use client'
+
+interface PostFormProps {
+  buttonLabels: Pick<AdminT, 'save' | 'cancel' | 'delete'>
+}
+
+export function PostForm({ buttonLabels }: PostFormProps) {
+  return (
+    <>
+      <button>{buttonLabels.save}</button>
+      <button>{buttonLabels.cancel}</button>
+      <button>{buttonLabels.delete}</button>
+    </>
+  )
+}
+```
+
+### Traditional next-intl Usage (Still Supported)
+
+For simple cases or dynamic keys, you can still use the traditional `useTranslations()` and `getTranslations()`:
+
+```typescript
+// Server component
+import { getTranslations } from 'next-intl/server'
+
+const t = await getTranslations('common')
+const text = t('signIn')
+
+// Client component
+'use client'
+import { useTranslations } from 'next-intl'
+
+const t = useTranslations('common')
+const text = t('signIn')
+```
+
+However, prefer the `localize()` approach for better type safety and developer experience.
+
+### Adding New Translations
+
+To add a new translation namespace:
+
+1. **Create the namespace class** in `messages/types/`:
+
+```typescript
+// messages/types/MyNewFeatureT.ts
+import type { Translation } from './Translation'
+
+export class MyNewFeatureT implements Translation {
+  namespace?: keyof import('./FullTranslation').FullTranslation = 'myNewFeature'
+  
+  title = ''
+  description = ''
+  // ... other fields
+}
+```
+
+2. **Add to FullTranslation type**:
+
+```typescript
+// messages/types/FullTranslation.ts
+import type { MyNewFeatureT } from './MyNewFeatureT'
+
+export type FullTranslation = {
+  // ... existing namespaces
+  myNewFeature: MyNewFeatureT
+}
+```
+
+3. **Add translations to all language files**:
+
+```typescript
+// messages/en.ts
+const en: FullTranslation = {
+  // ... existing namespaces
+  myNewFeature: {
+    title: 'My Feature Title',
+    description: 'Feature description',
+  }
+}
+
+// messages/fr.ts
+const fr: FullTranslation = {
+  // ... existing namespaces
+  myNewFeature: {
+    title: 'Titre de ma fonctionnalité',
+    description: 'Description de la fonctionnalité',
+  }
+}
+```
+
+4. **Export from index**:
+
+```typescript
+// messages/types/index.ts
+export { MyNewFeatureT } from './MyNewFeatureT'
+```
+
+5. **Use in components**:
+
+```typescript
+import { localize } from '@/i18n/localize'
+import { MyNewFeatureT } from '@/messages/types'
+
+const translations = await localize(MyNewFeatureT)
+```
+
+### Benefits of This Approach
+
+1. **Type Safety**: TypeScript will catch missing or misspelled translation keys at compile time
+2. **Single Call**: Get all translations for a namespace with one function call instead of multiple `t()` calls
+3. **Structured Props**: Pass complete or partial translation objects to child components with proper typing
+4. **Server-Only**: No need for `NextIntlClientProvider` or client-side translation context
+5. **Maintenance**: When adding/changing translations, TypeScript will highlight all affected files
+6. **Autocomplete**: Full IDE autocomplete support for all translation keys
+

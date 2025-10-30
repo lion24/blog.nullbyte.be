@@ -13,6 +13,7 @@ export default getRequestConfig(async ({requestLocale}) => {
 
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
+    // Import TypeScript translation files instead of JSON
+    messages: (await import(`../../messages/${locale}.ts`)).default,
   };
 });

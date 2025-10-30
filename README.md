@@ -137,15 +137,27 @@ tech-blog/
 │   │   └── layout.tsx    # Root layout
 │   ├── components/       # Reusable components
 │   ├── lib/             # Utilities
+│   ├── i18n/            # Internationalization
 │   └── types/           # TypeScript types
+├── messages/            # Translation files (i18n)
 ├── prisma/
 │   └── schema.prisma    # Database schema
+├── docs/                # Project documentation
 └── public/              # Static assets
 ```
 
+## Documentation
+
+For detailed documentation, see the [`docs/`](./docs) directory:
+
+- 🌍 **[i18n Quick Start](./docs/I18N_QUICKSTART.md)** - Strongly typed translation system
+- 💡 **[Translation Examples](./docs/TRANSLATION_EXAMPLES.md)** - Code examples for i18n
+- 🤖 **[AI Features](./docs/AI_FEATURES.md)** - AI-powered editor capabilities
+- 🏗️ **[Architecture Guide](./CLAUDE.md)** - Complete technical documentation
+
 ## Contributing
 
-Feel free to open issues or submit pull requests!
+Feel free to open issues or submit pull requests! See our [contributing guidelines](./CONTRIBUTING.md) for more details.
 
 ## License
 
