@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { POST } from './route'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
+import { generateUniqueSlug, slugify } from '@/lib/slug'
 import { Role } from '@prisma/client'
 import { ErrorCode } from '@/lib/errors'
 
@@ -15,6 +16,13 @@ jest.mock('@/lib/prisma', () => ({
       create: jest.fn(),
     },
   },
+}))
+
+jest.mock('@/lib/slug', () => ({
+  generateUniqueSlug: jest.fn(),
+  slugify: jest.fn((text: string) => 
+    text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+  ),
 }))
 
 jest.mock('@/lib/auth', () => {
@@ -41,10 +49,15 @@ jest.mock('@/lib/auth', () => {
 const mockRequireAdmin = requireAdmin as jest.MockedFunction<typeof requireAdmin>
 const mockPrismaUserFindUnique = prisma.user.findUnique as jest.MockedFunction<typeof prisma.user.findUnique>
 const mockPrismaPostCreate = prisma.post.create as jest.MockedFunction<typeof prisma.post.create>
+const mockGenerateUniqueSlug = generateUniqueSlug as jest.MockedFunction<typeof generateUniqueSlug>
 
 describe('POST /api/posts', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Set default mock behavior for generateUniqueSlug
+    mockGenerateUniqueSlug.mockImplementation(async (title: string) => {
+      return slugify(title)
+    })
   })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

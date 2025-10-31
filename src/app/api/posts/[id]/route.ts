@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { ErrorCode, createErrorResponse } from '@/lib/errors'
+import { generateUniqueSlug, slugify } from '@/lib/slug'
 
 export async function GET(
   request: NextRequest,
@@ -58,11 +59,8 @@ export async function PUT(
     const body = await request.json()
     const { title, content, excerpt, featuredImage, published, tags, categories } = body
 
-    // Generate slug from title
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '')
+    // Generate unique slug from title (exclude current post from uniqueness check)
+    const slug = await generateUniqueSlug(title, id)
 
     // First, disconnect all existing tags and categories
     await prisma.post.update({
@@ -85,19 +83,19 @@ export async function PUT(
         published,
         tags: {
           connectOrCreate: tags?.map((tag: string) => ({
-            where: { name: tag },
+            where: { slug: slugify(tag) },  // Use slug for lookup (case-insensitive)
             create: {
               name: tag,
-              slug: tag.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+              slug: slugify(tag)
             }
           })) ?? []
         },
         categories: {
           connectOrCreate: categories?.map((category: string) => ({
-            where: { name: category },
+            where: { slug: slugify(category) },  // Use slug for lookup (case-insensitive)
             create: {
               name: category,
-              slug: category.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+              slug: slugify(category)
             }
           })) ?? []
         }

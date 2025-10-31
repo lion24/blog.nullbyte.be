@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { calculateReadingTime } from '@/lib/reading-time'
 import { ErrorCode, createErrorResponse } from '@/lib/errors'
+import { generateUniqueSlug, slugify } from '@/lib/slug'
 
 export async function GET(request: NextRequest) {
   try {
@@ -89,11 +90,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, content, excerpt, featuredImage, published, tags, categories } = body
 
-    // Generate slug from title
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)+/g, '')
+    // Validate required fields
+    if (!title || !content) {
+      return NextResponse.json(
+        createErrorResponse(ErrorCode.INVALID_INPUT, 'Title and content are required'),
+        { status: 400 }
+      )
+    }
+
+    // Generate unique slug from title
+    const slug = await generateUniqueSlug(title)
 
     const post = await prisma.post.create({
       data: {
@@ -106,19 +112,19 @@ export async function POST(request: NextRequest) {
         authorId: user.id,
         tags: {
           connectOrCreate: tags?.map((tag: string) => ({
-            where: { name: tag },
+            where: { slug: slugify(tag) },  // Use slug for lookup (case-insensitive)
             create: {
               name: tag,
-              slug: tag.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+              slug: slugify(tag)
             }
           })) ?? []
         },
         categories: {
           connectOrCreate: categories?.map((category: string) => ({
-            where: { name: category },
+            where: { slug: slugify(category) },  // Use slug for lookup (case-insensitive)
             create: {
               name: category,
-              slug: category.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+              slug: slugify(category)
             }
           })) ?? []
         }
@@ -144,6 +150,23 @@ export async function POST(request: NextRequest) {
         createErrorResponse(error.code, error.message),
         { status: 403 }
       )
+    }
+
+    // Handle Prisma errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      const prismaError = error as { code: string; meta?: { target?: string[] } }
+      
+      if (prismaError.code === 'P2002') {
+        // Unique constraint violation
+        const target = prismaError.meta?.target
+        return NextResponse.json(
+          createErrorResponse(
+            ErrorCode.INVALID_INPUT,
+            `A ${target?.[0] === 'slug' ? 'post with a similar title' : target?.[0] || 'record'} already exists`
+          ),
+          { status: 409 }
+        )
+      }
     }
 
     console.error('Error creating post:', error)
