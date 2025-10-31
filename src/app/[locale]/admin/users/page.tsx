@@ -41,7 +41,7 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/users')
+      const response = await fetch('/api/admin/users')
       const data = await response.json()
       
       if (!response.ok) {
@@ -68,7 +68,7 @@ export default function UsersPage() {
   const updateUserRole = async (userId: string, newRole: Role) => {
     setUpdating(userId)
     try {
-      const response = await fetch('/api/users', {
+      const response = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

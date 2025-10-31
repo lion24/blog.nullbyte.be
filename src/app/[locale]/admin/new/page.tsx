@@ -45,7 +45,7 @@ export default function NewPostPage() {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/posts', {
+      const response = await fetch('/api/admin/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

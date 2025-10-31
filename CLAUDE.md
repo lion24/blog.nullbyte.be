@@ -135,16 +135,146 @@ The seed script (`prisma/seed.ts`) uses factory functions from `prisma/fixtures/
 - `createTag()`, `createCategory()` - Generate taxonomy
 - Includes predefined `defaultTags`, `defaultCategories`, and `samplePostContents`
 
+## Security Architecture
+
+This application implements a **defense-in-depth security strategy** with multiple layers of protection. Full details in `SECURITY.md`.
+
+### Security Layers
+
+1. **Origin Validation** (`src/lib/security.ts`)
+   - Verifies requests come from allowed domains
+   - Checks `NEXTAUTH_URL`, Vercel deployment URLs, and localhost in development
+   - Prevents scraping and unauthorized API access
+   - Applied automatically via middleware to all `/api` routes
+
+2. **Rate Limiting** (`src/lib/rate-limit.ts`)
+   - Uses Upstash Redis for distributed rate limiting
+   - Falls back to in-memory storage if Redis not configured (dev only)
+   - Three tiers:
+     - **Public API**: 10 requests / 10 seconds
+     - **Admin API**: 30 requests / 60 seconds
+     - **Strict**: 5 requests / hour (sensitive operations)
+   - Applied automatically via middleware to all `/api` routes
+
+3. **CSRF Protection** (`src/lib/security.ts`)
+   - Custom implementation with token generation and validation
+   - Tokens expire after 1 hour
+   - Required for all state-changing operations
+   - Use `generateCsrfToken()` and `validateCsrfToken()` functions
+
+4. **Middleware Security** (`src/middleware.ts`)
+   - Centralized security enforcement before route handlers
+   - Order: Origin Check → Rate Limiting → i18n → Route Handler
+   - Runs on all `/api` routes except `/api/auth/*`
+
+5. **Authentication & Authorization**
+   - NextAuth.js with GitHub OAuth
+   - Role-based access control (USER, EDITOR, ADMIN)
+   - Helper functions: `requireAuth()`, `requireAdmin()`, `requireRole()`
+   - Roles cached in JWT, only refreshed on sign-in
+
+### Using Security Functions
+
+#### In API Routes
+
+```typescript
+import { requireAdmin } from '@/lib/auth'
+import { checkRateLimit, publicApiLimiter } from '@/lib/rate-limit'
+import { validateOrigin } from '@/lib/security'
+
+export async function POST(request: NextRequest) {
+  // 1. Origin and rate limiting handled by middleware automatically
+  
+  // 2. Check authentication and authorization
+  await requireAdmin()
+  
+  // 3. Optional: Custom rate limiting for specific endpoints
+  const rateLimitResult = await checkRateLimit(request, strictLimiter)
+  if (!rateLimitResult.success) {
+    return rateLimitResult.response
+  }
+  
+  // 4. Process request...
+}
+```
+
+#### CSRF Token Pattern
+
+```typescript
+// Server: Generate token
+import { generateCsrfToken } from '@/lib/security'
+
+export async function GET() {
+  const session = await getServerSession(authOptions)
+  const token = await generateCsrfToken(session.user.id)
+  return NextResponse.json({ csrfToken: token })
+}
+
+// Client: Include in request
+const response = await fetch('/api/posts', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRF-Token': csrfToken
+  },
+  body: JSON.stringify(data)
+})
+
+// Server: Validate token
+import { validateCsrfToken } from '@/lib/security'
+
+export async function POST(request: NextRequest) {
+  const token = request.headers.get('x-csrf-token')
+  const session = await getServerSession(authOptions)
+  
+  if (!await validateCsrfToken(token, session.user.id)) {
+    return createCsrfErrorResponse()
+  }
+  
+  // Process request...
+}
+```
+
+### Server Actions vs API Routes
+
+**Prefer Server Actions** for internal operations:
+- No API endpoint exposure
+- Automatic CSRF protection
+- Type-safe between client and server
+- Better performance
+
+**Use API Routes** only for:
+- External integrations (webhooks, n8n, Zapier)
+- Public APIs (RSS feeds)
+- Third-party callbacks (OAuth, payments)
+
+### Redis Configuration
+
+Rate limiting requires Upstash Redis for production (optional for development):
+
+1. Create free account at [upstash.com](https://upstash.com)
+2. Create a Redis database
+3. Add to `.env`:
+
+```bash
+UPSTASH_REDIS_REST_URL="https://your-redis-url.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="your-redis-token"
+```
+
+If not configured, rate limiting uses in-memory storage (not suitable for production with multiple instances).
+
 ## Environment Variables
 
 Required environment variables (see `.env.example`):
 
 - `DATABASE_URL` - PostgreSQL connection string
-- `NEXTAUTH_URL` - Application URL
+- `NEXTAUTH_URL` - Application URL (also used for origin validation)
 - `NEXTAUTH_SECRET` - Random secret for JWT signing
 - `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` - GitHub OAuth credentials
 - `OPENAI_API_KEY` - For AI editor features (optional)
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob Storage token for media uploads
+- `UPSTASH_REDIS_REST_URL` - Upstash Redis URL (optional, for production rate limiting)
+- `UPSTASH_REDIS_REST_TOKEN` - Upstash Redis token (optional, for production rate limiting)
 
 ## Common Workflows
 

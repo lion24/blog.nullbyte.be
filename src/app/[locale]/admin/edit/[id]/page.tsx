@@ -48,7 +48,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
   const fetchPost = useCallback(async () => {
     try {
-      const response = await fetch(`/api/posts/${id}`)
+      const response = await fetch(`/api/admin/posts/${id}`)
       if (!response.ok) {
         throw new Error('Failed to fetch post')
       }
@@ -89,7 +89,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     setLoading(true)
 
     try {
-      const response = await fetch(`/api/posts/${id}`, {
+      const response = await fetch(`/api/admin/posts/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
     setDeleting(true)
     try {
-      const response = await fetch(`/api/posts/${id}`, {
+      const response = await fetch(`/api/admin/posts/${id}`, {
         method: 'DELETE',
       })
 

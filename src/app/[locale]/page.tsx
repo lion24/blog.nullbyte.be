@@ -1,43 +1,30 @@
-'use client'
-
-import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
-import { useTranslations, useLocale } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import PostCard from '@/components/PostCard'
+import InteractiveLink from '@/components/InteractiveLink'
+import { getPublishedPosts } from '@/lib/posts'
+import type { Metadata } from 'next'
 
-type Post = {
-  id: string
-  title: string
-  slug: string
-  excerpt: string | null
-  createdAt: string
-  readingTime: number
-  author: {
-    name: string | null
-  }
-  tags: Array<{ id: string; name: string; slug: string }>
-  categories: Array<{ id: string; name: string }>
+type Props = {
+  params: Promise<{ locale: string }>
 }
 
-export default function HomePage() {
-  const [latestPosts, setLatestPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(true)
-  const t = useTranslations()
-  const locale = useLocale()
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'home' })
+  
+  return {
+    title: t('title'),
+    description: t('subtitle'),
+  }
+}
 
-  useEffect(() => {
-    fetch('/api/posts?published=true&limit=3')
-      .then(res => res.json())
-      .then(data => {
-        setLatestPosts(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error('Failed to fetch posts:', err)
-        setLoading(false)
-      })
-  }, [])
+export default async function HomePage({ params }: Props) {
+  const { locale } = await params
+  const t = await getTranslations({ locale })
+  
+  // Fetch latest 3 posts directly from database
+  const latestPosts = await getPublishedPosts(3)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -76,54 +63,37 @@ export default function HomePage() {
             {t('home.subtitle')}
           </p>
           <div className="flex justify-center space-x-4 flex-wrap gap-4">
-            <Link
+            <InteractiveLink
               href={`/${locale}/posts`}
-              className="px-6 py-3 rounded-lg transition-colors inline-block shadow-lg"
-              style={{
-                backgroundColor: 'var(--primary)',
-                color: 'var(--text-inverse)'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--primary-hover)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
+              className="px-6 py-3 rounded-lg inline-block shadow-lg"
+              baseColor="var(--text-inverse)"
+              hoverColor="var(--text-inverse)"
+              backgroundColor="var(--primary)"
+              hoverBackgroundColor="var(--primary-hover)"
             >
               {t('posts.allPosts')}
-            </Link>
-            <Link
+            </InteractiveLink>
+            <InteractiveLink
               href="https://github.com/lion24"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-lg transition-colors inline-block shadow-lg"
-              style={{
-                backgroundColor: 'var(--background-secondary)',
-                color: 'var(--text-primary)',
-                border: '1px solid var(--border)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--background-tertiary)';
-                e.currentTarget.style.borderColor = 'var(--border-hover)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
-                e.currentTarget.style.borderColor = 'var(--border)';
-              }}
+              className="px-6 py-3 rounded-lg inline-block shadow-lg"
+              baseColor="var(--text-primary)"
+              hoverColor="var(--text-primary)"
+              backgroundColor="var(--background-secondary)"
+              hoverBackgroundColor="var(--background-tertiary)"
+              border="1px solid var(--border)"
+              hoverBorder="1px solid var(--border-hover)"
             >
               {t('home.githubProfile')}
-            </Link>
+            </InteractiveLink>
           </div>
         </div>
       </section>
 
       <section className="py-16">
         <h2 className="text-3xl font-bold mb-8" style={{ color: 'var(--text-primary)' }}>{t('home.latestPosts')}</h2>
-        {loading ? (
-          <div className="text-center py-12 rounded-lg" style={{
-            backgroundColor: 'var(--background-secondary)',
-            boxShadow: 'var(--shadow-sm)',
-            border: '1px solid var(--border)'
-          }}>
-            <p style={{ color: 'var(--text-secondary)' }}>{t('common.loading')}</p>
-          </div>
-        ) : latestPosts.length === 0 ? (
+        {latestPosts.length === 0 ? (
           <div className="text-center py-12 rounded-lg" style={{
             backgroundColor: 'var(--background-secondary)',
             boxShadow: 'var(--shadow-sm)',

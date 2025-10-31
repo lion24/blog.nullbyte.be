@@ -4,11 +4,18 @@ import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { ErrorCode, createErrorResponse } from '@/lib/errors'
 import { generateUniqueSlug, slugify } from '@/lib/slug'
 
+/**
+ * GET /api/admin/posts/[id]
+ * Get a single post by ID - requires admin authentication
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Require admin authentication
+    await requireAdmin()
+
     const { id } = await params;
     const post = await prisma.post.findUnique({
       where: { id },
@@ -27,7 +34,21 @@ export async function GET(
     }
 
     return NextResponse.json(post)
-  } catch {
+  } catch (error) {
+    // Handle authentication/authorization errors
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 401 }
+      )
+    }
+    if (error instanceof ForbiddenError) {
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 403 }
+      )
+    }
+
     return NextResponse.json(
       createErrorResponse(ErrorCode.INTERNAL_ERROR, 'Failed to fetch post'),
       { status: 500 }
@@ -35,6 +56,10 @@ export async function GET(
   }
 }
 
+/**
+ * PUT /api/admin/posts/[id]
+ * Update a post - requires admin authentication
+ */
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -131,6 +156,10 @@ export async function PUT(
   }
 }
 
+/**
+ * DELETE /api/admin/posts/[id]
+ * Delete a post - requires admin authentication
+ */
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

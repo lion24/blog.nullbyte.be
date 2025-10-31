@@ -24,7 +24,16 @@ const config: NextConfig = {
         hostname: 'placekittens.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'api.dicebear.com',
+        pathname: '/**',
+      }
     ],
+    // Allow SVG images from dicebear.com (avatar generator)
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   }
 };
 

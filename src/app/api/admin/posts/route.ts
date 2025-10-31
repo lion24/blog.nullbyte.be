@@ -5,15 +5,22 @@ import { calculateReadingTime } from '@/lib/reading-time'
 import { ErrorCode, createErrorResponse } from '@/lib/errors'
 import { generateUniqueSlug, slugify } from '@/lib/slug'
 
+/**
+ * GET /api/admin/posts
+ * Get all posts (including unpublished) - requires authentication
+ */
 export async function GET(request: NextRequest) {
   try {
+    // Require admin authentication for all requests
+    await requireAdmin()
+
     const searchParams = request.nextUrl.searchParams
     const published = searchParams.get('published')
     const limitParam = searchParams.get('limit')
     const limit = limitParam ? parseInt(limitParam, 10) : undefined
 
     const posts = await prisma.post.findMany({
-      where: published === 'false' ? {} : { published: true },
+      where: published === 'false' ? {} : published === 'true' ? { published: true } : {},
       orderBy: { createdAt: 'desc' },
       take: limit,
       select: {
@@ -61,16 +68,34 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Return empty array if no posts found (this is valid, not an error)
     return NextResponse.json(postsWithReadingTime || [])
   } catch (error) {
+    // Handle authentication/authorization errors
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 401 }
+      )
+    }
+    if (error instanceof ForbiddenError) {
+      return NextResponse.json(
+        createErrorResponse(error.code, error.message),
+        { status: 403 }
+      )
+    }
+
     console.error('Error fetching posts:', error)
-    // Return empty array instead of error to prevent homepage from breaking
-    // This handles cases where database might not be fully set up yet
-    return NextResponse.json([])
+    return NextResponse.json(
+      createErrorResponse(ErrorCode.INTERNAL_ERROR, 'Failed to fetch posts'),
+      { status: 500 }
+    )
   }
 }
 
+/**
+ * POST /api/admin/posts
+ * Create a new post - requires admin authentication
+ */
 export async function POST(request: NextRequest) {
   try {
     // Check if user is admin (throws UnauthorizedError or ForbiddenError if not)

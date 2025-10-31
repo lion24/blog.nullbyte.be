@@ -47,7 +47,7 @@ export default function AdminPage() {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('/api/posts?published=false')
+      const response = await fetch('/api/admin/posts?published=false')
       const data = await response.json()
       setPosts(data)
     } catch (error) {

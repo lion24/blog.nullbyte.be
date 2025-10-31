@@ -40,7 +40,7 @@ const mockRequireAdmin = requireAdmin as jest.MockedFunction<typeof requireAdmin
 const mockPrismaUserFindMany = prisma.user.findMany as jest.MockedFunction<typeof prisma.user.findMany>
 const mockPrismaUserUpdate = prisma.user.update as jest.MockedFunction<typeof prisma.user.update>
 
-describe('GET /api/users', () => {
+describe('GET /api/admin/users', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -142,7 +142,7 @@ describe('GET /api/users', () => {
   })
 })
 
-describe('PATCH /api/users', () => {
+describe('PATCH /api/admin/users', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })

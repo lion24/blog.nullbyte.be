@@ -1,86 +1,68 @@
-'use client'
-
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { useTranslations, useLocale } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
+import { getPostBySlug, incrementPostViews } from '@/lib/posts'
+import { getFullUrl } from '@/lib/url'
+import type { Metadata } from 'next'
 
-type Post = {
-  id: string
-  title: string
-  content: string
-  excerpt: string | null
-  featuredImage: string | null
-  published: boolean
-  views: number
-  readingTime: number
-  createdAt: string
-  author: {
-    name: string | null
-  }
-  tags: Array<{ id: string; name: string; slug: string }>
-  categories: Array<{ id: string; name: string }>
+type Props = {
+  params: Promise<{ slug: string; locale: string }>
 }
 
-export default function PostPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
-  const [post, setPost] = useState<Post | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [postUrl, setPostUrl] = useState('')
-  const router = useRouter()
-  const t = useTranslations()
-  const locale = useLocale()
-
-  useEffect(() => {
-    async function fetchPost() {
-      try {
-        const { slug } = await params
-        if (!slug) {
-          notFound()
-        }
-
-        const response = await fetch(`/api/posts/by-slug/${slug}`)
-        if (!response.ok) {
-          if (response.status === 404) {
-            notFound()
-          }
-          throw new Error('Failed to fetch post')
-        }
-
-        const data = await response.json()
-        setPost(data)
-
-        // Set the full URL for sharing
-        if (typeof window !== 'undefined') {
-          setPostUrl(window.location.href)
-        }
-      } catch (error) {
-        console.error('Error fetching post:', error)
-        router.push('/posts')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchPost()
-  }, [params, router])
-
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="flex justify-center items-center min-h-[60vh]">
-          <div style={{ color: 'var(--text-secondary)' }}>{t('common.loading')}</div>
-        </div>
-      </div>
-    )
-  }
-
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug, locale } = await params
+  const post = await getPostBySlug(slug)
+  
   if (!post) {
-    return null
+    return {
+      title: 'Post Not Found',
+    }
   }
+
+  const fullUrl = getFullUrl(`/${locale}/posts/${slug}`)
+  
+  return {
+    title: post.title,
+    description: post.excerpt || undefined,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || undefined,
+      type: 'article',
+      url: fullUrl,
+      images: post.featuredImage ? [{ url: post.featuredImage }] : undefined,
+      publishedTime: post.createdAt,
+      modifiedTime: post.updatedAt,
+      authors: post.author.name ? [post.author.name] : undefined,
+      tags: post.tags.map(tag => tag.name),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt || undefined,
+      images: post.featuredImage ? [post.featuredImage] : undefined,
+    },
+  }
+}
+
+export default async function PostPage({ params }: Props) {
+  const { slug, locale } = await params
+  const t = await getTranslations({ locale })
+  
+  // Fetch post directly from database
+  const post = await getPostBySlug(slug)
+  
+  if (!post) {
+    notFound()
+  }
+
+  // Increment view count (non-blocking)
+  incrementPostViews(post.id)
+
+  // Get full URL for sharing
+  const postUrl = getFullUrl(`/${locale}/posts/${slug}`)
 
   return (
     <article className="container mx-auto px-4 py-8 max-w-4xl">
@@ -151,7 +133,7 @@ export default function PostPage({ params }: { params: Promise<{ slug: string; l
       )}
 
       <div className="mb-8">
-        <ContentRenderer content={post.content} />
+        <ContentRenderer content={JSON.stringify(post.content)} />
       </div>
 
       <footer className="pt-8" style={{ borderTop: '1px solid var(--border)' }}>

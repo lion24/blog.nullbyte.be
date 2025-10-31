@@ -4,6 +4,10 @@ import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { Role } from '@prisma/client'
 import { ErrorCode, createErrorResponse } from '@/lib/errors'
 
+/**
+ * GET /api/admin/users
+ * List all users - requires admin authentication
+ */
 export async function GET() {
   try {
     // Check if user is admin (throws UnauthorizedError or ForbiddenError if not)
@@ -48,6 +52,10 @@ export async function GET() {
   }
 }
 
+/**
+ * PATCH /api/admin/users
+ * Update user role - requires admin authentication
+ */
 export async function PATCH(request: NextRequest) {
   try {
     // Check if user is admin (throws UnauthorizedError or ForbiddenError if not)

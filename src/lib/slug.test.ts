@@ -52,7 +52,7 @@ describe('generateUniqueSlug', () => {
 
   it('appends number when slug exists', async () => {
     mockPrismaPost.findUnique
-      .mockResolvedValueOnce({ id: 'existing-id', slug: 'my-post' } as any)
+      .mockResolvedValueOnce({ id: 'existing-id', slug: 'my-post' } satisfies { id: string; slug: string } as never)
       .mockResolvedValueOnce(null)
     
     const slug = await generateUniqueSlug('My Post')
@@ -62,9 +62,9 @@ describe('generateUniqueSlug', () => {
 
   it('increments number until unique slug found', async () => {
     mockPrismaPost.findUnique
-      .mockResolvedValueOnce({ id: 'id-1', slug: 'my-post' } as any)
-      .mockResolvedValueOnce({ id: 'id-2', slug: 'my-post-1' } as any)
-      .mockResolvedValueOnce({ id: 'id-3', slug: 'my-post-2' } as any)
+      .mockResolvedValueOnce({ id: 'id-1', slug: 'my-post' } satisfies { id: string; slug: string } as never)
+      .mockResolvedValueOnce({ id: 'id-2', slug: 'my-post-1' } satisfies { id: string; slug: string } as never)
+      .mockResolvedValueOnce({ id: 'id-3', slug: 'my-post-2' } satisfies { id: string; slug: string } as never)
       .mockResolvedValueOnce(null)
     
     const slug = await generateUniqueSlug('My Post')
@@ -74,7 +74,7 @@ describe('generateUniqueSlug', () => {
 
   it('excludes specified post ID from uniqueness check', async () => {
     mockPrismaPost.findUnique
-      .mockResolvedValueOnce({ id: 'current-id', slug: 'my-post' } as any)
+      .mockResolvedValueOnce({ id: 'current-id', slug: 'my-post' } satisfies { id: string; slug: string } as never)
     
     const slug = await generateUniqueSlug('My Post', 'current-id')
     expect(slug).toBe('my-post')
@@ -83,8 +83,8 @@ describe('generateUniqueSlug', () => {
 
   it('continues checking when excluded ID matches but finds another duplicate', async () => {
     mockPrismaPost.findUnique
-      .mockResolvedValueOnce({ id: 'current-id', slug: 'my-post' } as any)
-      .mockResolvedValueOnce({ id: 'other-id', slug: 'my-post-1' } as any)
+      .mockResolvedValueOnce({ id: 'current-id', slug: 'my-post' } satisfies { id: string; slug: string } as never)
+      .mockResolvedValueOnce({ id: 'other-id', slug: 'my-post-1' } satisfies { id: string; slug: string } as never)
       .mockResolvedValueOnce(null)
     
     const slug = await generateUniqueSlug('My Post', 'current-id')
