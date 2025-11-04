@@ -1,23 +1,26 @@
 /**
  * API Authentication utilities
- * Supports both session-based (browser) and API key (external tools) authentication
+ * Supports both session-based (browser) and bearer token (external tools) authentication
  */
 
 import { getServerSession } from 'next-auth'
 import { authOptions } from './auth-options'
 import { prisma } from './prisma'
+import { verifyBearerToken } from './verify-bearer-token'
 
-export type AuthMethod = 'session' | 'api-key'
+export type AuthMethod = 'session' | 'bearer-token'
 
 export interface AuthResult {
   userId: string
   email: string
   role: string
   method: AuthMethod
+  serviceAccountId?: string
+  serviceAccountScopes?: string[]
 }
 
 /**
- * Authenticate a request using either session or API key
+ * Authenticate a request using either session or bearer token
  * Returns user info if authenticated, null otherwise
  */
 export async function authenticateRequest(request: Request): Promise<AuthResult | null> {
@@ -39,27 +42,26 @@ export async function authenticateRequest(request: Request): Promise<AuthResult 
     }
   }
   
-  // Try API key authentication (for external tools)
-  const apiKey = request.headers.get('x-api-key') || request.headers.get('authorization')?.replace('Bearer ', '')
-  
-  if (apiKey) {
-    // TODO: Implement API key lookup in database
-    // For now, check against environment variable
-    const validApiKey = process.env.API_KEY
+  // Try bearer token authentication (for external tools)
+  const authHeader = request.headers.get('authorization')
+  if (authHeader) {
+    const serviceAccount = await verifyBearerToken(authHeader)
     
-    if (validApiKey && apiKey === validApiKey) {
-      // Get admin user for API key requests
-      const adminUser = await prisma.user.findFirst({
-        where: { role: 'ADMIN' },
+    if (serviceAccount) {
+      // Get the user who created this service account
+      const user = await prisma.user.findUnique({
+        where: { id: serviceAccount.createdById },
         select: { id: true, email: true, role: true }
       })
       
-      if (adminUser && adminUser.email) {
+      if (user && user.email) {
         return {
-          userId: adminUser.id,
-          email: adminUser.email,
-          role: adminUser.role,
-          method: 'api-key'
+          userId: user.id,
+          email: user.email,
+          role: user.role,
+          method: 'bearer-token',
+          serviceAccountId: serviceAccount.serviceAccountId,
+          serviceAccountScopes: serviceAccount.scopes,
         }
       }
     }

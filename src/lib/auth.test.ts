@@ -8,11 +8,38 @@ jest.mock('next-auth', () => ({
   getServerSession: jest.fn(),
 }))
 
+// Mock Next.js headers
+jest.mock('next/headers', () => ({
+  headers: jest.fn(),
+}))
+
+// Mock prisma
+jest.mock('./prisma', () => ({
+  prisma: {
+    user: {
+      findUnique: jest.fn(),
+    },
+  },
+}))
+
+// Mock bearer token verification
+jest.mock('./verify-bearer-token', () => ({
+  verifyBearerToken: jest.fn(),
+}))
+
+// Import mocked modules
+import { headers } from 'next/headers'
+
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
+const mockHeaders = headers as jest.MockedFunction<typeof headers>
 
 describe('Auth Utilities', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Default mock for headers - it returns a Promise that resolves to a Headers-like object
+    mockHeaders.mockResolvedValue({
+      get: jest.fn().mockReturnValue(null),
+    } as unknown as Awaited<ReturnType<typeof headers>>)
   })
 
   describe('UnauthorizedError', () => {

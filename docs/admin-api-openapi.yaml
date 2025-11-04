@@ -5,8 +5,21 @@ info:
     Secure administrative API for the NullByte tech blog platform.
     
     ## Authentication
-    This API requires admin-level authentication using NextAuth.js session cookies.
-    All endpoints require the user to have an `ADMIN` role.
+    This API supports two authentication methods:
+    
+    1. **Session Authentication** (for browser/UI): NextAuth.js session cookies
+    2. **Bearer Token Authentication** (for external tools): Service account tokens
+    
+    All endpoints require the user to have an `ADMIN` role or a valid service account token.
+    
+    ### Service Account Tokens
+    Service accounts allow external tools (n8n, CI/CD, scripts) to authenticate via bearer tokens.
+    
+    - Token format: `sa_<64_hex_characters>`
+    - Header: `Authorization: Bearer sa_...`
+    - Tokens are created via `/service-accounts` endpoint
+    - Tokens can be scoped to specific permissions
+    - Tokens can be revoked but not regenerated
     
     ## Error Handling
     All errors follow a consistent format with error codes and messages.
@@ -15,7 +28,7 @@ info:
     ## Rate Limiting
     API endpoints are subject to rate limiting to prevent abuse.
     
-  version: 1.0.0
+  version: 2.0.0
   contact:
     name: NullByte Blog
     url: https://blog.nullbyte.be
@@ -31,6 +44,7 @@ servers:
 
 security:
   - sessionAuth: []
+  - bearerAuth: []
 
 paths:
   /users:
@@ -357,6 +371,190 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 
+  /service-accounts:
+    get:
+      summary: List all service accounts
+      description: Retrieve a list of all service accounts with their details (tokens are never exposed)
+      operationId: getServiceAccounts
+      tags:
+        - Service Accounts
+      responses:
+        '200':
+          description: Successfully retrieved service accounts list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  serviceAccounts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ServiceAccount'
+                  availableScopes:
+                    type: array
+                    items:
+                      type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: Create a new service account
+      description: |
+        Create a new service account and generate a bearer token.
+        **IMPORTANT**: The token is only shown in the response and cannot be retrieved later.
+        Save it immediately in a secure location.
+      operationId: createServiceAccount
+      tags:
+        - Service Accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateServiceAccountRequest'
+      responses:
+        '201':
+          description: Successfully created service account
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  serviceAccount:
+                    $ref: '#/components/schemas/ServiceAccount'
+                  token:
+                    type: string
+                    description: Bearer token for authentication (only shown once)
+                    example: "sa_a1b2c3d4e5f6789abcdef0123456789abcdef0123456789abcdef0123456789"
+                  warning:
+                    type: string
+                    example: "This token will not be shown again. Save it securely."
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /service-accounts/{id}:
+    get:
+      summary: Get service account details
+      description: Retrieve detailed information about a specific service account
+      operationId: getServiceAccount
+      tags:
+        - Service Accounts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Service account ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved service account
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  serviceAccount:
+                    $ref: '#/components/schemas/ServiceAccount'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Service account not found
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    patch:
+      summary: Update service account
+      description: Update a service account (currently only supports revoking)
+      operationId: updateServiceAccount
+      tags:
+        - Service Accounts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Service account ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revoked:
+                  type: boolean
+                  description: Set to true to revoke the service account
+                  example: true
+              required:
+                - revoked
+      responses:
+        '200':
+          description: Successfully updated service account
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  serviceAccount:
+                    $ref: '#/components/schemas/ServiceAccount'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Service account not found
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Delete service account
+      description: Permanently delete a service account
+      operationId: deleteServiceAccount
+      tags:
+        - Service Accounts
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Service account ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully deleted service account
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Service account not found
+        '500':
+          $ref: '#/components/responses/InternalError'
+
 components:
   securitySchemes:
     sessionAuth:
@@ -366,6 +564,19 @@ components:
       description: |
         NextAuth.js session cookie for authentication.
         Users must be authenticated with ADMIN role to access these endpoints.
+    
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Service Account Token
+      description: |
+        Service account bearer token authentication for external tools and services.
+        Token format: sa_<64_hex_characters>
+        
+        Example: Authorization: Bearer sa_a1b2c3d4e5f6789abcdef0123456789...
+        
+        To create a service account token, use the POST /service-accounts endpoint.
+        The token is only shown once during creation and cannot be retrieved later.
 
   schemas:
     User:
@@ -658,6 +869,103 @@ components:
         - userId
         - role
 
+    ServiceAccount:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique service account identifier
+          example: "clx123abc"
+        name:
+          type: string
+          description: Service account name
+          example: "n8n Automation"
+        description:
+          type: string
+          nullable: true
+          description: Optional description of the service account's purpose
+          example: "Service account for n8n workflow automation"
+        scopes:
+          type: array
+          items:
+            type: string
+          description: List of scopes/permissions granted to this service account
+          example: ["posts:read", "posts:write", "tags:read"]
+        revoked:
+          type: boolean
+          description: Whether the service account has been revoked
+          example: false
+        lastUsedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Last time this service account was used for authentication
+          example: "2024-01-20T15:45:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          description: Service account creation timestamp
+          example: "2024-01-15T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Service account last update timestamp
+          example: "2024-01-20T15:45:00Z"
+        createdBy:
+          type: object
+          properties:
+            id:
+              type: string
+              example: "cm1abc123"
+            name:
+              type: string
+              example: "Admin User"
+            email:
+              type: string
+              format: email
+              example: "admin@example.com"
+      required:
+        - id
+        - name
+        - scopes
+        - revoked
+        - createdAt
+        - updatedAt
+        - createdBy
+
+    CreateServiceAccountRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Service account name
+          example: "n8n Automation"
+        description:
+          type: string
+          maxLength: 500
+          description: Optional description
+          example: "Service account for n8n workflow automation"
+        scopes:
+          type: array
+          items:
+            type: string
+            enum:
+              - posts:read
+              - posts:write
+              - posts:delete
+              - tags:read
+              - tags:write
+              - users:read
+              - admin:full
+          minItems: 1
+          description: List of scopes to grant
+          example: ["posts:read", "posts:write"]
+      required:
+        - name
+        - scopes
+
     ErrorResponse:
       type: object
       properties:
@@ -759,6 +1067,8 @@ tags:
     description: User management operations
   - name: Posts
     description: Blog post management operations
+  - name: Service Accounts
+    description: Service account and bearer token management for external tool authentication
 
 externalDocs:
   description: Project Documentation
