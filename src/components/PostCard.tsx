@@ -101,16 +101,19 @@ export default function PostCard({ post, locale }: PostCardProps) {
               <Link
                 key={tag.id}
                 href={`/${locale}/tags/${tag.slug}`}
-                className="text-xs transition-colors hover:underline truncate"
-                style={{ color: 'var(--text-tertiary)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
+                className="text-xs font-bold transition-colors hover:underline truncate"
+                style={{ color: 'var(--tag-background)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--tag-background-hover)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--tag-background)')}
               >
                 #{tag.name}
               </Link>
             ))}
             {post.tags.length > 3 && (
-              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+              <span 
+                className="text-xs font-bold"
+                style={{ color: 'var(--tag-background)' }}
+              >
                 +{post.tags.length - 3}
               </span>
             )}

@@ -33,6 +33,7 @@ const en: FullTranslation = {
   },
   posts: {
     allPosts: 'All Posts',
+    allPostsDescription: 'Browse all blog posts about web development, programming, and software engineering.',
     publishedOn: 'Published on',
     updatedOn: 'Updated on',
     tags: 'Tags',

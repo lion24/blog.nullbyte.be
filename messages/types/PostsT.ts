@@ -9,6 +9,7 @@ export class PostsT implements Translation {
   namespace?: keyof FullTranslation = 'posts'
 
   allPosts = ''
+  allPostsDescription = ''
   publishedOn = ''
   updatedOn = ''
   tags = ''

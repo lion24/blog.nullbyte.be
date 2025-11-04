@@ -33,6 +33,7 @@ const fr: FullTranslation = {
   },
   posts: {
     allPosts: 'Tous les Articles',
+    allPostsDescription: 'Parcourez tous les articles de blog sur le développement web, la programmation et l\'ingénierie logicielle.',
     publishedOn: 'Publié le',
     updatedOn: 'Mis à jour le',
     tags: 'Étiquettes',
