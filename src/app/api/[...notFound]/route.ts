@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 /**
  * Catch-all route for undefined API endpoints
@@ -11,35 +11,35 @@ import { NextRequest, NextResponse } from 'next/server'
  * 
  * Instead, this returns a proper JSON 404 response.
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   return NextResponse.json(
     { error: 'API endpoint not found' },
     { status: 404 }
   )
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   return NextResponse.json(
     { error: 'API endpoint not found' },
     { status: 404 }
   )
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT() {
   return NextResponse.json(
     { error: 'API endpoint not found' },
     { status: 404 }
   )
 }
 
-export async function PATCH(request: NextRequest) {
+export async function PATCH() {
   return NextResponse.json(
     { error: 'API endpoint not found' },
     { status: 404 }
   )
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   return NextResponse.json(
     { error: 'API endpoint not found' },
     { status: 404 }

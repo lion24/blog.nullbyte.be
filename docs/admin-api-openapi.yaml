@@ -1,0 +1,765 @@
+openapi: 3.0.3
+info:
+  title: NullByte Blog Admin API
+  description: |
+    Secure administrative API for the NullByte tech blog platform.
+    
+    ## Authentication
+    This API requires admin-level authentication using NextAuth.js session cookies.
+    All endpoints require the user to have an `ADMIN` role.
+    
+    ## Error Handling
+    All errors follow a consistent format with error codes and messages.
+    Authentication and authorization errors return appropriate HTTP status codes.
+    
+    ## Rate Limiting
+    API endpoints are subject to rate limiting to prevent abuse.
+    
+  version: 1.0.0
+  contact:
+    name: NullByte Blog
+    url: https://blog.nullbyte.be
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://blog.nullbyte.be/api/admin
+    description: Production server
+  - url: http://localhost:3000/api/admin
+    description: Development server
+
+security:
+  - sessionAuth: []
+
+paths:
+  /users:
+    get:
+      summary: List all users
+      description: Retrieve a list of all users in the system with their basic information and post counts
+      operationId: getUsers
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Successfully retrieved users list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserWithPostCount'
+              examples:
+                success:
+                  summary: Example users list
+                  value:
+                    - id: "cm1abc123"
+                      email: "admin@example.com"
+                      name: "Admin User"
+                      image: "https://avatars.githubusercontent.com/u/12345"
+                      role: "ADMIN"
+                      emailVerified: "2024-01-15T10:30:00Z"
+                      _count:
+                        posts: 15
+                    - id: "cm1def456"
+                      email: "user@example.com"
+                      name: "Regular User"
+                      image: null
+                      role: "READER"
+                      emailVerified: null
+                      _count:
+                        posts: 0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    patch:
+      summary: Update user role
+      description: Update the role of a specific user (admin only operation)
+      operationId: updateUserRole
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRoleRequest'
+            examples:
+              makeAdmin:
+                summary: Promote user to admin
+                value:
+                  userId: "cm1def456"
+                  role: "ADMIN"
+              makeReader:
+                summary: Demote user to reader
+                value:
+                  userId: "cm1def456"
+                  role: "READER"
+      responses:
+        '200':
+          description: Successfully updated user role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+              examples:
+                success:
+                  summary: Updated user
+                  value:
+                    id: "cm1def456"
+                    email: "user@example.com"
+                    name: "Regular User"
+                    role: "ADMIN"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/UserNotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /posts:
+    get:
+      summary: List all posts
+      description: Retrieve all posts (including unpublished) with optional filtering
+      operationId: getPosts
+      tags:
+        - Posts
+      parameters:
+        - name: published
+          in: query
+          description: Filter posts by published status
+          required: false
+          schema:
+            type: string
+            enum: ["true", "false"]
+          examples:
+            all:
+              summary: All posts
+              value: null
+            published:
+              summary: Published posts only
+              value: "true"
+            unpublished:
+              summary: Unpublished posts only
+              value: "false"
+        - name: limit
+          in: query
+          description: Maximum number of posts to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          example: 10
+      responses:
+        '200':
+          description: Successfully retrieved posts list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PostWithDetails'
+              examples:
+                success:
+                  summary: Example posts list
+                  value:
+                    - id: "cm1post123"
+                      title: "Getting Started with TypeScript"
+                      slug: "getting-started-with-typescript"
+                      excerpt: "Learn the basics of TypeScript in this comprehensive guide."
+                      featuredImage: "https://example.com/typescript-guide.jpg"
+                      published: true
+                      createdAt: "2024-01-15T10:30:00Z"
+                      updatedAt: "2024-01-16T14:20:00Z"
+                      views: 1250
+                      readingTime: "8 min read"
+                      author:
+                        id: "cm1abc123"
+                        name: "Admin User"
+                        email: "admin@example.com"
+                        image: "https://avatars.githubusercontent.com/u/12345"
+                      tags:
+                        - id: "cm1tag1"
+                          name: "TypeScript"
+                          slug: "typescript"
+                      categories:
+                        - id: "cm1cat1"
+                          name: "Programming"
+                          slug: "programming"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      summary: Create new post
+      description: Create a new blog post with content, metadata, and relationships
+      operationId: createPost
+      tags:
+        - Posts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostRequest'
+            examples:
+              fullPost:
+                summary: Complete blog post
+                value:
+                  title: "Advanced React Patterns"
+                  content: "[{\"type\":\"p\",\"children\":[{\"text\":\"This is the post content in PlateJS format...\"}]}]"
+                  excerpt: "Explore advanced React patterns for building scalable applications."
+                  featuredImage: "https://example.com/react-patterns.jpg"
+                  published: true
+                  tags: ["React", "JavaScript", "Frontend"]
+                  categories: ["Programming", "Web Development"]
+              draftPost:
+                summary: Draft post
+                value:
+                  title: "Draft: Understanding Redux"
+                  content: "[{\"type\":\"p\",\"children\":[{\"text\":\"Work in progress...\"}]}]"
+                  published: false
+      responses:
+        '201':
+          description: Successfully created post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostWithRelations'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Post with similar title already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "INVALID_INPUT"
+                  message: "A post with a similar title already exists"
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The unique identifier of the post
+        schema:
+          type: string
+        example: "cm1post123"
+
+    get:
+      summary: Get post by ID
+      description: Retrieve a specific post by its unique identifier
+      operationId: getPostById
+      tags:
+        - Posts
+      responses:
+        '200':
+          description: Successfully retrieved post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostWithRelations'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PostNotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    put:
+      summary: Update post
+      description: Update an existing post with new content, metadata, and relationships
+      operationId: updatePost
+      tags:
+        - Posts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostRequest'
+            examples:
+              updateContent:
+                summary: Update post content
+                value:
+                  title: "Advanced React Patterns (Updated)"
+                  content: "[{\"type\":\"p\",\"children\":[{\"text\":\"Updated content with more examples...\"}]}]"
+                  excerpt: "Explore advanced React patterns with updated examples."
+                  published: true
+              publishDraft:
+                summary: Publish draft
+                value:
+                  published: true
+      responses:
+        '200':
+          description: Successfully updated post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostWithRelations'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PostNotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      summary: Delete post
+      description: Permanently delete a post and all its relationships
+      operationId: deletePost
+      tags:
+        - Posts
+      responses:
+        '200':
+          description: Successfully deleted post
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Post deleted successfully"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/PostNotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: next-auth.session-token
+      description: |
+        NextAuth.js session cookie for authentication.
+        Users must be authenticated with ADMIN role to access these endpoints.
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique user identifier
+          example: "cm1abc123"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "user@example.com"
+        name:
+          type: string
+          nullable: true
+          description: User's display name
+          example: "John Doe"
+        image:
+          type: string
+          nullable: true
+          description: URL to user's profile image
+          example: "https://avatars.githubusercontent.com/u/12345"
+        role:
+          $ref: '#/components/schemas/Role'
+        emailVerified:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when email was verified
+          example: "2024-01-15T10:30:00Z"
+      required:
+        - id
+        - email
+        - role
+
+    UserWithPostCount:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            _count:
+              type: object
+              properties:
+                posts:
+                  type: integer
+                  description: Number of posts authored by this user
+                  example: 15
+              required:
+                - posts
+          required:
+            - _count
+
+    Role:
+      type: string
+      enum:
+        - READER
+        - ADMIN
+      description: User role determining access permissions
+
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique post identifier
+          example: "cm1post123"
+        title:
+          type: string
+          description: Post title
+          example: "Getting Started with TypeScript"
+        slug:
+          type: string
+          description: URL-friendly post identifier
+          example: "getting-started-with-typescript"
+        content:
+          type: string
+          description: Post content in PlateJS JSON format
+          example: "[{\"type\":\"p\",\"children\":[{\"text\":\"Post content...\"}]}]"
+        excerpt:
+          type: string
+          nullable: true
+          description: Brief post summary
+          example: "Learn the basics of TypeScript in this guide."
+        featuredImage:
+          type: string
+          nullable: true
+          description: URL to post's featured image
+          example: "https://example.com/image.jpg"
+        published:
+          type: boolean
+          description: Whether the post is published
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          description: Post creation timestamp
+          example: "2024-01-15T10:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Post last update timestamp
+          example: "2024-01-16T14:20:00Z"
+        authorId:
+          type: string
+          description: ID of the post author
+          example: "cm1abc123"
+        views:
+          type: integer
+          description: Number of times the post has been viewed
+          example: 1250
+      required:
+        - id
+        - title
+        - slug
+        - content
+        - published
+        - createdAt
+        - updatedAt
+        - authorId
+        - views
+
+    PostWithDetails:
+      allOf:
+        - $ref: '#/components/schemas/Post'
+        - type: object
+          properties:
+            readingTime:
+              type: string
+              description: Estimated reading time
+              example: "8 min read"
+            author:
+              $ref: '#/components/schemas/User'
+            tags:
+              type: array
+              items:
+                $ref: '#/components/schemas/Tag'
+            categories:
+              type: array
+              items:
+                $ref: '#/components/schemas/Category'
+          required:
+            - readingTime
+            - author
+            - tags
+            - categories
+
+    PostWithRelations:
+      allOf:
+        - $ref: '#/components/schemas/Post'
+        - type: object
+          properties:
+            author:
+              $ref: '#/components/schemas/User'
+            tags:
+              type: array
+              items:
+                $ref: '#/components/schemas/Tag'
+            categories:
+              type: array
+              items:
+                $ref: '#/components/schemas/Category'
+          required:
+            - author
+            - tags
+            - categories
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique tag identifier
+          example: "cm1tag1"
+        name:
+          type: string
+          description: Tag display name
+          example: "TypeScript"
+        slug:
+          type: string
+          description: URL-friendly tag identifier
+          example: "typescript"
+      required:
+        - id
+        - name
+        - slug
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique category identifier
+          example: "cm1cat1"
+        name:
+          type: string
+          description: Category display name
+          example: "Programming"
+        slug:
+          type: string
+          description: URL-friendly category identifier
+          example: "programming"
+      required:
+        - id
+        - name
+        - slug
+
+    CreatePostRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Post title
+          example: "Advanced React Patterns"
+        content:
+          type: string
+          description: Post content in PlateJS JSON format
+          example: "[{\"type\":\"p\",\"children\":[{\"text\":\"Post content...\"}]}]"
+        excerpt:
+          type: string
+          description: Brief post summary
+          example: "Explore advanced React patterns."
+        featuredImage:
+          type: string
+          nullable: true
+          description: URL to post's featured image
+          example: "https://example.com/image.jpg"
+        published:
+          type: boolean
+          description: Whether to publish the post immediately
+          default: false
+          example: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: List of tag names to associate with the post
+          example: ["React", "JavaScript"]
+        categories:
+          type: array
+          items:
+            type: string
+          description: List of category names to associate with the post
+          example: ["Programming", "Web Development"]
+      required:
+        - title
+        - content
+
+    UpdatePostRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Post title
+        content:
+          type: string
+          description: Post content in PlateJS JSON format
+        excerpt:
+          type: string
+          description: Brief post summary
+        featuredImage:
+          type: string
+          nullable: true
+          description: URL to post's featured image
+        published:
+          type: boolean
+          description: Whether the post is published
+        tags:
+          type: array
+          items:
+            type: string
+          description: List of tag names to associate with the post
+        categories:
+          type: array
+          items:
+            type: string
+          description: List of category names to associate with the post
+
+    UpdateUserRoleRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: ID of the user to update
+          example: "cm1def456"
+        role:
+          $ref: '#/components/schemas/Role'
+      required:
+        - userId
+        - role
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Error code for programmatic handling
+              example: "UNAUTHORIZED"
+            message:
+              type: string
+              description: Human-readable error message
+              example: "Authentication required"
+          required:
+            - code
+            - message
+      required:
+        - error
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "UNAUTHORIZED"
+              message: "Authentication required"
+
+    Forbidden:
+      description: Insufficient permissions (admin role required)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "FORBIDDEN"
+              message: "Admin role required"
+
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            missingField:
+              summary: Missing required field
+              value:
+                error:
+                  code: "MISSING_REQUIRED_FIELD"
+                  message: "Title and content are required"
+            invalidRole:
+              summary: Invalid role
+              value:
+                error:
+                  code: "INVALID_ROLE"
+                  message: "Invalid role"
+
+    PostNotFound:
+      description: Post not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "POST_NOT_FOUND"
+              message: "Post not found"
+
+    UserNotFound:
+      description: User not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "USER_NOT_FOUND"
+              message: "User not found"
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "INTERNAL_ERROR"
+              message: "An unexpected error occurred"
+
+tags:
+  - name: Users
+    description: User management operations
+  - name: Posts
+    description: Blog post management operations
+
+externalDocs:
+  description: Project Documentation
+  url: https://github.com/lion24/blog.nullbyte.be/blob/main/README.md

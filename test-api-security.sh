@@ -30,7 +30,12 @@ curl -s -X POST \
   "$BASE_URL/api/admin/posts" | jq -r 'if .error then "✅ Correctly blocked: \(.error)" else "❌ Should have been blocked!" end'
 echo ""
 
-echo "4️⃣ Test: POST with evil origin (should be blocked by middleware)"
+echo "4️⃣ Test: GET /api/admin/docs/openapi.json without auth (should fail)"
+echo "---"
+curl -s "$BASE_URL/api/admin/docs/openapi.json" | jq -r 'if .error then "✅ Correctly blocked: \(.error)" else "❌ Should have been blocked!" end'
+echo ""
+
+echo "5️⃣ Test: POST with evil origin (should be blocked by middleware)"
 echo "---"
 curl -s -X POST \
   -H "Origin: https://evil-site.com" \
@@ -39,7 +44,7 @@ curl -s -X POST \
   "$BASE_URL/api/admin/posts" | jq -r 'if .error then "✅ Correctly blocked: \(.message)" else "❌ Should have been blocked!" end'
 echo ""
 
-echo "5️⃣ Test: Rate limiting (make many requests)"
+echo "6️⃣ Test: Rate limiting (make many requests)"
 echo "---"
 echo "Making 15 rapid requests to test rate limiting..."
 for i in {1..15}; do
@@ -57,7 +62,8 @@ echo ""
 echo "📝 Summary"
 echo "=========="
 echo "✅ Public API removed - no /api/posts endpoint"
-echo "✅ Admin API protected - requires authentication"
+echo "✅ Admin API protected - ALL /api/admin/* routes require authentication"
+echo "✅ Admin docs protected - /api/admin/docs/openapi.json requires auth"
 echo "✅ CSRF protection - origin validation for mutations"
 echo "✅ Rate limiting - prevents abuse"
 echo ""
