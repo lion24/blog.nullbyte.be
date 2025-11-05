@@ -21,7 +21,7 @@ const config: NextConfig = {
       },
       { // For placeholder images in the editor (test/dev purposes)
         protocol: 'https',
-        hostname: 'placekittens.com',
+        hostname: 'placecats.com',
         pathname: '/**',
       },
       {
