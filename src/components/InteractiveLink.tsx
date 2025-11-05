@@ -11,6 +11,10 @@ type InteractiveLinkProps = {
   hoverColor?: string
   backgroundColor?: string
   hoverBackgroundColor?: string
+  border?: string
+  hoverBorder?: string
+  target?: string
+  rel?: string
 }
 
 /**
@@ -24,6 +28,8 @@ type InteractiveLinkProps = {
  *   href="/some-path"
  *   baseColor="var(--text-tertiary)"
  *   hoverColor="var(--text-secondary)"
+ *   target="_blank"
+ *   rel="noopener noreferrer"
  * >
  *   Link Text
  * </InteractiveLink>
@@ -36,6 +42,10 @@ export default function InteractiveLink({
   hoverColor,
   backgroundColor,
   hoverBackgroundColor,
+  border,
+  hoverBorder,
+  target,
+  rel,
 }: InteractiveLinkProps) {
   const [isHovered, setIsHovered] = useState(false)
 
@@ -51,11 +61,17 @@ export default function InteractiveLink({
     style.backgroundColor = isHovered ? hoverBackgroundColor : backgroundColor
   }
 
+  if (border || hoverBorder) {
+    style.border = isHovered ? hoverBorder : border
+  }
+
   return (
     <Link
       href={href}
       className={className}
       style={style}
+      target={target}
+      rel={rel}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

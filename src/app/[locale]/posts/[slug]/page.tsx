@@ -3,13 +3,62 @@ import Link from 'next/link'
 import Image from 'next/image'
 import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
+import InteractiveLink from '@/components/InteractiveLink'
 import { getTranslations } from 'next-intl/server'
-import { getPostBySlug, incrementPostViews } from '@/lib/posts'
+import { prisma } from '@/lib/prisma'
+import { calculateReadingTime } from '@/lib/reading-time'
 import { getFullUrl } from '@/lib/url'
 import type { Metadata } from 'next'
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>
+}
+
+type Post = {
+  id: string
+  title: string
+  content: string
+  excerpt: string | null
+  featuredImage: string | null
+  published: boolean
+  views: number
+  readingTime: number
+  createdAt: string
+  updatedAt: string
+  author: {
+    name: string | null
+  }
+  tags: Array<{ id: string; name: string; slug: string }>
+  categories: Array<{ id: string; name: string }>
+}
+
+async function getPostBySlug(slug: string): Promise<Post | null> {
+  const post = await prisma.post.findUnique({
+    where: { slug },
+    include: {
+      author: true,
+      tags: true,
+      categories: true,
+    },
+  })
+
+  if (!post || !post.published) {
+    return null
+  }
+
+  // Increment view count atomically (non-blocking)
+  prisma.post.update({
+    where: { id: post.id },
+    data: { views: { increment: 1 } },
+  }).catch(err => console.error('Failed to update view count:', err))
+
+  return {
+    ...post,
+    views: post.views + 1,
+    readingTime: calculateReadingTime(post.content),
+    createdAt: post.createdAt.toISOString(),
+    updatedAt: post.updatedAt.toISOString(),
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -58,9 +107,6 @@ export default async function PostPage({ params }: Props) {
     notFound()
   }
 
-  // Increment view count (non-blocking)
-  incrementPostViews(post.id)
-
   // Get full URL for sharing
   const postUrl = getFullUrl(`/${locale}/posts/${slug}`)
 
@@ -105,11 +151,9 @@ export default async function PostPage({ params }: Props) {
           </div>
         </div>
 
-        {postUrl && (
-          <div className="pb-6 mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-            <SocialShare url={postUrl} title={post.title} />
-          </div>
-        )}
+        <div className="pb-6 mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+          <SocialShare url={postUrl} title={post.title} />
+        </div>
       </header>
 
       {post.featuredImage && (
@@ -133,35 +177,33 @@ export default async function PostPage({ params }: Props) {
       )}
 
       <div className="mb-8">
-        <ContentRenderer content={JSON.stringify(post.content)} />
+        <ContentRenderer content={post.content} />
       </div>
 
       <footer className="pt-8" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="flex items-center flex-wrap gap-2 mb-8">
           <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('posts.tagsLabel')}</span>
           {post.tags.map((tag) => (
-            <Link
+            <InteractiveLink
               key={tag.id}
               href={`/${locale}/tags/${tag.slug}`}
               className="text-sm transition-colors"
-              style={{ color: 'var(--text-tertiary)' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-tertiary)'}
+              baseColor="var(--text-tertiary)"
+              hoverColor="var(--text-secondary)"
             >
               #{tag.name}
-            </Link>
+            </InteractiveLink>
           ))}
         </div>
 
-        <Link
+        <InteractiveLink
           href={`/${locale}/posts`}
           className="inline-flex items-center transition-colors"
-          style={{ color: 'var(--primary)' }}
-          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-hover)'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--primary)'}
+          baseColor="var(--primary)"
+          hoverColor="var(--primary-hover)"
         >
           {t('common.backToAllPosts')}
-        </Link>
+        </InteractiveLink>
       </footer>
     </article>
   )
