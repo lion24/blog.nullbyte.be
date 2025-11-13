@@ -21,6 +21,8 @@ export class PostsT implements Translation {
   byAuthor = ''
   viewCount = ''
   taggedWith = ''
+  categorizedAs = ''
   foundCount = ''
   noPostsWithTag = ''
+  noPostsInCategory = ''
 }

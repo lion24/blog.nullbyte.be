@@ -15,7 +15,7 @@ type PostCardProps = {
       name: string | null;
     };
     tags: Array<{ id: string; name: string; slug: string }>;
-    categories: Array<{ id: string; name: string }>;
+    categories: Array<{ id: string; name: string; slug: string }>;
   };
   locale: string;
 };
@@ -50,17 +50,26 @@ export default function PostCard({ post, locale }: PostCardProps) {
       {post.categories.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-3">
           {post.categories.map((category) => (
-            <span
+            <Link
               key={category.id}
-              className="text-xs px-2.5 py-1 rounded-full font-medium"
+              href={`/${locale}/categories/${category.slug}`}
+              className="text-xs px-2.5 py-1 rounded-full font-medium transition-all"
               style={{
                 backgroundColor: 'var(--primary)',
                 color: 'var(--text-inverse)',
                 opacity: 0.9,
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '0.9';
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
             >
               {category.name}
-            </span>
+            </Link>
           ))}
         </div>
       )}

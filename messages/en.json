@@ -42,8 +42,10 @@
     "byAuthor": "By {author}",
     "viewCount": "{count} views",
     "taggedWith": "Posts tagged with \"{tag}\"",
+    "categorizedAs": "Posts in \"{category}\"",
     "foundCount": "Found {count} {count, plural, one {post} other {posts}}",
-    "noPostsWithTag": "No posts found with this tag."
+    "noPostsWithTag": "No posts found with this tag.",
+    "noPostsInCategory": "No posts found in this category."
   },
   "breadcrumb": {
     "home": "Home",

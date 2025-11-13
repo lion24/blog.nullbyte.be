@@ -45,8 +45,10 @@ const fr: FullTranslation = {
     byAuthor: 'Par {author}',
     viewCount: '{count} vues',
     taggedWith: 'Articles étiquetés « {tag} »',
+    categorizedAs: 'Articles dans « {category} »',
     foundCount: 'Trouvé {count} {count, plural, one {article} other {articles}}',
     noPostsWithTag: 'Aucun article trouvé avec cette étiquette.',
+    noPostsInCategory: 'Aucun article trouvé dans cette catégorie.',
   },
   breadcrumb: {
     home: 'Accueil',
