@@ -47,7 +47,7 @@ model Post {
   featuredImage String?
   published     Boolean    @default(false)
   createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  updatedAt     DateTime   @default(now())
   authorId      String
   views         Int        @default(0)
   author        User       @relation(fields: [authorId], references: [id])

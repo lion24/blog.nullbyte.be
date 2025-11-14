@@ -106,6 +106,7 @@ export async function PUT(
         excerpt,
         featuredImage: featuredImage || null,
         published,
+        updatedAt: new Date(), // Manually set updatedAt on content changes
         tags: {
           connectOrCreate: tags?.map((tag: string) => ({
             where: { slug: slugify(tag) },  // Use slug for lookup (case-insensitive)

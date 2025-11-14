@@ -4,6 +4,7 @@ import Image from 'next/image'
 import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
 import InteractiveLink from '@/components/InteractiveLink'
+import { ViewCounter } from '@/components/ViewCounter'
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { calculateReadingTime } from '@/lib/reading-time'
@@ -46,15 +47,9 @@ async function getPostBySlug(slug: string): Promise<Post | null> {
     return null
   }
 
-  // Increment view count atomically (non-blocking)
-  prisma.post.update({
-    where: { id: post.id },
-    data: { views: { increment: 1 } },
-  }).catch(err => console.error('Failed to update view count:', err))
-
   return {
     ...post,
-    views: post.views + 1,
+    views: post.views,
     readingTime: calculateReadingTime(post.content),
     createdAt: post.createdAt.toISOString(),
     updatedAt: post.updatedAt.toISOString(),
@@ -131,7 +126,7 @@ export default async function PostPage({ params }: Props) {
             <span>•</span>
             <span>{t('common.readingTime', { minutes: post.readingTime })}</span>
             <span>•</span>
-            <span>{t('posts.viewCount', { count: post.views })}</span>
+            <ViewCounter postId={post.id} initialViews={post.views} />
           </div>
 
           <div className="flex items-center space-x-2">
