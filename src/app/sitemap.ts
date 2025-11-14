@@ -19,7 +19,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     orderBy: { updatedAt: 'desc' },
   })
 
-  // Fetch all tags that have published posts
+  // Get the most recent post update date (for listing pages)
+  const mostRecentPostDate = posts.length > 0 ? posts[0].updatedAt : new Date()
+
+  // Fetch all tags that have published posts with their most recent post
   const tags = await prisma.tag.findMany({
     where: {
       posts: {
@@ -30,10 +33,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     select: {
       slug: true,
+      posts: {
+        where: { published: true },
+        select: { updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 1,
+      },
     },
   })
 
-  // Fetch all categories that have published posts
+  // Fetch all categories that have published posts with their most recent post
   const categories = await prisma.category.findMany({
     where: {
       posts: {
@@ -44,30 +53,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     select: {
       slug: true,
+      posts: {
+        where: { published: true },
+        select: { updatedAt: true },
+        orderBy: { updatedAt: 'desc' },
+        take: 1,
+      },
     },
   })
 
-  // Homepage
+  // Homepage - uses most recent post date
   const homepage: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: new Date(),
+      lastModified: mostRecentPostDate,
       changeFrequency: 'daily',
       priority: 1,
     },
   ]
 
-  // Posts page
+  // Posts page - uses most recent post date
   const postsPage: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}/posts`,
-      lastModified: new Date(),
+      lastModified: mostRecentPostDate,
       changeFrequency: 'daily',
       priority: 0.9,
     },
   ]
 
-  // Individual post pages
+  // Individual post pages - uses their own updatedAt
   const postPages: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${baseUrl}/posts/${post.slug}`,
     lastModified: post.updatedAt,
@@ -75,18 +90,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // Tag pages
+  // Tag pages - uses most recent post date in that tag
   const tagPages: MetadataRoute.Sitemap = tags.map((tag) => ({
     url: `${baseUrl}/tags/${tag.slug}`,
-    lastModified: new Date(),
+    lastModified: tag.posts[0]?.updatedAt || mostRecentPostDate,
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
 
-  // Category pages
+  // Category pages - uses most recent post date in that category
   const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
     url: `${baseUrl}/categories/${category.slug}`,
-    lastModified: new Date(),
+    lastModified: category.posts[0]?.updatedAt || mostRecentPostDate,
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
