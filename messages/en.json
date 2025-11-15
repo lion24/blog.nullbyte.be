@@ -31,6 +31,10 @@
   },
   "posts": {
     "allPosts": "All Posts",
+    "allTags": "All Tags",
+    "allTagsList": "All Tags",
+    "exploreTags": "Click or hover to explore",
+    "noTags": "No tags available yet.",
     "publishedOn": "Published on",
     "updatedOn": "Updated on",
     "tags": "Tags",
@@ -49,7 +53,9 @@
   },
   "breadcrumb": {
     "home": "Home",
-    "posts": "Posts"
+    "posts": "Posts",
+    "tags": "Tags",
+    "categories": "Categories"
   },
   "admin": {
     "dashboard": "Admin Dashboard",

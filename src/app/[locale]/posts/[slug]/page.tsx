@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import Image from 'next/image'
 import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
 import InteractiveLink from '@/components/InteractiveLink'
 import { ViewCounter } from '@/components/ViewCounter'
+import { Breadcrumb } from '@/components/Breadcrumb'
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { calculateReadingTime } from '@/lib/reading-time'
@@ -108,13 +108,13 @@ export default async function PostPage({ params }: Props) {
   return (
     <article className="container mx-auto px-4 py-8 max-w-4xl">
       <header className="mb-8">
-        <div className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-          <Link href={`/${locale}`} className="hover:text-primary transition-colors">{t('breadcrumb.home')}</Link>
-          <span>→</span>
-          <Link href={`/${locale}/posts`} className="hover:text-primary transition-colors">{t('breadcrumb.posts')}</Link>
-          <span>→</span>
-          <span style={{ color: 'var(--text-primary)' }}>{post.title}</span>
-        </div>
+        <Breadcrumb 
+          locale={locale}
+          items={[
+            { label: t('breadcrumb.posts'), href: `/${locale}/posts` },
+            { label: post.title }
+          ]}
+        />
 
         <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{post.title}</h1>
 

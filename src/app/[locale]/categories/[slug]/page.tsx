@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { getFullUrl } from '@/lib/url'
+import { Breadcrumb } from '@/components/Breadcrumb'
 
 interface Post {
   id: string
@@ -96,6 +97,14 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      <Breadcrumb 
+        locale={locale}
+        items={[
+          { label: t('breadcrumb.posts'), href: `/${locale}/posts` },
+          { label: category.name }
+        ]}
+      />
+      
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
           {t('posts.categorizedAs', { category: category.name })}

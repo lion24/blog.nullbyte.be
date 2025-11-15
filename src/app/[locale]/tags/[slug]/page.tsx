@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { getFullUrl } from '@/lib/url'
+import { Breadcrumb } from '@/components/Breadcrumb'
 
 interface Post {
   id: string
@@ -88,9 +89,18 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
   const { slug, locale } = await params
   const { tag, posts, count } = await getPostsByTag(slug)
   const t = await getTranslations()
+  const tBreadcrumb = await getTranslations({ locale, namespace: 'breadcrumb' })
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      <Breadcrumb 
+        locale={locale}
+        items={[
+          { label: tBreadcrumb('tags'), href: `/${locale}/tags` },
+          { label: tag.name }
+        ]}
+      />
+      
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
           {t('posts.taggedWith', { tag: tag.name })}

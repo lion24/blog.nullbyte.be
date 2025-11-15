@@ -10,4 +10,6 @@ export class BreadcrumbT implements Translation {
 
   home = ''
   posts = ''
+  tags = ''
+  categories = ''
 }

@@ -34,6 +34,10 @@ const en: FullTranslation = {
   posts: {
     allPosts: 'All Posts',
     allPostsDescription: 'Browse all blog posts about web development, programming, and software engineering.',
+    allTags: 'All Tags',
+    allTagsList: 'All Tags',
+    exploreTags: 'Click or hover to explore',
+    noTags: 'No tags available yet.',
     publishedOn: 'Published on',
     updatedOn: 'Updated on',
     tags: 'Tags',
@@ -53,6 +57,8 @@ const en: FullTranslation = {
   breadcrumb: {
     home: 'Home',
     posts: 'Posts',
+    tags: 'Tags',
+    categories: 'Categories',
   },
   admin: {
     dashboard: 'Admin Dashboard',

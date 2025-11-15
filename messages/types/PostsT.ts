@@ -10,6 +10,10 @@ export class PostsT implements Translation {
 
   allPosts = ''
   allPostsDescription = ''
+  allTags = ''
+  allTagsList = ''
+  exploreTags = ''
+  noTags = ''
   publishedOn = ''
   updatedOn = ''
   tags = ''
