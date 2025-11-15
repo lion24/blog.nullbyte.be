@@ -25,8 +25,9 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith('/api')) {
     // 1. Origin validation for state-changing requests
     // Skip origin validation for routes that use bearer token authentication
-    // (service accounts) or have their own session-based auth checks
+    // (service accounts), have their own session-based auth checks, or are NextAuth routes
     const skipOriginValidation = 
+      pathname.startsWith('/api/auth') || // NextAuth routes handle their own security
       pathname.startsWith('/api/admin') || // Admin routes use NextAuth session
       pathname.startsWith('/api/posts') && request.headers.get('authorization') // Bearer token auth
     
