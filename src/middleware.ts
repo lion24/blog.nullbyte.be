@@ -24,11 +24,19 @@ export async function middleware(request: NextRequest) {
   // Handle API routes with security measures
   if (pathname.startsWith('/api')) {
     // 1. Origin validation for state-changing requests
-    // Set to `true` to also enforce origin validation for GET requests
-    const enforceForGetRequests = false // Change to true if you want to restrict GET too
-    const originError = validateOrigin(request, enforceForGetRequests)
-    if (originError) {
-      return originError
+    // Skip origin validation for routes that use bearer token authentication
+    // (service accounts) or have their own session-based auth checks
+    const skipOriginValidation = 
+      pathname.startsWith('/api/admin') || // Admin routes use NextAuth session
+      pathname.startsWith('/api/posts') && request.headers.get('authorization') // Bearer token auth
+    
+    if (!skipOriginValidation) {
+      // Set to `true` to also enforce origin validation for GET requests
+      const enforceForGetRequests = false // Change to true if you want to restrict GET too
+      const originError = validateOrigin(request, enforceForGetRequests)
+      if (originError) {
+        return originError
+      }
     }
     
     // 2. Rate limiting
