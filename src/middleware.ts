@@ -11,11 +11,15 @@ const intlMiddleware = createIntlMiddleware(routing)
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
-  // Skip middleware for static files and Next.js internals
+  // Skip middleware for static files, Next.js internals, and metadata routes
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/_static') ||
     pathname.startsWith('/_vercel') ||
+    pathname === '/icon' ||
+    pathname === '/apple-icon' ||
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
     pathname.includes('.')
   ) {
     return NextResponse.next()
