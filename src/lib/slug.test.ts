@@ -31,8 +31,22 @@ describe('slugify', () => {
     expect(slugify('hello    world')).toBe('hello-world')
   })
 
-  it('handles unicode characters', () => {
-    expect(slugify('Café Résumé')).toBe('caf-r-sum')
+  it('properly transliterates accented characters', () => {
+    expect(slugify('Café Résumé')).toBe('cafe-resume')
+  })
+
+  it('handles French accented characters', () => {
+    expect(slugify('Partager une décennie d\'expérience')).toBe('partager-une-decennie-d-experience')
+  })
+
+  it('handles various accented characters', () => {
+    expect(slugify('Zürich Öffentlich')).toBe('zurich-offentlich')
+    expect(slugify('Señor Niño')).toBe('senor-nino')
+    expect(slugify('Æther Œuvre')).toBe('aether-oeuvre')
+  })
+
+  it('handles mixed case with accents', () => {
+    expect(slugify('CAFÉ RÉSUMÉ')).toBe('cafe-resume')
   })
 })
 
