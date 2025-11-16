@@ -67,10 +67,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const fullUrl = getFullUrl(`/${locale}/posts/${slug}`)
+  const baseUrl = getFullUrl('')
   
   return {
     title: post.title,
     description: post.excerpt || undefined,
+    alternates: {
+      canonical: fullUrl,
+      languages: {
+        'en': `${baseUrl}/en/posts/${slug}`,
+        'fr': `${baseUrl}/fr/posts/${slug}`,
+      },
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt || undefined,

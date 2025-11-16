@@ -18,9 +18,17 @@ export const metadata: Metadata = {
   keywords: ['programming', 'web development', 'software engineering', 'tech blog', 'coding tutorials', 'javascript', 'typescript', 'react', 'nextjs'],
   authors: [{ name: 'Lionel H' }],
   creator: 'Lionel H',
+  alternates: {
+    canonical: getBaseUrl(),
+    languages: {
+      'en': `${getBaseUrl()}/en`,
+      'fr': `${getBaseUrl()}/fr`,
+    },
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
+    url: getBaseUrl(),
     siteName: 'NullByte',
     title: 'NullByte - Tech Blog',
     description: 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.',
