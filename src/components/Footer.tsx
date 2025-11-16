@@ -1,11 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
   const t = useTranslations()
+  const locale = useLocale()
 
   return (
     <footer
@@ -35,7 +36,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/"
+                  href={`/${locale}`}
                   className="text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
@@ -46,7 +47,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/posts"
+                  href={`/${locale}/posts`}
                   className="text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
