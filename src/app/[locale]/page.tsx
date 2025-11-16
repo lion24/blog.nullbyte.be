@@ -22,9 +22,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function HomePage({ params }: Props) {
   const { locale } = await params
   const t = await getTranslations({ locale })
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
   
   // Fetch latest 3 posts directly from database
   const latestPosts = await getPublishedPosts(3)
+
+  // Add formatted reading time to each post
+  const postsWithTranslations = latestPosts.map(post => ({
+    ...post,
+    readingTimeText: tCommon('readingTime', { minutes: post.readingTime })
+  }))
+
+  const translations = {
+    readMore: tCommon('readMore'),
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -103,8 +114,8 @@ export default async function HomePage({ params }: Props) {
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {latestPosts.map((post) => (
-              <PostCard key={post.id} post={post} locale={locale} />
+            {postsWithTranslations.map((post) => (
+              <PostCard key={post.id} post={post} locale={locale} translations={translations} />
             ))}
           </div>
         )}

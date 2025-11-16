@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFacebook,
@@ -13,11 +12,17 @@ import { faLink, faCheck } from '@fortawesome/free-solid-svg-icons';
 interface SocialShareProps {
   url: string;
   title: string;
+  translations: {
+    share: string;
+    shareOnFacebook: string;
+    shareOnX: string;
+    shareOnReddit: string;
+    copyLink: string;
+  };
 }
 
-export default function SocialShare({ url, title }: SocialShareProps) {
+export default function SocialShare({ url, title, translations }: SocialShareProps) {
   const [copied, setCopied] = useState(false);
-  const t = useTranslations('social');
 
   const shareUrls = {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
@@ -41,7 +46,7 @@ export default function SocialShare({ url, title }: SocialShareProps) {
   return (
     <div className="flex items-center gap-3">
       <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-        {t('share')}
+        {translations.share}
       </span>
       <div className="flex items-center gap-2">
         {/* Facebook */}
@@ -51,7 +56,7 @@ export default function SocialShare({ url, title }: SocialShareProps) {
           rel="noopener noreferrer"
           className={buttonClass}
           style={{ backgroundColor: '#1877F2' }}
-          aria-label={t('shareOnFacebook')}
+          aria-label={translations.shareOnFacebook}
         >
           <FontAwesomeIcon icon={faFacebook} className="text-white text-lg" />
         </a>
@@ -63,7 +68,7 @@ export default function SocialShare({ url, title }: SocialShareProps) {
           rel="noopener noreferrer"
           className={buttonClass}
           style={{ backgroundColor: '#000000' }}
-          aria-label={t('shareOnX')}
+          aria-label={translations.shareOnX}
         >
           <FontAwesomeIcon icon={faXTwitter} className="text-white text-lg" />
         </a>
@@ -75,7 +80,7 @@ export default function SocialShare({ url, title }: SocialShareProps) {
           rel="noopener noreferrer"
           className={buttonClass}
           style={{ backgroundColor: '#FF4500' }}
-          aria-label={t('shareOnReddit')}
+          aria-label={translations.shareOnReddit}
         >
           <FontAwesomeIcon icon={faReddit} className="text-white text-lg" />
         </a>
@@ -85,7 +90,7 @@ export default function SocialShare({ url, title }: SocialShareProps) {
           onClick={copyToClipboard}
           className={buttonClass}
           style={{ backgroundColor: copied ? '#10B981' : 'var(--background-secondary)' }}
-          aria-label={t('copyLink')}
+          aria-label={translations.copyLink}
         >
           <FontAwesomeIcon
             icon={copied ? faCheck : faLink}

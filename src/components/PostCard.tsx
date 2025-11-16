@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 
 type PostCardProps = {
   post: {
@@ -11,6 +10,7 @@ type PostCardProps = {
     excerpt: string | null;
     createdAt: string;
     readingTime: number;
+    readingTimeText: string; // Pre-formatted reading time text
     author: {
       name: string | null;
     };
@@ -18,10 +18,12 @@ type PostCardProps = {
     categories: Array<{ id: string; name: string; slug: string }>;
   };
   locale: string;
+  translations: {
+    readMore: string;
+  };
 };
 
-export default function PostCard({ post, locale }: PostCardProps) {
-  const t = useTranslations();
+export default function PostCard({ post, locale, translations }: PostCardProps) {
 
   const truncateExcerpt = (text: string | null, maxLength: number = 150): string => {
     if (!text) return '';
@@ -100,7 +102,7 @@ export default function PostCard({ post, locale }: PostCardProps) {
         <div className="flex items-center gap-2 text-xs mb-3" style={{ color: 'var(--text-tertiary)' }}>
           <time>{new Date(post.createdAt).toLocaleDateString()}</time>
           <span>•</span>
-          <span>{t('common.readingTime', { minutes: post.readingTime })}</span>
+          <span>{post.readingTimeText}</span>
         </div>
 
         {/* Tags and Read More */}
@@ -134,7 +136,7 @@ export default function PostCard({ post, locale }: PostCardProps) {
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--primary-hover)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--primary)')}
           >
-            {t('common.readMore')} →
+            {translations.readMore} →
           </Link>
         </div>
       </div>

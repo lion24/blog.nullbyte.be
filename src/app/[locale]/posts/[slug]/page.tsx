@@ -102,6 +102,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PostPage({ params }: Props) {
   const { slug, locale } = await params
   const t = await getTranslations({ locale })
+  const tSocial = await getTranslations({ locale, namespace: 'social' })
   
   // Fetch post directly from database
   const post = await getPostBySlug(slug)
@@ -112,6 +113,14 @@ export default async function PostPage({ params }: Props) {
 
   // Get full URL for sharing
   const postUrl = getFullUrl(`/${locale}/posts/${slug}`)
+
+  const socialTranslations = {
+    share: tSocial('share'),
+    shareOnFacebook: tSocial('shareOnFacebook'),
+    shareOnX: tSocial('shareOnX'),
+    shareOnReddit: tSocial('shareOnReddit'),
+    copyLink: tSocial('copyLink'),
+  }
 
   return (
     <article className="container mx-auto px-4 py-8 max-w-4xl">
@@ -155,7 +164,7 @@ export default async function PostPage({ params }: Props) {
         </div>
 
         <div className="pb-6 mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-          <SocialShare url={postUrl} title={post.title} />
+          <SocialShare url={postUrl} title={post.title} translations={socialTranslations} />
         </div>
       </header>
 

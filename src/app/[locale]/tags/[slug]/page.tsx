@@ -52,17 +52,32 @@ async function getPostsByTag(slug: string): Promise<TagResponse> {
       }
     },
     orderBy: { createdAt: 'desc' },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      createdAt: true,
       author: {
+        select: {
+          name: true,
+          email: true,
+        }
+      },
+      tags: {
         select: {
           id: true,
           name: true,
-          email: true,
-          image: true
+          slug: true,
         }
       },
-      tags: true,
-      categories: true,
+      categories: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        }
+      },
     },
   })
 
@@ -70,7 +85,6 @@ async function getPostsByTag(slug: string): Promise<TagResponse> {
   const serializedPosts = posts.map(post => ({
     ...post,
     createdAt: post.createdAt.toISOString(),
-    updatedAt: post.updatedAt.toISOString(),
   }))
 
   return {
@@ -171,16 +185,44 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
   )
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   try {
-    const { slug } = await params
-    const { tag, count } = await getPostsByTag(slug)
-    const tagUrl = getFullUrl(`/tags/${slug}`)
+    const { slug, locale } = await params
+    
+    // Lightweight query - only fetch tag info without posts
+    const tag = await prisma.tag.findUnique({
+      where: { slug },
+      select: {
+        name: true,
+        slug: true,
+        _count: {
+          select: { posts: true }
+        }
+      }
+    })
+
+    if (!tag) {
+      return {
+        title: 'Tag not found',
+        description: 'The requested tag could not be found',
+      }
+    }
+
+    const count = tag._count.posts
+    const tagUrl = getFullUrl(`/${locale}/tags/${slug}`)
+    const baseUrl = getFullUrl('')
 
     return {
       title: `Posts tagged with "${tag.name}"`,
       description: `Browse ${count} blog ${count === 1 ? 'post' : 'posts'} tagged with ${tag.name}. Discover articles about ${tag.name} and related topics.`,
       keywords: [tag.name, 'blog posts', 'articles', 'tutorials'],
+      alternates: {
+        canonical: tagUrl,
+        languages: {
+          'en': `${baseUrl}/en/tags/${slug}`,
+          'fr': `${baseUrl}/fr/tags/${slug}`,
+        },
+      },
       openGraph: {
         type: 'website',
         title: `Posts tagged with "${tag.name}"`,

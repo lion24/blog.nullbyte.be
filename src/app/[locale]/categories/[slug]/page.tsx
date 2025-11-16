@@ -57,17 +57,32 @@ async function getPostsByCategory(slug: string): Promise<CategoryResponse> {
       }
     },
     orderBy: { createdAt: 'desc' },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      excerpt: true,
+      createdAt: true,
       author: {
+        select: {
+          name: true,
+          email: true,
+        }
+      },
+      tags: {
         select: {
           id: true,
           name: true,
-          email: true,
-          image: true
+          slug: true,
         }
       },
-      tags: true,
-      categories: true,
+      categories: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        }
+      },
     },
   })
 
@@ -75,7 +90,6 @@ async function getPostsByCategory(slug: string): Promise<CategoryResponse> {
   const serializedPosts = posts.map(post => ({
     ...post,
     createdAt: post.createdAt.toISOString(),
-    updatedAt: post.updatedAt.toISOString(),
   }))
 
   return {
@@ -192,16 +206,44 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   )
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string; locale: string }> }) {
   try {
-    const { slug } = await params
-    const { category, count } = await getPostsByCategory(slug)
-    const categoryUrl = getFullUrl(`/categories/${slug}`)
+    const { slug, locale } = await params
+    
+    // Lightweight query - only fetch category info without posts
+    const category = await prisma.category.findUnique({
+      where: { slug },
+      select: {
+        name: true,
+        slug: true,
+        _count: {
+          select: { posts: true }
+        }
+      }
+    })
+
+    if (!category) {
+      return {
+        title: 'Category not found',
+        description: 'The requested category could not be found',
+      }
+    }
+
+    const count = category._count.posts
+    const categoryUrl = getFullUrl(`/${locale}/categories/${slug}`)
+    const baseUrl = getFullUrl('')
 
     return {
       title: `${category.name} - Blog Posts`,
       description: `Browse ${count} blog ${count === 1 ? 'post' : 'posts'} in the ${category.name} category. Discover articles about ${category.name} and related topics.`,
       keywords: [category.name, 'blog posts', 'articles', 'category', 'tutorials'],
+      alternates: {
+        canonical: categoryUrl,
+        languages: {
+          'en': `${baseUrl}/en/categories/${slug}`,
+          'fr': `${baseUrl}/fr/categories/${slug}`,
+        },
+      },
       openGraph: {
         type: 'website',
         title: `${category.name} - Blog Posts`,
