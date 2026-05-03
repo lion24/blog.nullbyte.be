@@ -139,7 +139,7 @@ export default async function PostPage({ params }: Props) {
           <div className="flex items-center space-x-4">
             <span>{t('posts.byAuthor', { author: post.author.name || t('admin.anonymous') })}</span>
             <span>•</span>
-            <time>{new Date(post.createdAt).toLocaleDateString()}</time>
+            <time dateTime={post.createdAt}>{new Date(post.createdAt).toLocaleDateString(locale)}</time>
             <span>•</span>
             <span>{t('common.readingTime', { minutes: post.readingTime })}</span>
             <span>•</span>

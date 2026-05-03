@@ -100,7 +100,7 @@ export default function PostCard({ post, locale, translations }: PostCardProps) 
       <div className="mt-auto pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
         {/* Date and Reading Time */}
         <div className="flex items-center gap-2 text-xs mb-3" style={{ color: 'var(--text-tertiary)' }}>
-          <time>{new Date(post.createdAt).toLocaleDateString()}</time>
+          <time dateTime={post.createdAt}>{new Date(post.createdAt).toLocaleDateString(locale)}</time>
           <span>•</span>
           <span>{post.readingTimeText}</span>
         </div>

@@ -161,7 +161,7 @@ export default function AdminPage() {
                         {post.title}
                       </h3>
                       <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                        {new Date(post.createdAt).toLocaleDateString()} •
+                        {new Date(post.createdAt).toLocaleDateString(locale)} •
                         {post.published ? (
                           <span className="ml-1" style={{ color: 'var(--success)' }}>{t('admin.published')}</span>
                         ) : (

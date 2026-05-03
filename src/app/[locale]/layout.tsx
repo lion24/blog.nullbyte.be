@@ -3,8 +3,6 @@ import {notFound} from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Providers } from "../providers";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
 import { getBaseUrl } from '@/lib/url';
 import {routing} from '@/i18n/routing';
 
@@ -68,27 +66,17 @@ export default async function LocaleLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  
-  // Validate locale
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!routing.locales.includes(locale as any)) {
     notFound();
   }
-  
-  // Pass the locale to getMessages
+
   const messages = await getMessages({locale});
 
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
-      <Providers>
-        <div className="flex flex-col min-h-screen">
-          <Navigation />
-          <main className="flex-1" style={{ backgroundColor: 'var(--background)' }}>
-            {children}
-          </main>
-          <Footer />
-        </div>
-      </Providers>
+      <Providers>{children}</Providers>
     </NextIntlClientProvider>
   );
 }
