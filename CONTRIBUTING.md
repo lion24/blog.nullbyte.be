@@ -38,38 +38,20 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 ## Workflow Strategy
 
-This project follows a three-branch strategy:
+This project follows GitHub Flow: `main` is the only long-lived branch and represents production. All work happens in short-lived feature branches that merge back into `main` via pull request.
 
 ```
-dev (development) -> staging (pre-production) -> main (production)
+feature/x ─┐
+feature/y ─┼─► main (production)
+feature/z ─┘
 ```
-
-### Branch Descriptions
-
-- **`dev`**: Development branch for active feature work
-  - All feature branches are created from `dev`
-  - Merge feature branches back to `dev` when complete
-  - Deployed to development environment
-  - Less stable, frequent changes
-
-- **`staging`**: Pre-production testing branch
-  - Merge `dev` into `staging` when features are ready for testing
-  - Used for QA, integration testing, and final review
-  - Deployed to staging environment (Vercel preview)
-  - Should be stable and production-ready
-
-- **`main`**: Production branch
-  - Only merge `staging` into `main` after thorough testing
-  - Automatically deployed to production (blog.nullbyte.be)
-  - Must always be stable and working
-  - Protected branch with required reviews
 
 ### Workflow Steps
 
-1. **Create a feature branch from `dev`:**
+1. **Create a feature branch from `main`:**
    ```bash
-   git checkout dev
-   git pull upstream dev
+   git checkout main
+   git pull upstream main
    git checkout -b feature/your-feature-name
    ```
 
@@ -78,27 +60,20 @@ dev (development) -> staging (pre-production) -> main (production)
    - Write tests for new functionality
    - Ensure all tests pass locally
 
-3. **Push and create a Pull Request to `dev`:**
+3. **Push and open a Pull Request to `main`:**
    ```bash
    git push origin feature/your-feature-name
    ```
-   - Open a PR against the `dev` branch
-   - Fill out the PR template completely
-   - Request review from maintainers
+   - Vercel will post a preview deployment URL as a check on the PR.
+   - CI (`ci/tests`, `ci/build`) must pass before merge.
 
-4. **After PR is merged to `dev`:**
-   - Maintainers will test in the development environment
-   - When ready, `dev` is merged into `staging` for final testing
-
-5. **Staging to Production:**
-   - After thorough testing in staging, `staging` is merged into `main`
-   - This triggers automatic deployment to production
+4. **Merge to `main`:**
+   - Once approved and checks pass, the PR is merged.
+   - Vercel automatically deploys `main` to production.
 
 ### Branch Protection Rules
 
-- **`main`**: Requires PR approval, passing CI/CD, and no direct pushes
-- **`staging`**: Requires passing CI/CD
-- **`dev`**: Open for direct pushes from maintainers, but PRs encouraged
+- **`main`**: Requires PR (no direct pushes), passing `ci/tests` and `ci/build`, branch must be up to date before merge.
 
 ## Development Setup
 
@@ -316,10 +291,10 @@ describe('MyComponent', () => {
 
 1. **Ensure your branch is up to date:**
    ```bash
-   git checkout dev
-   git pull upstream dev
+   git checkout main
+   git pull upstream main
    git checkout your-feature-branch
-   git rebase dev
+   git rebase main
    ```
 
 2. **Run all checks locally:**
@@ -331,14 +306,14 @@ describe('MyComponent', () => {
 
 3. **Review your changes:**
    ```bash
-   git diff dev
+   git diff main
    ```
 
 ### PR Requirements
 
 Your PR must:
 
-- [ ] Target the `dev` branch (not `main` or `staging`)
+- [ ] Target the `main` branch
 - [ ] Pass all CI/CD checks (lint, test, build)
 - [ ] Include a clear description of changes
 - [ ] Reference any related issues
@@ -386,57 +361,31 @@ Any additional information reviewers should know.
 
 ## Deployment Pipeline
 
-### Automatic Deployments
-
-Our CI/CD pipeline automatically handles deployments:
+Deployments are handled by Vercel's native Git integration. CI runs as a gate (tests + build); Vercel does the actual deployments.
 
 ```mermaid
 graph LR
-    A[Push to dev] --> B[Run Tests]
-    B --> C[Deploy to Dev Environment]
-    D[Merge to staging] --> E[Run Tests]
-    E --> F[Deploy to Staging]
-    G[Merge to main] --> H[Run Tests]
-    H --> I[Deploy to Production]
+    A[Open PR] --> B[CI: tests + build]
+    A --> C[Vercel preview deployment]
+    B --> D[Merge to main]
+    C --> D
+    D --> E[Vercel deploys main to production]
 ```
 
 ### Environments
 
-| Environment | Branch | URL | Purpose |
-|------------|--------|-----|---------|
-| Development | `dev` | dev.nullbyte.be* | Active development |
-| Staging | `staging` | staging.nullbyte.be* | Pre-production testing |
-| Production | `main` | blog.nullbyte.be | Live site |
-
-*Note: Vercel preview URLs are used for dev and staging
-
-### Deployment Steps
-
-1. **Development**: Push to `dev` branch
-   - Runs automated tests
-   - Deploys to development environment
-   - Preview URL available in PR comments
-
-2. **Staging**: Merge `dev` into `staging`
-   - Runs full test suite
-   - Deploys to staging environment
-   - QA and final testing
-
-3. **Production**: Merge `staging` into `main`
-   - Requires approval
-   - Runs production build
-   - Runs database migrations
-   - Deploys to production
-   - Creates GitHub release
+| Environment | Trigger | URL |
+|------------|---------|-----|
+| Preview | Any PR | Vercel-generated preview URL (posted on the PR) |
+| Production | Push to `main` | blog.nullbyte.be |
 
 ### Rollback Strategy
 
 If issues are found in production:
 
-1. Revert the problematic PR in `main`
-2. Deploy the revert to production immediately
-3. Fix the issue in a new branch from `dev`
-4. Follow the normal workflow: dev -> staging -> main
+1. **Instant rollback**: In the Vercel dashboard, promote the previous successful production deployment. This takes effect in seconds and doesn't require a code change.
+2. **Code revert**: Open a PR that reverts the problematic commit on `main`. Once merged, Vercel deploys the revert.
+3. **Forward fix**: Open a new feature branch from `main`, fix the issue, and follow the normal PR workflow.
 
 ## Common Issues
 
