@@ -89,6 +89,18 @@ export const authOptions: AuthOptions = {
         })
       }
     },
+    async signIn({ user }) {
+      if (user?.id) {
+        await prisma.user
+          .update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() },
+          })
+          .catch((error) => {
+            console.error('Failed to update lastLoginAt:', error)
+          })
+      }
+    },
   },
   pages: {
     signIn: '/auth/signin',
