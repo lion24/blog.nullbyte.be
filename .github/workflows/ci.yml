@@ -159,7 +159,7 @@ jobs:
           node-version: '20'
 
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install --global vercel@53.1.0
 
       # Production deployment (push to main)
       - name: Deploy to Vercel (Production)
