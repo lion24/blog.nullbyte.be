@@ -1,0 +1,10 @@
+{
+  "embedding": {
+    "provider": "voyageai",
+    "model": "voyage-3.5",
+    "rerank_model": "rerank-2.5"
+  },
+  "llm": {
+    "provider": "claude-code-cli"
+  }
+}
