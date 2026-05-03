@@ -9,6 +9,7 @@ import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { calculateReadingTime } from '@/lib/reading-time'
 import { getFullUrl } from '@/lib/url'
+import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
 
 type Props = {
@@ -75,6 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: fullUrl,
       languages: {
+        'x-default': `${baseUrl}/${routing.defaultLocale}/posts/${slug}`,
         'en': `${baseUrl}/en/posts/${slug}`,
         'fr': `${baseUrl}/fr/posts/${slug}`,
       },

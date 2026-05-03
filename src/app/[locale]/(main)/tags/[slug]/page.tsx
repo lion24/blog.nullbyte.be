@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { getFullUrl } from '@/lib/url'
+import { routing } from '@/i18n/routing'
 
 interface Post {
   id: string
@@ -219,6 +220,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       alternates: {
         canonical: tagUrl,
         languages: {
+          'x-default': `${baseUrl}/${routing.defaultLocale}/tags/${slug}`,
           'en': `${baseUrl}/en/tags/${slug}`,
           'fr': `${baseUrl}/fr/tags/${slug}`,
         },

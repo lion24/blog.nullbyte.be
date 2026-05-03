@@ -1,6 +1,8 @@
 import { getTranslations } from 'next-intl/server'
 import PostCard from '@/components/PostCard'
 import { getPublishedPosts } from '@/lib/posts'
+import { getBaseUrl } from '@/lib/url'
+import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
 
 type Props = {
@@ -10,10 +12,19 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'posts' })
-  
+  const baseUrl = getBaseUrl()
+
   return {
     title: t('allPosts'),
     description: t('allPostsDescription'),
+    alternates: {
+      canonical: `${baseUrl}/${locale}/posts`,
+      languages: {
+        'x-default': `${baseUrl}/${routing.defaultLocale}/posts`,
+        en: `${baseUrl}/en/posts`,
+        fr: `${baseUrl}/fr/posts`,
+      },
+    },
   }
 }
 

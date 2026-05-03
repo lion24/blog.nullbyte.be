@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { getFullUrl } from '@/lib/url'
+import { routing } from '@/i18n/routing'
 
 interface Post {
   id: string
@@ -240,6 +241,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       alternates: {
         canonical: categoryUrl,
         languages: {
+          'x-default': `${baseUrl}/${routing.defaultLocale}/categories/${slug}`,
           'en': `${baseUrl}/en/categories/${slug}`,
           'fr': `${baseUrl}/fr/categories/${slug}`,
         },
