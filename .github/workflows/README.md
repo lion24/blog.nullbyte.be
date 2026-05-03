@@ -1,69 +1,21 @@
 # GitHub Workflows
 
-This directory contains GitHub Actions workflows for CI/CD.
+## `ci.yml` — CI
 
-## Workflows
+Runs on pushes to `main` and pull requests targeting `main`.
 
-### `ci.yml` - CI/CD Pipeline
+### Jobs
 
-Runs on all pushes and pull requests to `dev`, `staging`, and `main` branches.
+- **`ci/tests`** — Lint, type-check, and run the Jest suite against a PostgreSQL service container.
+- **`ci/build`** — Generate the Prisma client and run `npm run build` to verify the Next.js production build.
 
-#### Jobs
+Both checks are required by branch protection on `main`.
 
-1. **`ci/tests`** (Required for all branches)
-   - Runs on: dev, staging, main
-   - Steps:
-     - Install dependencies
-     - Setup PostgreSQL test database
-     - Generate Prisma client
-     - Run ESLint
-     - Run TypeScript type checking
-     - Run tests
+### Deployments
 
-2. **`ci/build`** (Required for all branches)
-   - Runs on: dev, staging, main (all branches that deploy)
-   - Steps:
-     - Install dependencies
-     - Generate Prisma client
-     - Build Next.js application
-     - Verify build output
-   - **Why for all branches?** Ensures preview deployments don't fail due to build errors
+Deployments are handled by Vercel's native Git integration:
 
-#### Branch Protection Alignment
+- **Pull requests**: Vercel posts a preview URL as a check.
+- **Push to `main`**: Vercel deploys to production automatically.
 
-- **dev**: Requires `ci/tests` + `ci/build` status checks
-- **staging**: Requires `ci/tests` + `ci/build` status checks + 1 approval
-- **main**: Requires `ci/tests` + `ci/build` status checks (strict mode) + 2 approvals
-
-**Note:** All branches run both tests and build to ensure preview deployments succeed.
-
-#### Environment Variables Required
-
-The workflow uses placeholder values for CI builds. No secrets are required unless you want to:
-- Upload coverage reports (requires `CODECOV_TOKEN`)
-
-## Adding Tests
-
-To add actual tests, update `package.json`:
-
-```json
-{
-  "scripts": {
-    "test": "jest --ci --coverage"
-  }
-}
-```
-
-And install Jest:
-
-```bash
-npm install --save-dev jest @types/jest ts-jest
-```
-
-## Deployment
-
-Deployments are triggered by the CI/CD pipeline (GitHub Actions) after all required checks pass:
-- **Preview**: Triggered by the workflow on every commit/PR to dev, staging, or main
-- **Production**: Triggered by the workflow on main branch pushes after checks and approvals
-
-Automatic deployments by Vercel are disabled in `vercel.json`; all deployments are managed by the workflow.
+CI does not deploy. Branch protection on `main` ensures only PRs that pass `ci/tests` and `ci/build` can merge, so production never receives an untested commit.
