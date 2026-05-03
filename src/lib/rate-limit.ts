@@ -13,11 +13,21 @@ import { Redis } from '@upstash/redis'
  * If these are not set, rate limiting will use in-memory cache (dev only).
  */
 
-// Check if Upstash Redis is configured
-const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+// Check if Upstash Redis is configured.
+// The .env.example ships placeholder values like "https://your-redis-url.upstash.io"
+// and "your-redis-token". Treat those as unset so dev falls back to in-memory.
+const upstashUrl = process.env.UPSTASH_REDIS_REST_URL
+const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN
+const isPlaceholder =
+  !upstashUrl ||
+  !upstashToken ||
+  upstashUrl.includes('your-redis-url') ||
+  upstashToken.includes('your-redis-token')
+
+const redis = !isPlaceholder
   ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      url: upstashUrl!,
+      token: upstashToken!,
     })
   : undefined
 
@@ -95,8 +105,12 @@ export async function checkRateLimit(
   request: Request,
   limiter: typeof publicApiLimiter
 ): Promise<Response | null> {
+  if (process.env.NODE_ENV === 'development') {
+    return null
+  }
+
   const identifier = getClientIdentifier(request)
-  
+
   try {
     const { success, limit, remaining, reset } = await limiter.limit(identifier)
     

@@ -629,6 +629,13 @@ blockquote p {
   margin-bottom: 0.5rem;
 }
 
+/* Restore pointer cursor on interactive buttons (Tailwind preflight resets it) */
+button:not(:disabled),
+[role="button"]:not(:disabled) {
+  cursor: pointer;
+}
+
+
 /* Ensure proper contrast for disabled elements */
 :disabled {
   opacity: 0.6;
