@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: getBaseUrl(),
     siteName: 'NullByte',
-    title: 'NullByte - Tech Blog',
+    title: 'NullByte',
     description: 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.',
     images: [
       {
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NullByte - Tech Blog',
+    title: 'NullByte',
     description: 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.',
     images: ['/logo.png'],
   },

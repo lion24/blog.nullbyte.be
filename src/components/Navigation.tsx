@@ -11,6 +11,7 @@ import { Role } from '@prisma/client'
 export default function Navigation() {
   const { data: session } = useSession()
   const t = useTranslations('common')
+  const tNav = useTranslations('navigation')
   const locale = useLocale()
 
   return (
@@ -23,7 +24,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link href={`/${locale}`} className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
-              {t('blog')}
+              {tNav('brand')}
             </Link>
             <div className="hidden md:flex space-x-4">
               <Link

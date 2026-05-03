@@ -220,7 +220,7 @@ const fr: FullTranslation = {
     },
   },
   footer: {
-    techBlog: 'Blog Tech',
+    techBlog: 'NullByte',
     tagline: 'Partage de parcours de développement, d\'idées et de découvertes dans le monde de la technologie.',
     quickLinks: 'Liens Rapides',
     home: 'Accueil',
@@ -228,10 +228,10 @@ const fr: FullTranslation = {
     connect: 'Connexion',
     email: 'E-mail',
     github: 'GitHub',
-    copyright: '© {year} Blog Tech. Tous droits réservés.',
+    copyright: '© {year} NullByte. Tous droits réservés.',
   },
   navigation: {
-    brand: 'Blog Tech',
+    brand: 'NullByte',
   },
   social: {
     share: 'Partager :',
