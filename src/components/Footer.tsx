@@ -56,6 +56,39 @@ export default function Footer() {
                   {t('footer.allPosts')}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href={`/${locale}/legal/terms`}
+                  className="text-sm transition-colors"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                >
+                  {t('legal.common.terms')}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/legal/privacy`}
+                  className="text-sm transition-colors"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                >
+                  {t('legal.common.privacy')}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href={`/${locale}/legal/data-deletion`}
+                  className="text-sm transition-colors"
+                  style={{ color: 'var(--text-secondary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                >
+                  {t('legal.common.dataDeletion')}
+                </Link>
+              </li>
             </ul>
           </div>
 
