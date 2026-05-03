@@ -171,10 +171,25 @@ jobs:
 
       # Preview deployment (push to staging or dev, or any pull request)
       - name: Deploy to Vercel (Preview)
+        id: vercel-preview
         if: |
           github.event_name == 'pull_request'
           || (github.event_name == 'push' && (github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/dev'))
         run: |
           vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
           vercel build --token=${{ secrets.VERCEL_TOKEN }}
-          vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Preview URL: $url"
+
+      - name: Comment preview URL on PR
+        if: github.event_name == 'pull_request' && steps.vercel-preview.outputs.url != ''
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: vercel-preview
+          message: |
+            🚀 **Preview deployment ready**
+
+            **URL:** ${{ steps.vercel-preview.outputs.url }}
+
+            _Updated for commit ${{ github.sha }}_
