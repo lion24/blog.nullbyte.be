@@ -73,6 +73,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt || undefined,
+    keywords: post.tags.length ? post.tags.map(tag => tag.name).join(', ') : undefined,
+    authors: post.author.name ? [{ name: post.author.name }] : undefined,
     alternates: {
       canonical: fullUrl,
       languages: {

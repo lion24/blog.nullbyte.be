@@ -1,4 +1,3 @@
-import { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import { getFullUrl } from '@/lib/url'
 
@@ -32,60 +31,6 @@ async function getPost(slug: string) {
   } catch (error) {
     console.error('Error fetching post for metadata:', error)
     return null
-  }
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug, locale } = await params
-  const post = await getPost(slug)
-
-  if (!post) {
-    return {
-      title: 'Post Not Found',
-    }
-  }
-
-  const postUrl = getFullUrl(`/${locale}/posts/${slug}`)
-  const baseUrl = getFullUrl('')
-
-  return {
-    title: post.title,
-    description: post.excerpt || post.title,
-    keywords: post.tags?.map((tag) => tag.name).join(', '),
-    authors: [{ name: post.author?.name || 'Anonymous' }],
-    alternates: {
-      canonical: postUrl,
-      languages: {
-        'en': `${baseUrl}/en/posts/${slug}`,
-        'fr': `${baseUrl}/fr/posts/${slug}`,
-      },
-    },
-    openGraph: {
-      type: 'article',
-      title: post.title,
-      description: post.excerpt || post.title,
-      url: postUrl,
-      publishedTime: post.createdAt.toISOString(),
-      modifiedTime: post.updatedAt.toISOString(),
-      authors: [post.author?.name || 'Anonymous'],
-      tags: post.tags?.map((tag) => tag.name),
-      ...(post.featuredImage && {
-        images: [
-          {
-            url: post.featuredImage,
-            alt: post.title,
-          },
-        ],
-      }),
-    },
-    twitter: {
-      card: 'summary',
-      title: post.title,
-      description: post.excerpt || post.title,
-      ...(post.featuredImage && {
-        images: [post.featuredImage],
-      }),
-    },
   }
 }
 
