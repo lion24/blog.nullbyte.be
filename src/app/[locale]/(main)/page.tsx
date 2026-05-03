@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server'
 import PostCard from '@/components/PostCard'
 import InteractiveLink from '@/components/InteractiveLink'
 import { getPublishedPosts } from '@/lib/posts'
+import { getBaseUrl, getFullUrl } from '@/lib/url'
 import type { Metadata } from 'next'
 
 type Props = {
@@ -23,7 +24,7 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params
   const t = await getTranslations({ locale })
   const tCommon = await getTranslations({ locale, namespace: 'common' })
-  
+
   // Fetch latest 3 posts directly from database
   const latestPosts = await getPublishedPosts(3)
 
@@ -37,8 +38,41 @@ export default async function HomePage({ params }: Props) {
     readMore: tCommon('readMore'),
   }
 
+  const baseUrl = getBaseUrl()
+  const author = {
+    '@type': 'Person' as const,
+    name: 'Lionel H',
+    url: baseUrl,
+  }
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        name: 'NullByte',
+        alternateName: 'NullByte - Tech Blog',
+        url: baseUrl,
+        inLanguage: locale,
+        publisher: author,
+      },
+      {
+        '@type': 'Blog',
+        name: 'NullByte',
+        url: `${baseUrl}/${locale}`,
+        inLanguage: locale,
+        author,
+        publisher: author,
+        image: getFullUrl('/logo.png'),
+      },
+    ],
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="relative text-center py-16 mb-8 rounded-2xl overflow-hidden">
         {/* Background Image - 16:9 aspect ratio */}
         <div className="absolute inset-0 w-full h-full">

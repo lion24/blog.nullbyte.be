@@ -10,6 +10,14 @@ export const revalidate = 3600 // Revalidate every hour
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl()
   const locales = routing.locales
+  const defaultLocale = routing.defaultLocale
+
+  // Build the language alternates map for a given path suffix.
+  // Always includes x-default pointing at the default-locale variant.
+  const languageAlternates = (suffix: string) => ({
+    'x-default': `${baseUrl}/${defaultLocale}${suffix}`,
+    ...Object.fromEntries(locales.map((loc) => [loc, `${baseUrl}/${loc}${suffix}`])),
+  })
 
   // Fetch all published posts
   const posts = await prisma.post.findMany({
@@ -64,17 +72,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   })
 
+  // Bare-domain entry pointing at the default-locale homepage via x-default
+  const root: MetadataRoute.Sitemap = [{
+    url: baseUrl,
+    lastModified: mostRecentPostDate,
+    changeFrequency: 'daily' as const,
+    priority: 1,
+    alternates: { languages: languageAlternates('') },
+  }]
+
   // Homepage - create entry for each locale with alternates
   const homepage: MetadataRoute.Sitemap = locales.map((locale) => ({
     url: `${baseUrl}/${locale}`,
     lastModified: mostRecentPostDate,
     changeFrequency: 'daily' as const,
     priority: 1,
-    alternates: {
-      languages: Object.fromEntries(
-        locales.map((loc) => [loc, `${baseUrl}/${loc}`])
-      ),
-    },
+    alternates: { languages: languageAlternates('') },
   }))
 
   // Posts page - create entry for each locale with alternates
@@ -83,11 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: mostRecentPostDate,
     changeFrequency: 'daily' as const,
     priority: 0.9,
-    alternates: {
-      languages: Object.fromEntries(
-        locales.map((loc) => [loc, `${baseUrl}/${loc}/posts`])
-      ),
-    },
+    alternates: { languages: languageAlternates('/posts') },
   }))
 
   // Individual post pages - create entry for each locale with alternates
@@ -97,11 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: post.updatedAt,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
-      alternates: {
-        languages: Object.fromEntries(
-          locales.map((loc) => [loc, `${baseUrl}/${loc}/posts/${post.slug}`])
-        ),
-      },
+      alternates: { languages: languageAlternates(`/posts/${post.slug}`) },
     }))
   )
 
@@ -112,11 +117,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: tag.posts[0]?.updatedAt || mostRecentPostDate,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
-      alternates: {
-        languages: Object.fromEntries(
-          locales.map((loc) => [loc, `${baseUrl}/${loc}/tags/${tag.slug}`])
-        ),
-      },
+      alternates: { languages: languageAlternates(`/tags/${tag.slug}`) },
     }))
   )
 
@@ -127,13 +128,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: category.posts[0]?.updatedAt || mostRecentPostDate,
       changeFrequency: 'weekly' as const,
       priority: 0.7,
-      alternates: {
-        languages: Object.fromEntries(
-          locales.map((loc) => [loc, `${baseUrl}/${loc}/categories/${category.slug}`])
-        ),
-      },
+      alternates: { languages: languageAlternates(`/categories/${category.slug}`) },
     }))
   )
 
-  return [...homepage, ...postsPage, ...postPages, ...tagPages, ...categoryPages]
+  return [...root, ...homepage, ...postsPage, ...postPages, ...tagPages, ...categoryPages]
 }
