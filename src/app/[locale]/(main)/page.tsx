@@ -44,27 +44,28 @@ export default async function HomePage({ params }: Props) {
     name: 'Lionel H',
     url: baseUrl,
   }
-  const jsonLd = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      name: 'NullByte',
-      alternateName: 'NullByte - Tech Blog',
-      url: baseUrl,
-      inLanguage: locale,
-      publisher: author,
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Blog',
-      name: 'NullByte',
-      url: `${baseUrl}/${locale}`,
-      inLanguage: locale,
-      author,
-      publisher: author,
-      image: getFullUrl('/logo.png'),
-    },
-  ]
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        name: 'NullByte',
+        alternateName: 'NullByte - Tech Blog',
+        url: baseUrl,
+        inLanguage: locale,
+        publisher: author,
+      },
+      {
+        '@type': 'Blog',
+        name: 'NullByte',
+        url: `${baseUrl}/${locale}`,
+        inLanguage: locale,
+        author,
+        publisher: author,
+        image: getFullUrl('/logo.png'),
+      },
+    ],
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
