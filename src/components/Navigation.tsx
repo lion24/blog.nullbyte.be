@@ -95,7 +95,7 @@ export default function Navigation() {
               </>
             ) : (
               <button
-                onClick={() => signIn('github')}
+                onClick={() => signIn()}
                 className="text-sm px-4 py-2 rounded-md transition-colors"
                 style={{
                   backgroundColor: 'var(--text-primary)',

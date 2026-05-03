@@ -16,6 +16,21 @@ const config: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'platform-lookaside.fbsbx.com',
+        pathname: '/**',
+      },
+      {                                                                                                                                                                                                            
+        protocol: 'https',
+        hostname: '**.fbcdn.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.googleusercontent.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'blob.vercel-storage.com',
         pathname: '/**',
       },
@@ -28,6 +43,16 @@ const config: NextConfig = {
         protocol: 'https',
         hostname: 'api.dicebear.com',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.gravatar.com',
+        pathname: '/avatar/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'secure.gravatar.com',
+        pathname: '/avatar/**',
       }
     ],
     // Allow SVG images from dicebear.com (avatar generator)

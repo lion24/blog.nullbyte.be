@@ -5,6 +5,7 @@ import type { CommonT } from './CommonT'
 import type { ErrorsT } from './ErrorsT'
 import type { FooterT } from './FooterT'
 import type { HomeT } from './HomeT'
+import type { LegalT } from './LegalT'
 import type { LocaleSwitcherT } from './LocaleSwitcherT'
 import type { NavigationT } from './NavigationT'
 import type { PostsT } from './PostsT'
@@ -31,5 +32,6 @@ export type FullTranslation = {
   navigation: NavigationT
   social: SocialT
   errors: ErrorsT
+  legal: LegalT
   LocaleSwitcher: LocaleSwitcherT
 }
