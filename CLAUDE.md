@@ -62,6 +62,13 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
+## 5. Tool Selection Rules
+- **PRIMARY SEARCH TOOL**: ALWAYS use the `ChunkHound` MCP server for code research, semantic search, and understanding architectural patterns (if available).
+- **DO NOT USE GREP** for high-level research questions like "Research authentication mechanism".
+- Use `mcp__ChunkHound__code_research` for architectural synthesis and `mcp__ChunkHound__semantic_search` for finding specific logic.
+- Only fallback to built-in `grep` or `read_file` if ChunkHound fails to find the relevant entry points.
+
+
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
 
 @AGENTS.md

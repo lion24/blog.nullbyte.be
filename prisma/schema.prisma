@@ -35,6 +35,7 @@ model User {
   image           String?
   password        String?
   role            Role             @default(READER)
+  lastLoginAt     DateTime?
   accounts        Account[]
   posts           Post[]
   serviceAccounts ServiceAccount[]
