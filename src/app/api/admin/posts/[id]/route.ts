@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { ErrorCode, createErrorResponse } from '@/lib/errors'
-import { generateUniqueSlug, slugify } from '@/lib/slug'
+import { generateUniqueSlug } from '@/lib/slug'
+import { resolveCategoryIds, resolveTagIds } from '@/lib/post-relations'
 
 /**
  * GET /api/admin/posts/[id]
@@ -87,16 +88,15 @@ export async function PUT(
     // Generate unique slug from title (exclude current post from uniqueness check)
     const slug = await generateUniqueSlug(title, id)
 
-    // First, disconnect all existing tags and categories
-    await prisma.post.update({
-      where: { id },
-      data: {
-        tags: { set: [] },
-        categories: { set: [] }
-      }
-    })
+    // Resolve tag/category names to IDs first (case-insensitive on name, with
+    // slug fallback). Using `set: [...]` below replaces the post's relations
+    // in one update, so the previous "first disconnect all, then reconnect"
+    // two-step is unnecessary.
+    const [tagIds, categoryIds] = await Promise.all([
+      resolveTagIds(tags),
+      resolveCategoryIds(categories),
+    ])
 
-    // Then update with new data
     const updatedPost = await prisma.post.update({
       where: { id },
       data: {
@@ -107,24 +107,8 @@ export async function PUT(
         featuredImage: featuredImage || null,
         published,
         updatedAt: new Date(), // Manually set updatedAt on content changes
-        tags: {
-          connectOrCreate: tags?.map((tag: string) => ({
-            where: { slug: slugify(tag) },  // Use slug for lookup (case-insensitive)
-            create: {
-              name: tag,
-              slug: slugify(tag)
-            }
-          })) ?? []
-        },
-        categories: {
-          connectOrCreate: categories?.map((category: string) => ({
-            where: { slug: slugify(category) },  // Use slug for lookup (case-insensitive)
-            create: {
-              name: category,
-              slug: slugify(category)
-            }
-          })) ?? []
-        }
+        tags: { set: tagIds },
+        categories: { set: categoryIds },
       },
       include: {
         author: true,

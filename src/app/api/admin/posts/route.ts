@@ -3,7 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { requireAdmin, UnauthorizedError, ForbiddenError } from '@/lib/auth'
 import { calculateReadingTime } from '@/lib/reading-time'
 import { ErrorCode, createErrorResponse } from '@/lib/errors'
-import { generateUniqueSlug, slugify } from '@/lib/slug'
+import { generateUniqueSlug } from '@/lib/slug'
+import { resolveCategoryIds, resolveTagIds } from '@/lib/post-relations'
 
 /**
  * GET /api/admin/posts
@@ -126,6 +127,13 @@ export async function POST(request: NextRequest) {
     // Generate unique slug from title
     const slug = await generateUniqueSlug(title)
 
+    // Resolve tag/category names to IDs (case-insensitive on name, with slug
+    // fallback for legacy tags whose name and slug got out of sync).
+    const [tagIds, categoryIds] = await Promise.all([
+      resolveTagIds(tags),
+      resolveCategoryIds(categories),
+    ])
+
     const post = await prisma.post.create({
       data: {
         title,
@@ -135,24 +143,8 @@ export async function POST(request: NextRequest) {
         featuredImage: featuredImage || null,
         published: published ?? false,
         authorId: user.id,
-        tags: {
-          connectOrCreate: tags?.map((tag: string) => ({
-            where: { slug: slugify(tag) },  // Use slug for lookup (case-insensitive)
-            create: {
-              name: tag,
-              slug: slugify(tag)
-            }
-          })) ?? []
-        },
-        categories: {
-          connectOrCreate: categories?.map((category: string) => ({
-            where: { slug: slugify(category) },  // Use slug for lookup (case-insensitive)
-            create: {
-              name: category,
-              slug: slugify(category)
-            }
-          })) ?? []
-        }
+        tags: { connect: tagIds },
+        categories: { connect: categoryIds },
       },
       include: {
         author: true,
