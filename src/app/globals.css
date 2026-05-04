@@ -787,6 +787,25 @@ button:not(:disabled),
   color: var(--text-primary) !important;
 }
 
+/* Auth buttons in NavAuthMenu. Base styles + :hover override come from CSS
+   so the component can render statically (no JS for hover state). */
+.nav-auth-button-secondary {
+  background-color: var(--background-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.nav-auth-button-secondary:hover {
+  background-color: var(--border);
+}
+
+.nav-auth-button-primary {
+  background-color: var(--text-primary);
+  color: var(--background);
+}
+.nav-auth-button-primary:hover {
+  background-color: var(--text-secondary);
+}
+
 /* InteractiveLink: bridge per-instance hover colors (set as CSS custom
    properties via inline style) into a static :hover rule so the component
    can stay a Server Component — no React state, no per-render handlers. */
