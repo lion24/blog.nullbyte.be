@@ -23,7 +23,7 @@
     "backToAllPosts": "← Back to all posts"
   },
   "home": {
-    "title": "Welcome to the Blog",
+    "title": "Welcome to NullByte — Tutorials & Engineering Insights",
     "subtitle": "Sharing my development journey, insights, and discoveries in the world of technology",
     "latestPosts": "Latest Posts",
     "noPosts": "No posts yet. Check back soon!",
@@ -116,8 +116,9 @@
     "home": "Home",
     "allPosts": "All Posts",
     "connect": "Connect",
-    "email": "Email",
     "github": "GitHub",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
     "copyright": "© {year} Tech Blog. All rights reserved."
   },
   "navigation": {
@@ -138,5 +139,9 @@
   },
   "LocaleSwitcher": {
     "switchLocale": "Switch to {locale, select, en {English} fr {Français} other {Unknown}}"
+  },
+  "metadata": {
+    "siteTitle": "NullByte - Web Development, Software Engineering & Tutorials",
+    "description": "NullByte is a tech blog with in-depth tutorials, code walkthroughs, and insights on web development, software engineering, JavaScript, React, and Next.js."
   }
 }

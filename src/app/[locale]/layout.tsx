@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {notFound} from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { getBaseUrl } from '@/lib/url';
 import {routing} from '@/i18n/routing';
 
@@ -22,12 +22,13 @@ export async function generateMetadata({
   const { locale } = await params;
   const baseUrl = getBaseUrl();
   const localeUrl = `${baseUrl}/${locale}`;
-  const description = 'A modern tech blog sharing development insights, tutorials, and discoveries in software engineering.';
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+  const description = t('description');
 
   return {
     metadataBase: new URL(baseUrl),
     title: {
-      default: 'NullByte - Tech Blog',
+      default: t('siteTitle'),
       template: '%s | NullByte',
     },
     description,

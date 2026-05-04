@@ -25,7 +25,7 @@ const fr: FullTranslation = {
     backToAllPosts: '← Retour à tous les articles',
   },
   home: {
-    title: 'Bienvenue sur le Blog',
+    title: 'Bienvenue sur NullByte — Tutoriels et génie logiciel',
     subtitle: 'Partage de mon parcours de développement, d\'idées et de découvertes dans le monde de la technologie',
     latestPosts: 'Derniers Articles',
     noPosts: 'Aucun article pour le moment. Revenez bientôt !',
@@ -226,8 +226,9 @@ const fr: FullTranslation = {
     home: 'Accueil',
     allPosts: 'Tous les Articles',
     connect: 'Connexion',
-    email: 'E-mail',
     github: 'GitHub',
+    instagram: 'Instagram',
+    tiktok: 'TikTok',
     copyright: '© {year} NullByte. Tous droits réservés.',
   },
   navigation: {
@@ -248,6 +249,10 @@ const fr: FullTranslation = {
   },
   LocaleSwitcher: {
     switchLocale: 'Passer en {locale, select, en {anglais} fr {français} other {inconnu}}',
+  },
+  metadata: {
+    siteTitle: 'NullByte - Développement web, génie logiciel & tutoriels',
+    description: 'NullByte est un blog tech avec des tutoriels, analyses de code et conseils sur le développement web, le génie logiciel, JavaScript, React et Next.js.',
   },
 }
 
