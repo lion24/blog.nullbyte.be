@@ -17,13 +17,21 @@ import type { Metadata } from 'next'
 export const revalidate = 60
 
 export async function generateStaticParams() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    select: { slug: true },
-  })
-  return posts.flatMap((post) =>
-    routing.locales.map((locale) => ({ locale, slug: post.slug }))
-  )
+  // CI builds without DB connectivity (placeholder DATABASE_URL) hit this code
+  // path. Returning [] there falls back to fully on-demand ISR — posts render
+  // and cache on first request instead of being pre-rendered at build time.
+  try {
+    const posts = await prisma.post.findMany({
+      where: { published: true },
+      select: { slug: true },
+    })
+    return posts.flatMap((post) =>
+      routing.locales.map((locale) => ({ locale, slug: post.slug }))
+    )
+  } catch (err) {
+    console.warn('generateStaticParams: skipping DB query, falling back to on-demand ISR', err)
+    return []
+  }
 }
 
 type Props = {
