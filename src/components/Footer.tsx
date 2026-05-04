@@ -1,12 +1,13 @@
-'use client'
-
 import Link from 'next/link'
-import { useTranslations, useLocale } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 
-export default function Footer() {
+type FooterProps = {
+  locale: string
+}
+
+export default async function Footer({ locale }: FooterProps) {
   const currentYear = new Date().getFullYear()
-  const t = useTranslations()
-  const locale = useLocale()
+  const t = await getTranslations({ locale })
 
   return (
     <footer
@@ -37,10 +38,8 @@ export default function Footer() {
               <li>
                 <Link
                   href={`/${locale}`}
-                  className="text-sm transition-colors"
+                  className="footer-link text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                   {t('footer.home')}
                 </Link>
@@ -48,10 +47,8 @@ export default function Footer() {
               <li>
                 <Link
                   href={`/${locale}/posts`}
-                  className="text-sm transition-colors"
+                  className="footer-link text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                   {t('footer.allPosts')}
                 </Link>
@@ -59,10 +56,8 @@ export default function Footer() {
               <li>
                 <Link
                   href={`/${locale}/legal/terms`}
-                  className="text-sm transition-colors"
+                  className="footer-link text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                   {t('legal.common.terms')}
                 </Link>
@@ -70,10 +65,8 @@ export default function Footer() {
               <li>
                 <Link
                   href={`/${locale}/legal/privacy`}
-                  className="text-sm transition-colors"
+                  className="footer-link text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                   {t('legal.common.privacy')}
                 </Link>
@@ -81,10 +74,8 @@ export default function Footer() {
               <li>
                 <Link
                   href={`/${locale}/legal/data-deletion`}
-                  className="text-sm transition-colors"
+                  className="footer-link text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                   {t('legal.common.dataDeletion')}
                 </Link>
@@ -101,10 +92,8 @@ export default function Footer() {
               <li>
                 <a
                   href="mailto:contact@example.com"
-                  className="text-sm transition-colors"
+                  className="footer-link text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                   {t('footer.email')}
                 </a>
@@ -114,10 +103,8 @@ export default function Footer() {
                   href="https://github.com/lion24"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm transition-colors"
+                  className="footer-link text-sm transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                   {t('footer.github')}
                 </Link>

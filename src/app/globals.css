@@ -742,6 +742,100 @@ button:not(:disabled),
   color: var(--primary-hover) !important;
 }
 
+/* PostCard hover styles. Replaces per-element inline JS handlers so the
+   component can be server-rendered with no client JS. The base values stay
+   as inline `style` props on the elements; these rules only override on
+   :hover. CSS custom properties from :root supply the colors. */
+.post-card {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+/* !important is needed here because the base box-shadow and border live in
+   the JSX inline `style` prop, which beats normal selector specificity. The
+   simpler long-term fix is to move those base values into this rule too;
+   doing it now would touch every PostCard render path and is out of scope. */
+.post-card:hover {
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--border-hover) !important;
+}
+
+.post-card-category {
+  opacity: 0.9;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.post-card-category:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.post-card-title-link:hover {
+  color: var(--primary) !important;
+}
+
+.post-card-tag:hover {
+  color: var(--tag-background-hover) !important;
+}
+
+.post-card-readmore:hover {
+  color: var(--primary-hover) !important;
+}
+
+/* Footer / Navigation link hover. Single rule, used everywhere we had inline
+   onMouseEnter/Leave color flips. The base color stays as inline `style`
+   on each link; this only kicks in on :hover. */
+.footer-link:hover,
+.nav-link:hover {
+  color: var(--text-primary) !important;
+}
+
+/* Auth buttons in NavAuthMenu. Base styles + :hover override come from CSS
+   so the component can render statically (no JS for hover state). */
+.nav-auth-button-secondary {
+  background-color: var(--background-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.nav-auth-button-secondary:hover {
+  background-color: var(--border);
+}
+
+.nav-auth-button-primary {
+  background-color: var(--text-primary);
+  color: var(--background);
+}
+.nav-auth-button-primary:hover {
+  background-color: var(--text-secondary);
+}
+
+/* InteractiveLink: bridge per-instance hover colors (set as CSS custom
+   properties via inline style) into a static :hover rule so the component
+   can stay a Server Component — no React state, no per-render handlers. */
+.interactive-link {
+  color: var(--il-color, inherit);
+  background-color: var(--il-bg, transparent);
+  border: var(--il-border, none);
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.interactive-link:hover {
+  color: var(--il-color-hover, var(--il-color, inherit));
+  background-color: var(--il-bg-hover, var(--il-bg, transparent));
+  border: var(--il-border-hover, var(--il-border, none));
+}
+
+/* Shiki always renders code blocks with the dark theme (background and
+   token colors are baked into inline styles by the renderer). We only need
+   layout / spacing here — color and background come from the inline styles
+   and don't need to vary with the page theme. */
+.shiki {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

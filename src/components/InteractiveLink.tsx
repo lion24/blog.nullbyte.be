@@ -1,7 +1,5 @@
-'use client'
-
 import Link from 'next/link'
-import { useState, type ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 
 type InteractiveLinkProps = {
   href: string
@@ -18,21 +16,9 @@ type InteractiveLinkProps = {
 }
 
 /**
- * InteractiveLink - A Client Component wrapper for Next.js Link with hover effects
- * 
- * This component allows Server Components to use interactive links with hover states
- * without needing to pass event handlers (which would cause React errors).
- * 
- * Usage:
- * <InteractiveLink 
- *   href="/some-path"
- *   baseColor="var(--text-tertiary)"
- *   hoverColor="var(--text-secondary)"
- *   target="_blank"
- *   rel="noopener noreferrer"
- * >
- *   Link Text
- * </InteractiveLink>
+ * Server-rendered link with hover effects. Per-instance colors are passed in
+ * as inline CSS custom properties; the actual `:hover` swap lives in CSS
+ * (.interactive-link in globals.css). No React state, no client JS.
  */
 export default function InteractiveLink({
   href,
@@ -47,33 +33,21 @@ export default function InteractiveLink({
   target,
   rel,
 }: InteractiveLinkProps) {
-  const [isHovered, setIsHovered] = useState(false)
-
-  const style: React.CSSProperties = {
-    transition: 'all 0.2s ease',
-  }
-
-  if (baseColor || hoverColor) {
-    style.color = isHovered ? hoverColor : baseColor
-  }
-
-  if (backgroundColor || hoverBackgroundColor) {
-    style.backgroundColor = isHovered ? hoverBackgroundColor : backgroundColor
-  }
-
-  if (border || hoverBorder) {
-    style.border = isHovered ? hoverBorder : border
-  }
+  const style: CSSProperties = {}
+  if (baseColor) (style as Record<string, string>)['--il-color'] = baseColor
+  if (hoverColor) (style as Record<string, string>)['--il-color-hover'] = hoverColor
+  if (backgroundColor) (style as Record<string, string>)['--il-bg'] = backgroundColor
+  if (hoverBackgroundColor) (style as Record<string, string>)['--il-bg-hover'] = hoverBackgroundColor
+  if (border) (style as Record<string, string>)['--il-border'] = border
+  if (hoverBorder) (style as Record<string, string>)['--il-border-hover'] = hoverBorder
 
   return (
     <Link
       href={href}
-      className={className}
+      className={`interactive-link ${className}`.trim()}
       style={style}
       target={target}
       rel={rel}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {children}
     </Link>

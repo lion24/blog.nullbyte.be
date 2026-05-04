@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 
 type PostCardProps = {
@@ -23,29 +21,20 @@ type PostCardProps = {
   };
 };
 
+function truncate(text: string | null, maxLength = 150): string {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trim() + '...';
+}
+
 export default function PostCard({ post, locale, translations }: PostCardProps) {
-
-  const truncateExcerpt = (text: string | null, maxLength: number = 150): string => {
-    if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength).trim() + '...';
-  };
-
   return (
     <article
-      className="p-6 rounded-lg transition-all flex flex-col h-full"
+      className="post-card p-6 rounded-lg flex flex-col h-full"
       style={{
         backgroundColor: 'var(--background-secondary)',
         boxShadow: 'var(--shadow-sm)',
         border: '1px solid var(--border)',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-        e.currentTarget.style.borderColor = 'var(--border-hover)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-        e.currentTarget.style.borderColor = 'var(--border)';
       }}
     >
       {/* Categories - Top */}
@@ -55,19 +44,10 @@ export default function PostCard({ post, locale, translations }: PostCardProps) 
             <Link
               key={category.id}
               href={`/${locale}/categories/${category.slug}`}
-              className="text-xs px-2.5 py-1 rounded-full font-medium transition-all"
+              className="post-card-category text-xs px-2.5 py-1 rounded-full font-medium"
               style={{
                 backgroundColor: 'var(--primary)',
                 color: 'var(--text-inverse)',
-                opacity: 0.9,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = '1';
-                e.currentTarget.style.transform = 'scale(1.05)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '0.9';
-                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
               {category.name}
@@ -80,10 +60,8 @@ export default function PostCard({ post, locale, translations }: PostCardProps) 
       <h3 className="text-xl font-bold mb-3 leading-tight" style={{ color: 'var(--text-primary)' }}>
         <Link
           href={`/${locale}/posts/${post.slug}`}
-          className="transition-colors hover:underline"
+          className="post-card-title-link transition-colors hover:underline"
           style={{ color: 'inherit' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--primary)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'inherit')}
         >
           {post.title}
         </Link>
@@ -92,7 +70,7 @@ export default function PostCard({ post, locale, translations }: PostCardProps) 
       {/* Excerpt */}
       {post.excerpt && (
         <p className="mb-4 flex-1 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-          {truncateExcerpt(post.excerpt)}
+          {truncate(post.excerpt)}
         </p>
       )}
 
@@ -112,29 +90,22 @@ export default function PostCard({ post, locale, translations }: PostCardProps) 
               <Link
                 key={tag.id}
                 href={`/${locale}/tags/${tag.slug}`}
-                className="text-xs font-bold transition-colors hover:underline truncate"
+                className="post-card-tag text-xs font-bold transition-colors hover:underline truncate"
                 style={{ color: 'var(--tag-background)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--tag-background-hover)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--tag-background)')}
               >
                 #{tag.name}
               </Link>
             ))}
             {post.tags.length > 3 && (
-              <span 
-                className="text-xs font-bold"
-                style={{ color: 'var(--tag-background)' }}
-              >
+              <span className="text-xs font-bold" style={{ color: 'var(--tag-background)' }}>
                 +{post.tags.length - 3}
               </span>
             )}
           </div>
           <Link
             href={`/${locale}/posts/${post.slug}`}
-            className="text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0"
+            className="post-card-readmore text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0"
             style={{ color: 'var(--primary)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--primary-hover)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--primary)')}
           >
             {translations.readMore} →
           </Link>

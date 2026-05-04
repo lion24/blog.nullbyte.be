@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import {notFound} from 'next/navigation';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
-import { Providers } from "../providers";
 import { getBaseUrl } from '@/lib/url';
 import {routing} from '@/i18n/routing';
 
@@ -100,7 +99,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
-      <Providers>{children}</Providers>
+      {children}
     </NextIntlClientProvider>
   );
 }

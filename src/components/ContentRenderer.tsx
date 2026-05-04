@@ -1,62 +1,34 @@
-'use client';
-
-import * as React from 'react';
-import MarkdownPreview from './MarkdownPreview';
-import HtmlPreview from './HtmlPreview';
-import { PlatePreview } from './PlatePreview';
-import type { Value } from 'platejs';
+import { renderHtml, renderMarkdown } from '@/lib/markdown'
 
 interface ContentRendererProps {
-  content: string;
-  className?: string;
+  content: string
+  className?: string
 }
 
-export function ContentRenderer({ content, className }: ContentRendererProps) {
-  const isPlateContent = React.useMemo(() => {
-    if (!content) return false;
-    
-    try {
-      const parsed = JSON.parse(content);
-      return Array.isArray(parsed) && parsed.length > 0 && 
-             parsed[0] && typeof parsed[0] === 'object' && 
-             ('type' in parsed[0] || 'children' in parsed[0]);
-    } catch {
-      return false;
-    }
-  }, [content]);
+function looksLikeHtmlDocument(content: string): boolean {
+  const trimmed = content.trim()
+  return trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html')
+}
 
-  const isHtmlContent = React.useMemo(() => {
-    if (!content) return false;
-    
-    // Check if content is pure HTML document (starts with DOCTYPE or html tag)
-    const isPureHtml = content.trim().startsWith('<!DOCTYPE') || content.trim().startsWith('<html');
-    
-    // For our use case, most content should be treated as markdown (even with HTML tags)
-    // Only treat as HTML if it's a complete HTML document
-    return isPureHtml;
-  }, [content]);
-
+export async function ContentRenderer({ content, className }: ContentRendererProps) {
   if (!content) {
-    return <div className={className}>No content available</div>;
+    return <div className={className}>No content available</div>
   }
 
-  if (isPlateContent) {
-    try {
-      const plateValue: Value = JSON.parse(content);
-      return <PlatePreview value={plateValue} className={className} />;
-    } catch (error) {
-      console.error('Failed to parse Plate content:', error);
-      // Fallback to markdown
-      return <MarkdownPreview content={content} className={className} />;
-    }
-  }
+  // The editor serializes to markdown on save (see PlateEditor's
+  // plateValueToMarkdown), so all stored content is either markdown or a
+  // pure HTML document. Both go through unified server-side; no Plate code
+  // ships to readers.
+  const html = looksLikeHtmlDocument(content)
+    ? await renderHtml(content)
+    : await renderMarkdown(content)
 
-  if (isHtmlContent) {
-    return <HtmlPreview content={content} className={className} />;
-  }
-
-  // It's markdown content
-  return <MarkdownPreview content={content} className={className} />;
+  return (
+    <div
+      className={`prose prose-neutral dark:prose-invert max-w-none ${className || ''}`}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  )
 }
 
-export default ContentRenderer;
+export default ContentRenderer
