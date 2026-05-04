@@ -742,32 +742,10 @@ button:not(:disabled),
   color: var(--primary-hover) !important;
 }
 
-/* Shiki dual-theme support. The renderer emits each token with the light
-   color in an inline style attribute plus a --shiki-dark CSS variable. The
-   light theme is the default; the dark overrides apply when the user
-   selects dark, or when the OS prefers dark and no explicit theme is set.
-   !important is required because Shiki's per-token color sits in an inline
-   style attribute, which beats any normal selector specificity. */
-[data-theme="dark"] .shiki,
-[data-theme="dark"] .shiki span {
-  color: var(--shiki-dark) !important;
-  background-color: var(--shiki-dark-bg) !important;
-  font-style: var(--shiki-dark-font-style) !important;
-  font-weight: var(--shiki-dark-font-weight) !important;
-  text-decoration: var(--shiki-dark-text-decoration) !important;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .shiki,
-  :root:not([data-theme="light"]) .shiki span {
-    color: var(--shiki-dark) !important;
-    background-color: var(--shiki-dark-bg) !important;
-    font-style: var(--shiki-dark-font-style) !important;
-    font-weight: var(--shiki-dark-font-weight) !important;
-    text-decoration: var(--shiki-dark-text-decoration) !important;
-  }
-}
-
+/* Shiki always renders code blocks with the dark theme (background and
+   token colors are baked into inline styles by the renderer). We only need
+   layout / spacing here — color and background come from the inline styles
+   and don't need to vary with the page theme. */
 .shiki {
   padding: 1rem;
   border-radius: 0.5rem;

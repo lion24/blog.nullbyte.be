@@ -85,10 +85,12 @@ const SHIKI_LANGS = [
   'yaml',
 ] as const
 
-const SHIKI_THEMES = {
-  light: 'github-light',
-  dark: 'github-dark',
-} as const
+// Single dark theme regardless of page theme. Code blocks always have a dark
+// background — this matches the VS Code / many-MDX-blogs convention and
+// preserves token contrast in light mode (where a light syntax theme on a
+// near-white background washes out). Shiki bakes the colors directly into
+// inline style attributes, so no CSS theming work is needed.
+const SHIKI_THEME = 'github-dark'
 
 // rehype-sanitize must run BEFORE rehype-shiki: sanitize cleans untrusted
 // HTML embedded in the markdown, then Shiki tokenizes code blocks and emits
@@ -102,7 +104,7 @@ const markdownProcessor = unified()
   .use(rehypeRaw)
   .use(rehypeSanitize, sanitizeSchema)
   .use(rehypeShiki, {
-    themes: SHIKI_THEMES,
+    theme: SHIKI_THEME,
     langs: [...SHIKI_LANGS],
     defaultLanguage: 'text',
     fallbackLanguage: 'text',
