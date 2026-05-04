@@ -5,7 +5,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { Metadata } from "next";
-import { getLocale } from 'next-intl/server';
+import { routing } from '@/i18n/routing';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,15 +24,16 @@ export const metadata: Metadata = {
   }
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-
+  // Hardcoded default locale so this layout does not call any dynamic API
+  // (getLocale reads request state). Without this, every descendant route is
+  // forced into dynamic rendering and the edge cannot cache HTML.
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={routing.defaultLocale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

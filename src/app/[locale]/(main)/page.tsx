@@ -1,10 +1,15 @@
 import Image from 'next/image'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import PostCard from '@/components/PostCard'
 import InteractiveLink from '@/components/InteractiveLink'
 import { getPublishedPosts } from '@/lib/posts'
 import { getBaseUrl, getFullUrl } from '@/lib/url'
 import type { Metadata } from 'next'
+
+// ISR: regenerate the homepage at most every 5 minutes. New posts appear
+// after the next revalidation; admin actions can call revalidatePath('/[locale]')
+// for immediate freshness.
+export const revalidate = 300
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -22,6 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function HomePage({ params }: Props) {
   const { locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations({ locale })
   const tCommon = await getTranslations({ locale, namespace: 'common' })
 

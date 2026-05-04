@@ -129,19 +129,6 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
 }
 
 /**
- * Increment post view count (non-blocking)
- */
-export async function incrementPostViews(postId: string): Promise<void> {
-  // Fire and forget - don't await
-  prisma.post.update({
-    where: { id: postId },
-    data: { views: { increment: 1 } },
-  }).catch(err => {
-    console.error('Failed to increment post views:', err)
-  })
-}
-
-/**
  * Get all posts (including unpublished) - for admin pages
  */
 export async function getAllPosts(): Promise<PostSummary[]> {
