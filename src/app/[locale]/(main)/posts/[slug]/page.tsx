@@ -5,12 +5,34 @@ import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
 import InteractiveLink from '@/components/InteractiveLink'
 import { ViewCounter } from '@/components/ViewCounter'
-import { getTranslations } from 'next-intl/server'
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 import { calculateReadingTime } from '@/lib/reading-time'
 import { getFullUrl } from '@/lib/url'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
+
+// ISR: each post is regenerated at most once per minute. New slugs not in
+// generateStaticParams are rendered on demand and cached after first request.
+export const revalidate = 60
+
+export async function generateStaticParams() {
+  // CI builds without DB connectivity (placeholder DATABASE_URL) hit this code
+  // path. Returning [] there falls back to fully on-demand ISR — posts render
+  // and cache on first request instead of being pre-rendered at build time.
+  try {
+    const posts = await prisma.post.findMany({
+      where: { published: true },
+      select: { slug: true },
+    })
+    return posts.flatMap((post) =>
+      routing.locales.map((locale) => ({ locale, slug: post.slug }))
+    )
+  } catch (err) {
+    console.warn('generateStaticParams: skipping DB query, falling back to on-demand ISR', err)
+    return []
+  }
+}
 
 type Props = {
   params: Promise<{ slug: string; locale: string }>
@@ -105,6 +127,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PostPage({ params }: Props) {
   const { slug, locale } = await params
+  setRequestLocale(locale)
   const t = await getTranslations({ locale })
   const tSocial = await getTranslations({ locale, namespace: 'social' })
   

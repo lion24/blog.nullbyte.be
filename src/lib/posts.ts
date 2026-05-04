@@ -30,50 +30,61 @@ export type PostDetail = PostSummary & {
 }
 
 /**
- * Get all published posts (for public pages)
+ * Get all published posts (for public pages).
+ *
+ * Returns [] when the database is unreachable. This is intentional: CI runs
+ * `next build` with a placeholder DATABASE_URL just to verify compilation,
+ * and the home + posts-index pages are now SSG so their prerender step
+ * would otherwise crash the build. At runtime, a transient DB failure also
+ * renders an empty list rather than a 500 — better UX than a stack trace.
  */
 export async function getPublishedPosts(limit?: number): Promise<PostSummary[]> {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    orderBy: { createdAt: 'desc' },
-    take: limit,
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      excerpt: true,
-      featuredImage: true,
-      createdAt: true,
-      content: true, // Need for reading time
-      author: {
-        select: {
-          name: true,
-          image: true,
+  try {
+    const posts = await prisma.post.findMany({
+      where: { published: true },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        featuredImage: true,
+        createdAt: true,
+        content: true, // Need for reading time
+        author: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        tags: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
         },
       },
-      tags: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-      categories: {
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-        },
-      },
-    },
-  })
+    })
 
-  return posts.map(post => ({
-    ...post,
-    createdAt: post.createdAt.toISOString(),
-    readingTime: calculateReadingTime(post.content),
-    content: undefined as never, // Remove from response
-  }))
+    return posts.map(post => ({
+      ...post,
+      createdAt: post.createdAt.toISOString(),
+      readingTime: calculateReadingTime(post.content),
+      content: undefined as never, // Remove from response
+    }))
+  } catch (err) {
+    console.warn('getPublishedPosts: returning empty list, DB unreachable', err)
+    return []
+  }
 }
 
 /**
@@ -126,19 +137,6 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
     updatedAt: post.updatedAt.toISOString(),
     readingTime: calculateReadingTime(post.content),
   }
-}
-
-/**
- * Increment post view count (non-blocking)
- */
-export async function incrementPostViews(postId: string): Promise<void> {
-  // Fire and forget - don't await
-  prisma.post.update({
-    where: { id: postId },
-    data: { views: { increment: 1 } },
-  }).catch(err => {
-    console.error('Failed to increment post views:', err)
-  })
 }
 
 /**

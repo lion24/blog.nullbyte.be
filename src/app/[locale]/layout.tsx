@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import {notFound} from 'next/navigation';
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { Providers } from "../providers";
 import { getBaseUrl } from '@/lib/url';
 import {routing} from '@/i18n/routing';
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
 const OG_LOCALE: Record<string, string> = {
   en: 'en_US',
@@ -84,10 +88,13 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if (!routing.locales.includes(locale as any)) {
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
+
+  // Required for next-intl to render statically with the path param locale
+  // instead of falling back to per-request cookie/header detection.
+  setRequestLocale(locale);
 
   const messages = await getMessages({locale});
 
