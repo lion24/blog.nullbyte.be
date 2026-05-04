@@ -7,6 +7,7 @@ import type { FooterT } from './FooterT'
 import type { HomeT } from './HomeT'
 import type { LegalT } from './LegalT'
 import type { LocaleSwitcherT } from './LocaleSwitcherT'
+import type { MetadataT } from './MetadataT'
 import type { NavigationT } from './NavigationT'
 import type { PostsT } from './PostsT'
 import type { SocialT } from './SocialT'
@@ -34,4 +35,5 @@ export type FullTranslation = {
   errors: ErrorsT
   legal: LegalT
   LocaleSwitcher: LocaleSwitcherT
+  metadata: MetadataT
 }
