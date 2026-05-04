@@ -14,7 +14,8 @@ export class FooterT implements Translation {
   home = ''
   allPosts = ''
   connect = ''
-  email = ''
   github = ''
+  instagram = ''
+  tiktok = ''
   copyright = ''
 }

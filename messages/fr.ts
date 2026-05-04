@@ -226,8 +226,9 @@ const fr: FullTranslation = {
     home: 'Accueil',
     allPosts: 'Tous les Articles',
     connect: 'Connexion',
-    email: 'E-mail',
     github: 'GitHub',
+    instagram: 'Instagram',
+    tiktok: 'TikTok',
     copyright: '© {year} NullByte. Tous droits réservés.',
   },
   navigation: {

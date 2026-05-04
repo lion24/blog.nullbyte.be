@@ -116,8 +116,9 @@
     "home": "Accueil",
     "allPosts": "Tous les Articles",
     "connect": "Connexion",
-    "email": "E-mail",
     "github": "GitHub",
+    "instagram": "Instagram",
+    "tiktok": "TikTok",
     "copyright": "© {year} Blog Tech. Tous droits réservés."
   },
   "navigation": {

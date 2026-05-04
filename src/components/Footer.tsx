@@ -1,5 +1,11 @@
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faGithub,
+  faInstagram,
+  faTiktok,
+} from '@fortawesome/free-brands-svg-icons'
 
 type FooterProps = {
   locale: string
@@ -88,28 +94,38 @@ export default async function Footer({ locale }: FooterProps) {
             <h3 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
               {t('footer.connect')}
             </h3>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="mailto:contact@example.com"
-                  className="footer-link text-sm transition-colors"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  {t('footer.email')}
-                </a>
-              </li>
-              <li>
-                <Link
-                  href="https://github.com/lion24"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="footer-link text-sm transition-colors"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  {t('footer.github')}
-                </Link>
-              </li>
-            </ul>
+            <div className="flex items-center gap-4">
+              <Link
+                href="https://github.com/lion24"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('footer.github')}
+                className="footer-link transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <FontAwesomeIcon icon={faGithub} className="text-xl" />
+              </Link>
+              <Link
+                href="https://www.instagram.com/nullbyt3"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('footer.instagram')}
+                className="footer-link transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <FontAwesomeIcon icon={faInstagram} className="text-xl" />
+              </Link>
+              <Link
+                href="https://www.tiktok.com/@nullbyte0x"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('footer.tiktok')}
+                className="footer-link transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <FontAwesomeIcon icon={faTiktok} className="text-xl" />
+              </Link>
+            </div>
           </div>
         </div>
 
