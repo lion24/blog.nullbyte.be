@@ -1,62 +1,60 @@
-'use client';
-
-import * as React from 'react';
-import MarkdownPreview from './MarkdownPreview';
-import HtmlPreview from './HtmlPreview';
-import { PlatePreview } from './PlatePreview';
-import type { Value } from 'platejs';
+import type { Value } from 'platejs'
+import { renderHtml, renderMarkdown } from '@/lib/markdown'
+import PlatePreviewClient from './PlatePreviewClient'
 
 interface ContentRendererProps {
-  content: string;
-  className?: string;
+  content: string
+  className?: string
 }
 
-export function ContentRenderer({ content, className }: ContentRendererProps) {
-  const isPlateContent = React.useMemo(() => {
-    if (!content) return false;
-    
-    try {
-      const parsed = JSON.parse(content);
-      return Array.isArray(parsed) && parsed.length > 0 && 
-             parsed[0] && typeof parsed[0] === 'object' && 
-             ('type' in parsed[0] || 'children' in parsed[0]);
-    } catch {
-      return false;
+function looksLikePlate(content: string): { value: Value } | null {
+  try {
+    const parsed = JSON.parse(content)
+    if (
+      Array.isArray(parsed) &&
+      parsed.length > 0 &&
+      parsed[0] &&
+      typeof parsed[0] === 'object' &&
+      ('type' in parsed[0] || 'children' in parsed[0])
+    ) {
+      return { value: parsed as Value }
     }
-  }, [content]);
+  } catch {
+    /* not JSON, not Plate */
+  }
+  return null
+}
 
-  const isHtmlContent = React.useMemo(() => {
-    if (!content) return false;
-    
-    // Check if content is pure HTML document (starts with DOCTYPE or html tag)
-    const isPureHtml = content.trim().startsWith('<!DOCTYPE') || content.trim().startsWith('<html');
-    
-    // For our use case, most content should be treated as markdown (even with HTML tags)
-    // Only treat as HTML if it's a complete HTML document
-    return isPureHtml;
-  }, [content]);
+function looksLikeHtmlDocument(content: string): boolean {
+  const trimmed = content.trim()
+  return trimmed.startsWith('<!DOCTYPE') || trimmed.startsWith('<html')
+}
 
+export async function ContentRenderer({ content, className }: ContentRendererProps) {
   if (!content) {
-    return <div className={className}>No content available</div>;
+    return <div className={className}>No content available</div>
   }
 
-  if (isPlateContent) {
-    try {
-      const plateValue: Value = JSON.parse(content);
-      return <PlatePreview value={plateValue} className={className} />;
-    } catch (error) {
-      console.error('Failed to parse Plate content:', error);
-      // Fallback to markdown
-      return <MarkdownPreview content={content} className={className} />;
-    }
+  // Plate JSON: defer to a client island that lazy-loads the editor on mount.
+  // Non-Plate posts (the common case) never download Plate.
+  const plate = looksLikePlate(content)
+  if (plate) {
+    return <PlatePreviewClient value={plate.value} className={className} />
   }
 
-  if (isHtmlContent) {
-    return <HtmlPreview content={content} className={className} />;
-  }
+  // Pure HTML document, or markdown (most common). Both go through unified
+  // server-side and render as static HTML — no client JS for syntax
+  // highlighting or rendering.
+  const html = looksLikeHtmlDocument(content)
+    ? await renderHtml(content)
+    : await renderMarkdown(content)
 
-  // It's markdown content
-  return <MarkdownPreview content={content} className={className} />;
+  return (
+    <div
+      className={`prose prose-neutral dark:prose-invert max-w-none ${className || ''}`}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  )
 }
 
-export default ContentRenderer;
+export default ContentRenderer
