@@ -29,29 +29,23 @@ export default function Navigation() {
             <div className="hidden md:flex space-x-4">
               <Link
                 href={`/${locale}`}
-                className="transition-colors"
+                className="nav-link transition-colors"
                 style={{ color: 'var(--text-secondary)' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
               >
                 {t('home')}
               </Link>
               <Link
                 href={`/${locale}/posts`}
-                className="transition-colors"
+                className="nav-link transition-colors"
                 style={{ color: 'var(--text-secondary)' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
               >
                 {t('posts')}
               </Link>
               {session && session.user.role === Role.ADMIN && (
                 <Link
                   href={`/${locale}/admin`}
-                  className="transition-colors"
+                  className="nav-link transition-colors"
                   style={{ color: 'var(--text-secondary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                 >
                   {t('admin')}
                 </Link>
