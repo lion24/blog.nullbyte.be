@@ -7,60 +7,67 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Light mode colors with proper contrast ratios */ /* Darker than before for better contrast */
-  --background-secondary: #f9fafb; /* Light gray background */
-  --background-tertiary: #f3f4f6;
-  --border: oklch(0.922 0 0);
-  --border-hover: #d1d5db;
+  /* Light mode — warm-neutral palette tuned for long reading.
+     Page bg sits a touch warmer than surfaces so cards/nav/footer feel
+     gently elevated without needing heavy borders or shadows. */
+  --background: #f7f6f3;            /* page: soft warm off-white */
+  --background-secondary: #fdfcfa;  /* surfaces: nav, footer, cards */
+  --background-tertiary: #f1efe9;   /* recessed: code, blockquote */
+  --border: #e8e6e0;                /* soft warm divider */
+  --border-hover: #d4d1c8;
 
-  /* Text colors with WCAG AA compliance */
-  --text-primary: #111827; /* Very dark gray for main text */
-  --text-secondary: #4b5563; /* Medium gray for secondary text */
-  --text-tertiary: #6b7280; /* Lighter gray for hints */
+  /* Text — dark slate instead of pure black; secondary/tertiary stay
+     warm-neutral to feel cohesive with the page tint. */
+  --text-primary: #1f2024;
+  --text-secondary: #57534e;
+  --text-tertiary: #78736b;
   --text-inverse: #ffffff;
 
-  /* Interactive elements */
-  --primary: oklch(0.205 0 0); /* Blue for primary actions */
-  --primary-hover: #1d4ed8;
-  --primary-focus: #1e40af;
-  --danger: #dc2626;
-  --danger-hover: #b91c1c;
-  --success: #16a34a;
-  --warning: #d97706;
+  /* Interactive — restrained dark slate for primary CTA in light mode.
+     Matches text-primary so dark buttons feel intentional, not loud. */
+  --primary: #1f2024;
+  --primary-hover: #2c2e34;
+  --primary-focus: #3b3e46;
+  --danger: #b91c1c;
+  --danger-hover: #991b1b;
+  --success: #15803d;
+  --warning: #b45309;
 
   /* Tag colors for light theme */
   --tag-background: #d946ef; /* Fuchsia-500 */
   --tag-background-hover: #c026d3; /* Fuchsia-600 */
   --tag-text: #ffffff;
-  --tag-count-background: #6b7280; /* Gray-500 */
+  --tag-count-background: #78736b;
 
   /* Form elements */
-  --input-background: #ffffff;
-  --input-border: #d1d5db;
-  --input-focus-border: #3b82f6;
-  --input-placeholder: #9ca3af;
+  --input-background: #fdfcfa;
+  --input-border: #dcdad3;
+  --input-focus-border: #94a3b8;
+  --input-placeholder: #a8a29e;
 
-  /* Shadows and overlays */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  /* Shadows — warm-tinted, lower spread. Cards lift without feeling heavy. */
+  --shadow-sm: 0 1px 2px 0 rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 2px 4px -1px rgba(28, 25, 23, 0.06), 0 4px 8px -2px rgba(28, 25, 23, 0.04);
+  --shadow-lg: 0 8px 16px -4px rgba(28, 25, 23, 0.08), 0 4px 8px -2px rgba(28, 25, 23, 0.04);
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+
+  /* shadcn tokens aligned to the palette above so popovers/dropdowns
+     match the surface tone instead of jumping to pure white. */
+  --foreground: #1f2024;
+  --card: #fdfcfa;
+  --card-foreground: #1f2024;
+  --popover: #fdfcfa;
+  --popover-foreground: #1f2024;
+  --primary-foreground: #fdfcfa;
+  --secondary: #f1efe9;
+  --secondary-foreground: #1f2024;
+  --muted: #f1efe9;
+  --muted-foreground: #57534e;
+  --accent: #f1efe9;
+  --accent-foreground: #1f2024;
   --destructive: oklch(0.577 0.245 27.325);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --input: #e8e6e0;
+  --ring: #94a3b8;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -78,92 +85,90 @@
   --brand: oklch(0.623 0.214 259.815);
 }
 
-/* Dark mode variables - used when system prefers dark or data-theme="dark" */
+/* Dark mode — layered slate palette.
+   Three elevation tiers (page < surface < elevated) give cards real
+   depth without needing heavy borders or harsh shadows. Cool-neutral
+   slate tones avoid the bluish cast of pure-blue darks and the deadness
+   of pure-gray darks. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    /* Dark mode colors with proper contrast ratios */
-    --background: #0f0f0f; /* Slightly lighter than pure black */
-    --foreground: #f3f4f6; /* Light gray for main text */
-    --background-secondary: #1a1a1a;
-    --background-tertiary: #262626;
-    --border: #374151;
-    --border-hover: #4b5563;
+    /* Layered surfaces */
+    --background: #13161c;            /* L0 page: deep slate, not black */
+    --background-secondary: #1c1f27;  /* L1 surfaces: nav, footer, cards */
+    --background-tertiary: #262a33;   /* L2 elevated: code, hover, recessed */
+    --border: #2a2f3a;                /* low-contrast slate divider */
+    --border-hover: #3a4051;
 
-    /* Text colors with WCAG AA compliance for dark backgrounds */
-    --text-primary: #f9fafb; /* Very light for main text */
-    --text-secondary: #d1d5db; /* Light gray for secondary text */
-    --text-tertiary: #9ca3af; /* Medium gray for hints */
-    --text-inverse: #111827;
+    /* Text — soft off-white instead of stark white; cool grays for muted */
+    --foreground: #e6e8ee;
+    --text-primary: #e6e8ee;
+    --text-secondary: #a8acb6;
+    --text-tertiary: #878d99;
+    --text-inverse: #13161c;
 
-    /* Interactive elements adjusted for dark mode */
-    --primary: #3b82f6; /* Slightly lighter blue */
-    --primary-hover: #60a5fa;
-    --primary-focus: #93bbfc;
-    --danger: #ef4444;
-    --danger-hover: #f87171;
-    --success: #22c55e;
-    --warning: #f59e0b;
+    /* Accent — refined indigo-blue, less acid than blue-500 */
+    --primary: #7891f6;
+    --primary-hover: #93a8f8;
+    --primary-focus: #aebcfa;
+    --danger: #f87171;
+    --danger-hover: #fca5a5;
+    --success: #4ade80;
+    --warning: #fbbf24;
 
-    /* Tag colors for dark theme */
-    --tag-background: #e879f9; /* Fuchsia-400 - lighter for dark theme */
-    --tag-background-hover: #f0abfc; /* Fuchsia-300 */
-    --tag-text: #1f2937; /* Dark text for better contrast on light tag */
-    --tag-count-background: #9ca3af; /* Gray-400 */
+    /* Tag colors — brand fuchsia preserved, slightly less luminous */
+    --tag-background: #e879f9;
+    --tag-background-hover: #f0abfc;
+    --tag-text: #1f2024;
+    --tag-count-background: #878d99;
 
-    /* Form elements for dark mode */
-    --input-background: #1a1a1a;
-    --input-border: #374151;
-    --input-focus-border: #60a5fa;
-    --input-placeholder: #6b7280;
+    /* Form elements */
+    --input-background: #1c1f27;
+    --input-border: #2a2f3a;
+    --input-focus-border: #7891f6;
+    --input-placeholder: #878d99;
 
-    /* Shadows for dark mode */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+    /* Shadows — anchor cards softly; main lift comes from surface tone */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 12px 24px -6px rgba(0, 0, 0, 0.5), 0 4px 8px -2px rgba(0, 0, 0, 0.3);
   }
 }
 
-/* Explicit dark theme override */
+/* Explicit dark theme override (data-theme="dark") — same palette */
 [data-theme="dark"]:root {
-  /* Dark mode colors with proper contrast ratios */
-  --background: #0f0f0f;
-  --foreground: #f3f4f6;
-  --background-secondary: #1a1a1a;
-  --background-tertiary: #262626;
-  --border: #374151;
-  --border-hover: #4b5563;
+  --background: #13161c;
+  --background-secondary: #1c1f27;
+  --background-tertiary: #262a33;
+  --border: #2a2f3a;
+  --border-hover: #3a4051;
 
-  /* Text colors with WCAG AA compliance for dark backgrounds */
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-tertiary: #9ca3af;
-  --text-inverse: #111827;
+  --foreground: #e6e8ee;
+  --text-primary: #e6e8ee;
+  --text-secondary: #a8acb6;
+  --text-tertiary: #878d99;
+  --text-inverse: #13161c;
 
-  /* Interactive elements adjusted for dark mode */
-  --primary: #3b82f6;
-  --primary-hover: #60a5fa;
-  --primary-focus: #93bbfc;
-  --danger: #ef4444;
-  --danger-hover: #f87171;
-  --success: #22c55e;
-  --warning: #f59e0b;
+  --primary: #7891f6;
+  --primary-hover: #93a8f8;
+  --primary-focus: #aebcfa;
+  --danger: #f87171;
+  --danger-hover: #fca5a5;
+  --success: #4ade80;
+  --warning: #fbbf24;
 
-  /* Tag colors for dark theme */
-  --tag-background: #e879f9; /* Fuchsia-400 - lighter for dark theme */
-  --tag-background-hover: #f0abfc; /* Fuchsia-300 */
-  --tag-text: #1f2937; /* Dark text for better contrast on light tag */
-  --tag-count-background: #9ca3af; /* Gray-400 */
+  --tag-background: #e879f9;
+  --tag-background-hover: #f0abfc;
+  --tag-text: #1f2024;
+  --tag-count-background: #878d99;
 
-  /* Form elements for dark mode */
-  --input-background: #1a1a1a;
-  --input-border: #374151;
-  --input-focus-border: #60a5fa;
-  --input-placeholder: #6b7280;
+  --input-background: #1c1f27;
+  --input-border: #2a2f3a;
+  --input-focus-border: #7891f6;
+  --input-placeholder: #878d99;
 
-  /* Shadows for dark mode */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 24px -6px rgba(0, 0, 0, 0.5), 0 4px 8px -2px rgba(0, 0, 0, 0.3);
 }
 
 @theme inline {
@@ -504,10 +509,17 @@ input::placeholder, textarea::placeholder {
   color: var(--input-placeholder);
 }
 
-/* Focus styles for better accessibility */
+/* Focus styles — keyboard-only via :focus-visible. Mouse clicks no
+   longer leave outlines on buttons; keyboard users still get a clear,
+   calm ring. Color comes from --ring so dark mode adapts automatically. */
 *:focus {
-  outline: 2px solid var(--primary);
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--ring);
   outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Link styles */
@@ -643,37 +655,37 @@ button:not(:disabled),
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #13161c;
+  --foreground: #e6e8ee;
+  --card: #1c1f27;
+  --card-foreground: #e6e8ee;
+  --popover: #1c1f27;
+  --popover-foreground: #e6e8ee;
+  --primary: #7891f6;
+  --primary-foreground: #13161c;
+  --secondary: #262a33;
+  --secondary-foreground: #e6e8ee;
+  --muted: #262a33;
+  --muted-foreground: #a8acb6;
+  --accent: #262a33;
+  --accent-foreground: #e6e8ee;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --border: #2a2f3a;
+  --input: #262a33;
+  --ring: #7891f6;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: #1c1f27;
+  --sidebar-foreground: #e6e8ee;
+  --sidebar-primary: #7891f6;
+  --sidebar-primary-foreground: #13161c;
+  --sidebar-accent: #262a33;
+  --sidebar-accent-foreground: #e6e8ee;
+  --sidebar-border: #2a2f3a;
+  --sidebar-ring: #7891f6;
   --highlight: oklch(0.852 0.199 91.936);
   --brand: oklch(0.707 0.165 254.624);
 }
