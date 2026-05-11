@@ -109,7 +109,7 @@ export const VideoElement = withHOC(
             </div>
           </Resizable>
 
-          <Caption style={{ width }} align={align}>
+          <Caption style={{ width: width as React.CSSProperties['width'] }} align={align}>
             <CaptionTextarea
               readOnly={readOnly}
               placeholder="Write a caption..."
