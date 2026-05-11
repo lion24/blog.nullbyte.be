@@ -1,16 +1,9 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "warn",
@@ -19,8 +12,14 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-expressions": "warn",
       "@typescript-eslint/no-require-imports": "warn",
       "react/display-name": "off",
-      "@next/next/no-img-element": "warn"
-    }
+      "@next/next/no-img-element": "warn",
+      // New strict rules from eslint-plugin-react-hooks@6 (pulled in by
+      // eslint-config-next@16). Flagged as warn for now; address in a follow-up.
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/refs": "warn",
+      "react-hooks/immutability": "warn",
+      "react-hooks/use-memo": "warn",
+    },
   },
   {
     ignores: [
