@@ -42,20 +42,20 @@ export default function AdminPage() {
       return
     }
 
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('/api/admin/posts?published=false')
+        const data = await response.json()
+        setPosts(data)
+      } catch (error) {
+        console.error('Failed to fetch posts:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
     fetchPosts()
   }, [session, status, router])
-
-  const fetchPosts = async () => {
-    try {
-      const response = await fetch('/api/admin/posts?published=false')
-      const data = await response.json()
-      setPosts(data)
-    } catch (error) {
-      console.error('Failed to fetch posts:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   if (status === 'loading' || loading) {
     return (

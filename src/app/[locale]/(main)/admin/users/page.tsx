@@ -36,34 +36,34 @@ export default function UsersPage() {
       return
     }
 
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/admin/users')
+        const data = await response.json()
+
+        if (!response.ok) {
+          console.error('Failed to fetch users:', data.error || 'Unknown error')
+          setUsers([])
+          return
+        }
+
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          setUsers(data)
+        } else {
+          console.error('Invalid response format:', data)
+          setUsers([])
+        }
+      } catch (error) {
+        console.error('Failed to fetch users:', error)
+        setUsers([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
     fetchUsers()
   }, [session, status, router])
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('/api/admin/users')
-      const data = await response.json()
-      
-      if (!response.ok) {
-        console.error('Failed to fetch users:', data.error || 'Unknown error')
-        setUsers([])
-        return
-      }
-      
-      // Ensure data is an array
-      if (Array.isArray(data)) {
-        setUsers(data)
-      } else {
-        console.error('Invalid response format:', data)
-        setUsers([])
-      }
-    } catch (error) {
-      console.error('Failed to fetch users:', error)
-      setUsers([])
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const updateUserRole = async (userId: string, newRole: Role) => {
     setUpdating(userId)
