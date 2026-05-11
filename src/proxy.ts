@@ -8,7 +8,7 @@ import { validateOrigin } from './lib/security'
 // Create the i18n middleware
 const intlMiddleware = createIntlMiddleware(routing)
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   
   // Skip middleware for static files, Next.js internals, and metadata routes
