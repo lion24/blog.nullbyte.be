@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useState, useEffect, FormEvent, use, useCallback } from 'react'
+import { useState, useEffect, FormEvent, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
@@ -46,34 +46,6 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     },
   })
 
-  const fetchPost = useCallback(async () => {
-    try {
-      const response = await fetch(`/api/admin/posts/${id}`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch post')
-      }
-      const post: Post = await response.json()
-      
-      setFormData({
-        title: post.title,
-        excerpt: post.excerpt || '',
-        featuredImage: post.featuredImage || '',
-        tags: post.tags.map(t => t.name).join(', '),
-        categories: post.categories.map(c => c.name).join(', '),
-        published: post.published,
-      })
-      
-      // Set markdown content directly - PlateEditor will handle conversion
-      setMarkdownContent(post.content)
-    } catch (error) {
-      console.error('Error fetching post:', error)
-      alert('Failed to load post')
-      router.push('/admin')
-    } finally {
-      setFetchingPost(false)
-    }
-  }, [id, router])
-
   useEffect(() => {
     if (status === 'loading') return
     if (!session) {
@@ -81,8 +53,36 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       return
     }
 
+    const fetchPost = async () => {
+      try {
+        const response = await fetch(`/api/admin/posts/${id}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch post')
+        }
+        const post: Post = await response.json()
+
+        setFormData({
+          title: post.title,
+          excerpt: post.excerpt || '',
+          featuredImage: post.featuredImage || '',
+          tags: post.tags.map(t => t.name).join(', '),
+          categories: post.categories.map(c => c.name).join(', '),
+          published: post.published,
+        })
+
+        // Set markdown content directly - PlateEditor will handle conversion
+        setMarkdownContent(post.content)
+      } catch (error) {
+        console.error('Error fetching post:', error)
+        alert('Failed to load post')
+        router.push('/admin')
+      } finally {
+        setFetchingPost(false)
+      }
+    }
+
     fetchPost()
-  }, [session, status, router, fetchPost])
+  }, [id, session, status, router])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()

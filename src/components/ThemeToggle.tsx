@@ -1,38 +1,38 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useMounted } from '@/hooks/use-mounted'
 
 type Theme = 'light' | 'dark' | 'system'
 
+const getInitialTheme = (): Theme => {
+  if (typeof window === 'undefined') return 'system'
+  return (localStorage.getItem('theme') as Theme | null) ?? 'system'
+}
+
+const subscribeSystemTheme = (callback: () => void) => {
+  if (typeof window === 'undefined') return () => {}
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  mediaQuery.addEventListener('change', callback)
+  return () => mediaQuery.removeEventListener('change', callback)
+}
+
+const getSystemThemeSnapshot = (): 'light' | 'dark' =>
+  window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+
+const getSystemThemeServerSnapshot = (): 'light' | 'dark' => 'light'
+
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('system')
-  const [mounted, setMounted] = useState(false)
-  const [systemTheme, setSystemTheme] = useState<'light' | 'dark'>('light')
+  const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  const mounted = useMounted()
+  const systemTheme = useSyncExternalStore(
+    subscribeSystemTheme,
+    getSystemThemeSnapshot,
+    getSystemThemeServerSnapshot,
+  )
 
   // Get the actual theme (resolving 'system' to light/dark)
   const resolvedTheme = theme === 'system' ? systemTheme : theme
-
-  useEffect(() => {
-    setMounted(true)
-    
-    // Get saved theme from localStorage or default to system
-    const savedTheme = localStorage.getItem('theme') as Theme | null
-    if (savedTheme) {
-      setTheme(savedTheme)
-    }
-
-    // Detect system theme
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    setSystemTheme(mediaQuery.matches ? 'dark' : 'light')
-
-    // Listen for system theme changes
-    const handleChange = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? 'dark' : 'light')
-    }
-    
-    mediaQuery.addEventListener('change', handleChange)
-    return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [])
 
   useEffect(() => {
     if (!mounted) return
