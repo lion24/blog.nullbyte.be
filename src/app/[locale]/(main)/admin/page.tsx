@@ -113,6 +113,25 @@ export default function AdminPage() {
             {t('admin.manageUsers')}
           </Link>
           <Link
+            href={`/${locale}/admin/service-accounts`}
+            className="px-4 py-2 rounded-lg transition-colors"
+            style={{
+              backgroundColor: 'var(--background-tertiary)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border-hover)';
+              e.currentTarget.style.backgroundColor = 'var(--background-secondary)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--border)';
+              e.currentTarget.style.backgroundColor = 'var(--background-tertiary)';
+            }}
+          >
+            {t('admin.manageServiceAccounts')}
+          </Link>
+          <Link
             href={`/${locale}/admin/new`}
             className="px-4 py-2 rounded-lg transition-colors"
             style={{
