@@ -72,15 +72,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   })
 
-  // Bare-domain entry pointing at the default-locale homepage via x-default
-  const root: MetadataRoute.Sitemap = [{
-    url: baseUrl,
-    lastModified: mostRecentPostDate,
-    changeFrequency: 'daily' as const,
-    priority: 1,
-    alternates: { languages: languageAlternates('') },
-  }]
-
   // Homepage - create entry for each locale with alternates
   const homepage: MetadataRoute.Sitemap = locales.map((locale) => ({
     url: `${baseUrl}/${locale}`,
@@ -132,5 +123,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   )
 
-  return [...root, ...homepage, ...postsPage, ...postPages, ...tagPages, ...categoryPages]
+  return [...homepage, ...postsPage, ...postPages, ...tagPages, ...categoryPages]
 }
