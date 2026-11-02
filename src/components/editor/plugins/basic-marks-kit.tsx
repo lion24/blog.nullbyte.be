@@ -1,6 +1,16 @@
 'use client';
 
 import {
+  BoldRules,
+  CodeRules,
+  HighlightRules,
+  ItalicRules,
+  StrikethroughRules,
+  SubscriptRules,
+  SuperscriptRules,
+  UnderlineRules,
+} from '@platejs/basic-nodes';
+import {
   BoldPlugin,
   CodePlugin,
   HighlightPlugin,
@@ -12,28 +22,48 @@ import {
   UnderlinePlugin,
 } from '@platejs/basic-nodes/react';
 
+import { notInCodeBlock } from '@/components/editor/plugins/input-rule-utils';
 import { CodeLeaf } from '@/components/ui/code-node';
 import { HighlightLeaf } from '@/components/ui/highlight-node';
 import { KbdLeaf } from '@/components/ui/kbd-node';
 
+const enabled = notInCodeBlock;
+
 export const BasicMarksKit = [
-  BoldPlugin,
-  ItalicPlugin,
-  UnderlinePlugin,
+  BoldPlugin.configure({
+    inputRules: [BoldRules.markdown({ enabled, variant: '*' })],
+  }),
+  ItalicPlugin.configure({
+    inputRules: [
+      ItalicRules.markdown({ enabled, variant: '*' }),
+      ItalicRules.markdown({ enabled, variant: '_' }),
+    ],
+  }),
+  UnderlinePlugin.configure({
+    inputRules: [UnderlineRules.markdown({ enabled })],
+  }),
   CodePlugin.configure({
+    inputRules: [CodeRules.markdown({ enabled })],
     node: { component: CodeLeaf },
     shortcuts: { toggle: { keys: 'mod+e' } },
   }),
   StrikethroughPlugin.configure({
+    inputRules: [StrikethroughRules.markdown({ enabled })],
     shortcuts: { toggle: { keys: 'mod+shift+x' } },
   }),
   SubscriptPlugin.configure({
+    inputRules: [SubscriptRules.markdown({ enabled })],
     shortcuts: { toggle: { keys: 'mod+comma' } },
   }),
   SuperscriptPlugin.configure({
+    inputRules: [SuperscriptRules.markdown({ enabled })],
     shortcuts: { toggle: { keys: 'mod+period' } },
   }),
   HighlightPlugin.configure({
+    inputRules: [
+      HighlightRules.markdown({ enabled, variant: '==' }),
+      HighlightRules.markdown({ enabled, variant: '≡' }),
+    ],
     node: { component: HighlightLeaf },
     shortcuts: { toggle: { keys: 'mod+shift+h' } },
   }),
