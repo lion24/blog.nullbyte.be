@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
+import LegalPage from '@/components/LegalPage'
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params
@@ -20,8 +21,7 @@ export default async function DataDeletionStatusPage({
   const t = await getTranslations('legal.dataDeletionStatus')
 
   return (
-    <article className="container mx-auto max-w-3xl px-4 py-12 prose prose-neutral dark:prose-invert">
-      <h1>{t('title')}</h1>
+    <LegalPage title={t('title')}>
       <p>{t('body')}</p>
       {code && (
         <p>
@@ -29,6 +29,6 @@ export default async function DataDeletionStatusPage({
         </p>
       )}
       <p>{t.rich('contact', { email: (chunks) => <a href="mailto:sharkonet@protonmail.com">{chunks}</a> })}</p>
-    </article>
+    </LegalPage>
   )
 }

@@ -211,7 +211,7 @@ const en: FullTranslation = {
   },
   legal: {
     common: {
-      lastUpdated: 'Last updated: {date}',
+      lastUpdated: 'Last updated: <time>{date}</time>',
       terms: 'Terms of Service',
       privacy: 'Privacy Policy',
       dataDeletion: 'Delete my data',

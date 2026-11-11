@@ -349,6 +349,8 @@ Heavy, inked and singular: one per page.
 - **Share buttons:** 40px circles with a 2px ink outline and an ink icon; hover and focus fill them with the brand colour (Facebook, Reddit) or ink (X, copy link).
 - **After the article:** tags, then categories (the same links with no lane square, since a category has no lane; this is the only place categories are linked), "More on {topic}" (up to three log-style rows and a link to the topic), then older / newer post side by side, then the back link.
 
+- **Legal pages:** terms, privacy, data deletion and deletion status use the article column without the article-only parts (no breadcrumb, ref line, hunk lines, share buttons or Sections index): the Article title, a "Last updated" line (grotesk 600, ink secondary, the date in mono), a 2px ink rule, then the text in the article's body styles.
+
 ### Named Rules
 **The Hunk Rule.** A hunk line opens a section only when it tells the reader something: position, total and code count, on posts with two or more sections. A one-section post gets no hunk line and no index. The line never grows past one small mono line, and diff colours (+/− green and red) never enter the prose.
 
@@ -381,7 +383,7 @@ Heavy, inked and singular: one per page.
 
 ## Legacy world (being retired)
 
-**Remove as each page migrates.** These pages still render in the previous system ("The Engineer's Notebook": warm paper, Geist, fuchsia tags, soft-shadowed cards): legal pages, auth pages, and admin/editor. The full description lives in git history (`DESIGN.md` at commit `c5dcd2a`). None of its tokens belong in the frontmatter above, and new surfaces must not use them.
+**Remove as each page migrates.** These pages still render in the previous system ("The Engineer's Notebook": warm paper, Geist, fuchsia tags, soft-shadowed cards): auth pages and admin/editor. The full description lives in git history (`DESIGN.md` at commit `c5dcd2a`). None of its tokens belong in the frontmatter above, and new surfaces must not use them.
 
 The tokens those pages still rely on, defined in the upper part of `globals.css`:
 - **Surfaces:** `--background`, `--background-secondary`, `--background-tertiary`, `--border`, `--input-background`, `--input-border`.

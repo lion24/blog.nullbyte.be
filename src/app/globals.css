@@ -1275,6 +1275,11 @@ main:has(> .bl-logpage), main:has(> .bl-article-page) { background: var(--bl-gro
 .bl-share__btn--copy:hover, .bl-share__btn--copy:focus-visible { background: var(--bl-ink); color: var(--bl-ground) !important; }
 .bl-share__btn--copy[data-copied] { background: var(--bl-lane-2); border-color: var(--bl-lane-2); color: var(--bl-on-accent) !important; }
 
+/* Legal pages: the article column without the article-only parts. The header closes on a 2px ink rule like the article byline. */
+.bl-legal__head { padding: clamp(12px, 3vw, 40px) 0 18px; margin-bottom: 32px; border-bottom: 2px solid var(--bl-ink); }
+.bl-legal__head .bl-article-title { margin-bottom: 0 !important; }
+.bl-legal__updated { font-size: 1rem !important; font-weight: 600; line-height: 1.5 !important; color: var(--bl-ink-2); margin: 14px 0 0 !important; }
+.bl-legal__updated time { font-size: 0.9375rem; white-space: nowrap; }
 .bl-article-figure { position: relative; aspect-ratio: 2 / 1; margin: 0 0 32px; border-radius: 6px; overflow: hidden; background: var(--bl-ground-2); }
 
 /* Sections index: sticky margin on wide screens, a collapsible block above the body otherwise. */
