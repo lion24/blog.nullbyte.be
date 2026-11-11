@@ -92,6 +92,9 @@ jobs:
   design:
     name: ci/design-detector
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v4
@@ -106,9 +109,11 @@ jobs:
       #
       # Findings are scored against .impeccable/config.json (committed) and
       # DESIGN.md. Exit codes: 0 = clean (advisories may remain), 1 = scan
-      # failure (a target could not be read), 2 = primary findings — fail
-      # the job either way and let the uploaded JSON say which.
+      # failure (a target could not be read), 2 = primary findings. No
+      # continue-on-error here: a non-zero exit fails this job, and the
+      # later steps below still run (if: always()) to upload and comment.
       - name: Run Impeccable design detector
+        id: detect
         run: npx impeccable@4 detect --json src > impeccable-findings.json
 
       - name: Upload findings
@@ -117,3 +122,24 @@ jobs:
         with:
           name: impeccable-findings
           path: impeccable-findings.json
+
+      # Only PRs have a diff to comment on; a push to main has nowhere to
+      # post an inline comment.
+      - name: Convert findings to rdjson
+        if: always() && github.event_name == 'pull_request'
+        run: node .github/scripts/impeccable-to-rdjson.mjs impeccable-findings.json > impeccable.rdjson.json
+
+      - uses: reviewdog/action-setup@v1
+        if: always() && github.event_name == 'pull_request'
+        with:
+          reviewdog_version: v0.17.0
+
+      # reviewdog's default filter mode ("added") comments only on lines
+      # that are part of this PR's diff, so a finding on code the PR didn't
+      # touch lands in the uploaded JSON but not as a comment. -fail-level=none:
+      # the `detect` step above already decides whether this job fails.
+      - name: Comment findings inline on the PR
+        if: always() && github.event_name == 'pull_request'
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: reviewdog -f=rdjson -name=impeccable -reporter=github-pr-review -fail-level=none < impeccable.rdjson.json
