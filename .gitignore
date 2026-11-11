@@ -45,3 +45,8 @@ next-env.d.ts
 /.chunkhound/*
 
 /src/generated/prisma
+
+# Impeccable skill: the platform engine binary is downloaded and checksum-verified
+# by the launcher on first run, so only the skill sources are committed.
+.claude/skills/impeccable/scripts/bin/
+.github/skills/impeccable/scripts/bin/
