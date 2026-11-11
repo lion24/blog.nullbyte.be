@@ -12,6 +12,11 @@ import { relative, isAbsolute } from 'node:path'
 const inputPath = process.argv[2]
 const root = process.env.GITHUB_WORKSPACE || process.cwd()
 
+// Hidden in the rendered comment, but lets delete-stale-impeccable-comments.js
+// find and remove this job's own comments from an earlier run on the same
+// PR. Keep this literal in sync with that file if either changes.
+const MARKER = '<!-- impeccable-detector -->'
+
 function loadFindings() {
   try {
     const data = JSON.parse(readFileSync(inputPath, 'utf8'))
@@ -32,7 +37,7 @@ function toPath(file) {
 const diagnostics = loadFindings()
   .filter((finding) => toPath(finding.file))
   .map((finding) => {
-    const lines = [`**${finding.name ?? finding.antipattern ?? 'Impeccable finding'}**`]
+    const lines = [MARKER, `**${finding.name ?? finding.antipattern ?? 'Impeccable finding'}**`]
     if (finding.description) lines.push(finding.description)
     if (finding.snippet) lines.push('```\n' + finding.snippet + '\n```')
     if (!finding.advisory) {

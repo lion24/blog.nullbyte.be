@@ -129,6 +129,16 @@ jobs:
         if: always() && github.event_name == 'pull_request'
         run: node .github/scripts/impeccable-to-rdjson.mjs impeccable-findings.json > impeccable.rdjson.json
 
+      # Runs before reviewdog posts this run's comments, so a push that
+      # fixes or re-triggers findings doesn't pile duplicates on top of an
+      # earlier push's comments. Matches by a hidden marker in the comment
+      # body, so it never touches a human reviewer's own comments.
+      - name: Delete this job's previous PR comments
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script-path: .github/scripts/delete-stale-impeccable-comments.js
+
       - uses: reviewdog/action-setup@v1
         if: always() && github.event_name == 'pull_request'
         with:
