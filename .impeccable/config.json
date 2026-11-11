@@ -87,6 +87,24 @@
         ],
         "createdAt": "2026-11-11T09:49:54.105Z",
         "reason": "Agent: sizes the callout's emoji icon glyph inside a 24px button, not text"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#1877f2",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-11-11T12:31:44.758Z",
+        "reason": "Agent: Facebook / Reddit brand fill on the share buttons' hover state (article page)"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "#ff4500",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-11-11T12:31:44.796Z",
+        "reason": "Agent: Facebook / Reddit brand fill on the share buttons' hover state (article page)"
       }
     ]
   }

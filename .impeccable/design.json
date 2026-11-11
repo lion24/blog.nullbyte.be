@@ -184,6 +184,51 @@
           "#edeff1"
         ]
       },
+      "code-bar": {
+        "role": "neutral",
+        "displayName": "Code Bar",
+        "canonical": "#0d1117",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad2",
+          "#e9eff7"
+        ]
+      },
+      "code-bar-ink": {
+        "role": "neutral",
+        "displayName": "Code Bar Ink",
+        "canonical": "#e9edf1",
+        "tonalRamp": [
+          "#090b0e",
+          "#222528",
+          "#3f4246",
+          "#5e6265",
+          "#7f8386",
+          "#a2a5a9",
+          "#c6cacd",
+          "#ebeff2"
+        ]
+      },
+      "code-frame": {
+        "role": "neutral",
+        "displayName": "Code Frame",
+        "canonical": "#0d1117",
+        "tonalRamp": [
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad2",
+          "#e9eff7"
+        ]
+      },
       "ground-dark": {
         "role": "neutral",
         "displayName": "Pale Steel (dark theme)",
@@ -363,6 +408,51 @@
           "#c4cad1",
           "#edeff1"
         ]
+      },
+      "code-bar-dark": {
+        "role": "neutral",
+        "displayName": "Code Bar (dark theme)",
+        "canonical": "#0e0f10",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#242526",
+          "#414243",
+          "#606163",
+          "#818284",
+          "#a4a5a7",
+          "#c8c9cb",
+          "#edeff0"
+        ]
+      },
+      "code-bar-ink-dark": {
+        "role": "neutral",
+        "displayName": "Code Bar Ink (dark theme)",
+        "canonical": "#eaeef3",
+        "tonalRamp": [
+          "#090b0e",
+          "#222529",
+          "#3f4246",
+          "#5e6266",
+          "#7f8387",
+          "#a2a5aa",
+          "#c6c9ce",
+          "#ebeff3"
+        ]
+      },
+      "code-frame-dark": {
+        "role": "neutral",
+        "displayName": "Code Frame (dark theme)",
+        "canonical": "#34363a",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#232529",
+          "#404246",
+          "#5f6166",
+          "#808287",
+          "#a3a5aa",
+          "#c7c9ce",
+          "#eceef3"
+        ]
       }
     },
     "typographyMeta": {
@@ -408,7 +498,27 @@
       },
       "data-sm": {
         "displayName": "Data small",
-        "purpose": "Log-row meta, pill counts and dates."
+        "purpose": "Log-row meta, hunk lines, code toolbar, pill counts and dates."
+      },
+      "article-title": {
+        "displayName": "Article title",
+        "purpose": "The article page's h1 in its commit header, clamp(2.25rem, 4.6vw, 4rem), max 17ch."
+      },
+      "article-body": {
+        "displayName": "Article body",
+        "purpose": "The article's reading column, 1.1875rem / 1.7, max 68ch."
+      },
+      "section-heading": {
+        "displayName": "Section heading",
+        "purpose": "Article h2s under their hunk lines, clamp(1.625rem, 2.6vw, 2.125rem)."
+      },
+      "subsection-heading": {
+        "displayName": "Subsection heading",
+        "purpose": "Article h3s."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Code blocks and inline code in the article; Geist Mono."
       }
     },
     "shadows": [],
@@ -459,6 +569,11 @@
         "name": "md",
         "value": "768px",
         "purpose": "Below: pill row becomes a horizontal scroller, nav hides Home; at and above: 3-column footer."
+      },
+      {
+        "name": "lg",
+        "value": "1100px",
+        "purpose": "At and above: the article's Sections index moves into the sticky margin beside a 760px reading column."
       },
       {
         "name": "fluid",
@@ -523,6 +638,22 @@
       "description": "The log's close: 2px ink rule, footer mark and tagline, link columns, ruled copyright line.",
       "html": "<footer class=\"ds-footer\"><div class=\"ds-footer-grid\"><div><p class=\"ds-footer-mark\">NullByte</p><p class=\"ds-footer-tagline\">Tutorials and engineering insights from things actually built.</p></div><div><h2 class=\"ds-footer-heading\">Quick Links</h2><ul class=\"ds-footer-links\"><li><a class=\"ds-footer-link\" href=\"#\">Home</a></li><li><a class=\"ds-footer-link\" href=\"#\">All posts</a></li></ul></div></div><div class=\"ds-footer-base\">© 2026 NullByte</div></footer>",
       "css": ".ds-footer { background: var(--bl-ground, #e9edf1); color: var(--bl-ink, #0d1117); border-top: 2px solid var(--bl-ink, #0d1117); font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; padding: 0 24px; } .ds-footer-grid { display: grid; gap: 32px; grid-template-columns: 2fr 1fr; padding: 48px 0 28px; } .ds-footer-mark { font-size: clamp(2.25rem, 4vw, 3.25rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin: 0 0 14px; } .ds-footer-tagline { font-size: 1rem; line-height: 1.5; color: var(--bl-ink-2, #363d48); max-width: 44ch; margin: 0; } .ds-footer-heading { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bl-ink-3, #555e6b); margin: 0 0 12px; } .ds-footer-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; } .ds-footer-link { font-size: 1rem; font-weight: 600; color: var(--bl-ink-2, #363d48); text-decoration: none; } .ds-footer-link:hover { color: var(--bl-ink, #0d1117); text-decoration: underline; text-underline-offset: 0.15em; } .ds-footer-link:focus-visible { outline: 2px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; border-radius: 4px; } .ds-footer-base { border-top: 2px solid var(--bl-ink, #0d1117); padding: 16px 0 24px; font-size: 0.875rem; color: var(--bl-ink-3, #555e6b); }"
+    },
+    {
+      "name": "Code Toolbar",
+      "kind": "custom",
+      "refersTo": "code-toolbar",
+      "description": "Article code block: language label and copy button over Shiki's dark body; stays dark in dark mode.",
+      "html": "<div class=\"ds-code\"><div class=\"ds-code__bar\"><span>ts</span><button type=\"button\" class=\"ds-code__copy\">Copy</button></div><pre class=\"ds-code__pre\"><code>export const revalidate = 300</code></pre></div>",
+      "css": ".ds-code { max-width: 560px; border: 2px solid var(--bl-code-frame, #0d1117); border-radius: 8px; overflow: hidden; } .ds-code__bar { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding: 5px 6px 5px 14px; background: var(--bl-code-bar, #0d1117); color: var(--bl-code-bar-ink, #e9edf1); font: 700 0.75rem var(--font-geist-mono, 'Geist Mono', ui-monospace, monospace); } .ds-code__copy { font: inherit; color: var(--bl-code-bar-ink, #e9edf1); background: transparent; border: 2px solid color-mix(in srgb, var(--bl-code-bar-ink, #e9edf1) 45%, transparent); border-radius: 6px; padding: 3px 10px; cursor: pointer; transition: background-color 0.18s ease-out, color 0.18s ease-out; } .ds-code__copy:hover { background: var(--bl-code-bar-ink, #e9edf1); color: var(--bl-code-bar, #0d1117); } .ds-code__copy:focus-visible { outline: 3px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; } .ds-code__pre { margin: 0; padding: 16px; background: #24292e; color: #e1e4e8; font: 400 0.875rem/1.7 var(--font-geist-mono, 'Geist Mono', ui-monospace, monospace); overflow-x: auto; }"
+    },
+    {
+      "name": "Hunk Line + Section Heading",
+      "kind": "custom",
+      "refersTo": "hunk-line",
+      "description": "Article section opener: numbered mono hunk line with the section's code count, over a section heading with a hover/focus self-link.",
+      "html": "<div class=\"ds-hunk-wrap\"><p class=\"ds-hunk\">@@ 02 / 04 · 1 code block @@</p><h2 class=\"ds-section\" id=\"ds-s2\">middleware.ts is now proxy.ts<a class=\"ds-anchor\" href=\"#ds-s2\" aria-label=\"Link to this section\">#</a></h2></div>",
+      "css": ".ds-hunk-wrap { max-width: 640px; font-family: var(--font-display, 'Schibsted Grotesk', system-ui, sans-serif); color: var(--bl-ink, #0d1117); } .ds-hunk { display: flex; align-items: center; gap: 0.6em; margin: 0 0 0.5em; font: 700 0.8125rem var(--font-geist-mono, 'Geist Mono', ui-monospace, monospace); font-variant-numeric: tabular-nums; color: var(--bl-ink-2, #363d48); } .ds-hunk::before { content: ''; width: 10px; height: 10px; border-radius: 2px; background: var(--bl-lane-2, #1b8a4b); } .ds-section { margin: 0; font-size: 2.125rem; font-weight: 800; letter-spacing: -0.025em; line-height: 1.15; } .ds-anchor { margin-left: 0.3em; color: var(--bl-ink-3, #555e6b); text-decoration: none; opacity: 0; transition: opacity 0.15s ease-out; } .ds-section:hover .ds-anchor, .ds-anchor:focus-visible { opacity: 1; } .ds-anchor:focus-visible { outline: 3px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; }"
     }
   ],
   "narrative": {
@@ -554,7 +685,7 @@
       },
       {
         "name": "The Data Line Rule",
-        "body": "Geist Mono carries data: hashes, dates, counts and the units that belong to them. Titles, excerpts, nav, footer and topic links are always Schibsted Grotesk, even when they sit inside a mono line (topic links reset the family).",
+        "body": "Geist Mono carries data and code: hashes, dates, counts and the units that belong to them, plus code blocks and inline code. Titles, excerpts, nav, footer and topic links are always Schibsted Grotesk, even when they sit inside a mono line (topic links reset the family).",
         "section": "typography"
       },
       {
@@ -564,13 +695,23 @@
       },
       {
         "name": "The Class Selector Rule",
-        "body": "`globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose.",
+        "body": "`globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose. The same file's global `body` and `code, pre` rules name `--font-sans` / `--font-mono`, which `@theme inline` never emits, so those declarations are dead: name `--font-display` and `--font-geist-mono` directly.",
         "section": "typography"
       },
       {
         "name": "The Flat Log Rule",
         "body": "No cards, no shadows, no rounded panels. If content needs separating, use a 2px ink rule; if it needs grouping, put it on the log.",
         "section": "elevation"
+      },
+      {
+        "name": "The Hunk Rule",
+        "body": "A hunk line opens a section only when it tells the reader something: position, total and code count, on posts with two or more sections. A one-section post gets no hunk line and no index. The line never grows past one small mono line, and diff colours (+/− green and red) never enter the prose.",
+        "section": "components"
+      },
+      {
+        "name": "The One Title Rule",
+        "body": "The commit header owns the page's only h1. A body h1 that repeats the post title is dropped; any other body h1 is demoted to h2 and becomes a hunk section.",
+        "section": "components"
       },
       {
         "name": "The Draw Once Rule",
@@ -590,7 +731,8 @@
       "**Do** keep Geist Mono to hashes, dates and counts, with tabular numerals.",
       "**Do** keep keyboard focus cobalt: the world remaps `--ring` to the accent, so links take the global 2px outline and the branch pill and primary button take a 3px outline.",
       "**Do** style world elements through their own class selectors, since the global element rules outrank utilities.",
-      "**Do** honour reduced motion: no rail draw, no view transition, no rail, pill or button transitions."
+      "**Do** honour reduced motion: no rail draw, no view transition, no rail, pill or button transitions.",
+      "**Do** keep the article's reading column calm: Article body at a 68ch measure; the world shows in the commit header, hunk lines, rules, code and links."
     ],
     "donts": [
       "**Don't** add cards, shadows or rounded panels to this world.",

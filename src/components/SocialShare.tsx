@@ -40,63 +40,45 @@ export default function SocialShare({ url, title, translations }: SocialSharePro
     }
   };
 
-  const buttonClass =
-    'flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 hover:scale-110';
-
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-        {translations.share}
-      </span>
-      <div className="flex items-center gap-2">
-        {/* Facebook */}
+    <div className="bl-share">
+      <span className="bl-share__label">{translations.share}</span>
+      <div className="bl-share__list">
         <a
           href={shareUrls.facebook}
           target="_blank"
           rel="noopener noreferrer"
-          className={buttonClass}
-          style={{ backgroundColor: '#1877F2' }}
+          className="bl-share__btn bl-share__btn--facebook"
           aria-label={translations.shareOnFacebook}
         >
-          <FontAwesomeIcon icon={faFacebook} className="text-white text-lg" />
+          <FontAwesomeIcon icon={faFacebook} />
         </a>
-
-        {/* X (Twitter) */}
         <a
           href={shareUrls.twitter}
           target="_blank"
           rel="noopener noreferrer"
-          className={buttonClass}
-          style={{ backgroundColor: '#000000' }}
+          className="bl-share__btn bl-share__btn--x"
           aria-label={translations.shareOnX}
         >
-          <FontAwesomeIcon icon={faXTwitter} className="text-white text-lg" />
+          <FontAwesomeIcon icon={faXTwitter} />
         </a>
-
-        {/* Reddit */}
         <a
           href={shareUrls.reddit}
           target="_blank"
           rel="noopener noreferrer"
-          className={buttonClass}
-          style={{ backgroundColor: '#FF4500' }}
+          className="bl-share__btn bl-share__btn--reddit"
           aria-label={translations.shareOnReddit}
         >
-          <FontAwesomeIcon icon={faReddit} className="text-white text-lg" />
+          <FontAwesomeIcon icon={faReddit} />
         </a>
-
-        {/* Copy Link */}
         <button
+          type="button"
           onClick={copyToClipboard}
-          className={buttonClass}
-          style={{ backgroundColor: copied ? 'var(--success)' : 'var(--background-secondary)' }}
+          className="bl-share__btn bl-share__btn--copy"
+          data-copied={copied ? 'true' : undefined}
           aria-label={translations.copyLink}
         >
-          <FontAwesomeIcon
-            icon={copied ? faCheck : faLink}
-            className="text-lg"
-            style={{ color: copied ? 'var(--text-inverse)' : 'var(--text-primary)' }}
-          />
+          <FontAwesomeIcon icon={copied ? faCheck : faLink} />
         </button>
       </div>
     </div>
