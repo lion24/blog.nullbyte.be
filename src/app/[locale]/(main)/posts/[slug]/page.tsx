@@ -53,7 +53,7 @@ type Post = {
     name: string | null
   }
   tags: Array<{ id: string; name: string; slug: string }>
-  categories: Array<{ id: string; name: string }>
+  categories: Array<{ id: string; name: string; slug: string }>
 }
 
 async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -163,7 +163,7 @@ export default async function PostPage({ params }: Props) {
         <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{post.title}</h1>
 
         <div className="flex items-center justify-between flex-wrap gap-4 text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <span>{t('posts.byAuthor', { author: post.author.name || t('admin.anonymous') })}</span>
             <span>•</span>
             <time dateTime={post.createdAt}>{new Date(post.createdAt).toLocaleDateString(locale)}</time>
@@ -173,19 +173,19 @@ export default async function PostPage({ params }: Props) {
             <ViewCounter postId={post.id} initialViews={post.views} />
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             {post.categories.map((category) => (
-              <span
+              <Link
                 key={category.id}
-                className="px-3 py-1 rounded-full text-xs"
+                href={`/${locale}/categories/${category.slug}`}
+                className="post-card-category px-3 py-1 rounded-full text-xs font-medium"
                 style={{
                   backgroundColor: 'var(--primary)',
                   color: 'var(--text-inverse)',
-                  opacity: 0.9
                 }}
               >
                 {category.name}
-              </span>
+              </Link>
             ))}
           </div>
         </div>
@@ -226,9 +226,9 @@ export default async function PostPage({ params }: Props) {
             <InteractiveLink
               key={tag.id}
               href={`/${locale}/tags/${tag.slug}`}
-              className="text-sm transition-colors"
-              baseColor="var(--text-tertiary)"
-              hoverColor="var(--text-secondary)"
+              className="text-sm font-bold transition-colors hover:underline"
+              baseColor="var(--tag-background)"
+              hoverColor="var(--tag-background-hover)"
             >
               #{tag.name}
             </InteractiveLink>

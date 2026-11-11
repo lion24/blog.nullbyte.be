@@ -107,44 +107,49 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">
+        <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
           {t('posts.taggedWith', { tag: tag.name })}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p style={{ color: 'var(--text-secondary)' }}>
           {t('posts.foundCount', { count })}
         </p>
       </div>
 
       <div className="space-y-6">
         {posts.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+          <p className="text-center py-8" style={{ color: 'var(--text-tertiary)' }}>
             {t('posts.noPostsWithTag')}
           </p>
         ) : (
           posts.map((post) => (
             <article
               key={post.id}
-              className="border-b border-gray-200 dark:border-gray-700 pb-6"
+              className="pb-6"
+              style={{ borderBottom: '1px solid var(--border)' }}
             >
-              <Link href={`/${locale}/posts/${post.slug}`}>
-                <h2 className="text-2xl font-semibold mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              <h2 className="text-2xl font-semibold mb-2">
+                <Link
+                  href={`/${locale}/posts/${post.slug}`}
+                  className="post-card-title-link transition-colors"
+                  style={{ color: 'var(--text-primary)' }}
+                >
                   {post.title}
-                </h2>
-              </Link>
+                </Link>
+              </h2>
 
               {post.excerpt && (
-                <p className="text-gray-600 dark:text-gray-400 mb-3">
+                <p className="mb-3" style={{ color: 'var(--text-secondary)' }}>
                   {post.excerpt}
                 </p>
               )}
 
-              <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style={{ color: 'var(--text-tertiary)' }}>
                 <span>
                   {t('posts.byAuthor', { author: post.author.name || post.author.email || t('admin.anonymous') })}
                 </span>
                 <span>•</span>
                 <time dateTime={post.createdAt}>
-                  {new Date(post.createdAt).toLocaleDateString('en-US', {
+                  {new Date(post.createdAt).toLocaleDateString(locale, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
@@ -153,18 +158,16 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
               </div>
 
               {post.tags.length > 0 && (
-                <div className="flex gap-2 mt-3">
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3">
                   {post.tags.map((t) => (
                     <Link
                       key={t.id}
                       href={`/${locale}/tags/${t.slug}`}
-                      className={`text-xs px-2 py-1 rounded-md transition-colors ${
-                        t.slug === tag.slug
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
-                      }`}
+                      aria-current={t.slug === tag.slug ? 'page' : undefined}
+                      className={`post-card-tag text-xs font-bold transition-colors hover:underline ${t.slug === tag.slug ? 'underline' : ''}`}
+                      style={{ color: 'var(--tag-background)' }}
                     >
-                      {t.name}
+                      #{t.name}
                     </Link>
                   ))}
                 </div>
@@ -177,7 +180,8 @@ export default async function TagPage({ params }: { params: Promise<{ slug: stri
       <div className="mt-8">
         <Link
           href={`/${locale}/posts`}
-          className="text-blue-600 dark:text-blue-400 hover:underline"
+          className="post-card-readmore hover:underline"
+          style={{ color: 'var(--primary)' }}
         >
           {t('common.backToAllPosts')}
         </Link>

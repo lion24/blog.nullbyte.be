@@ -1,0 +1,289 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-11T00:00:00Z",
+  "title": "Design System: NullByte",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "primary",
+        "displayName": "Ink",
+        "canonical": "#1f2024",
+        "tonalRamp": [
+          "#0e0f11",
+          "#1f2024",
+          "#2c2e34",
+          "#3b3e46",
+          "#5a5d66",
+          "#80838b",
+          "#b4b6bc",
+          "#e6e7ea"
+        ]
+      },
+      "night-indigo": {
+        "role": "primary",
+        "displayName": "Night Indigo (dark-theme primary)",
+        "canonical": "#7891f6",
+        "tonalRamp": [
+          "#1e2a5c",
+          "#2f3f8a",
+          "#4a5fc4",
+          "#6178e6",
+          "#7891f6",
+          "#93a8f8",
+          "#aebcfa",
+          "#dde3fd"
+        ]
+      },
+      "margin-fuchsia": {
+        "role": "secondary",
+        "displayName": "Margin Fuchsia (tags only)",
+        "canonical": "#a21caf",
+        "tonalRamp": [
+          "#4a044e",
+          "#701a75",
+          "#a21caf",
+          "#c026d3",
+          "#d946ef",
+          "#e879f9",
+          "#f0abfc",
+          "#fae8ff"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#f7f6f3",
+        "tonalRamp": [
+          "#57534e",
+          "#6e6961",
+          "#a8a29e",
+          "#d4d1c8",
+          "#e8e6e0",
+          "#f1efe9",
+          "#f7f6f3",
+          "#fdfcfa"
+        ]
+      },
+      "slate-page": {
+        "role": "neutral",
+        "displayName": "Slate Page (dark L0)",
+        "canonical": "#13161c",
+        "tonalRamp": [
+          "#0b0d11",
+          "#13161c",
+          "#1c1f27",
+          "#262a33",
+          "#2a2f3a",
+          "#3a4051",
+          "#878d99",
+          "#e6e8ee"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Home hero headline only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Post titles and section headings (h1 2.25rem → h3 1.5rem, weight 600)."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Post-card titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Article prose; 1.8 paragraph line-height inside a max-w-4xl column."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Category chips, dates, reading time; tags at weight 700."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Code blocks and inline code in Geist Mono."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-sm",
+        "value": "0 1px 2px 0 rgba(28, 25, 23, 0.04)",
+        "purpose": "Rest: nav bar and post cards. Dark: 0 1px 2px 0 rgba(0,0,0,0.4)."
+      },
+      {
+        "name": "shadow-md",
+        "value": "0 2px 4px -1px rgba(28, 25, 23, 0.06), 0 4px 8px -2px rgba(28, 25, 23, 0.04)",
+        "purpose": "Post-card hover lift only."
+      },
+      {
+        "name": "shadow-lg",
+        "value": "0 8px 16px -4px rgba(28, 25, 23, 0.08), 0 4px 8px -2px rgba(28, 25, 23, 0.04)",
+        "purpose": "Hero call-to-action buttons."
+      }
+    ],
+    "motion": [
+      {
+        "name": "link-color",
+        "value": "color 0.15s ease",
+        "purpose": "Link color change on hover."
+      },
+      {
+        "name": "card-lift",
+        "value": "box-shadow 0.2s ease, border-color 0.2s ease",
+        "purpose": "Post-card hover lift."
+      },
+      {
+        "name": "chip-pop",
+        "value": "opacity 0.2s ease, transform 0.2s ease",
+        "purpose": "Category chip hover (scale 1.05, opacity 0.9 → 1)."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default action. Ink by day, indigo by night.",
+      "html": "<button class=\"ds-btn-primary\">Publish post</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 8px 16px; border: none; border-radius: 8px; background: var(--primary, #1f2024); color: var(--primary-foreground, #fdfcfa); font: 500 0.875rem/1 var(--font-sans, Geist, system-ui, sans-serif); cursor: pointer; transition: background-color 0.15s ease; } .ds-btn-primary:hover { background: var(--primary-hover, #2c2e34); } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quiet alternative action on a recessed fill.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; height: 36px; padding: 8px 16px; border: 1px solid var(--border, #e8e6e0); border-radius: 8px; background: var(--background-tertiary, #f1efe9); color: var(--text-primary, #1f2024); font: 500 0.875rem/1 var(--font-sans, Geist, system-ui, sans-serif); cursor: pointer; transition: background-color 0.15s ease; } .ds-btn-secondary:hover { background: var(--border, #e8e6e0); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; }"
+    },
+    {
+      "name": "Hero CTA",
+      "kind": "button",
+      "refersTo": "button-cta",
+      "description": "Larger raised call-to-action used in the home hero.",
+      "html": "<a class=\"ds-btn-cta\" href=\"#\">All Posts</a>",
+      "css": ".ds-btn-cta { display: inline-block; padding: 12px 24px; border-radius: 10px; background: var(--primary, #1f2024); color: var(--text-inverse, #ffffff); font: 500 1rem/1.5 var(--font-sans, Geist, system-ui, sans-serif); text-decoration: none; box-shadow: var(--shadow-lg, 0 8px 16px -4px rgba(28,25,23,0.08), 0 4px 8px -2px rgba(28,25,23,0.04)); transition: background-color 0.2s ease; } .ds-btn-cta:hover { background: var(--primary-hover, #2c2e34); } .ds-btn-cta:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Single-line field on the surface tone.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Search posts…\" />",
+      "css": ".ds-input { height: 36px; width: 280px; padding: 4px 12px; border: 1px solid var(--input-border, #dcdad3); border-radius: 8px; background: var(--input-background, #fdfcfa); color: var(--text-primary, #1f2024); font: 400 0.875rem/1.4 var(--font-sans, Geist, system-ui, sans-serif); transition: border-color 0.15s ease, box-shadow 0.15s ease; } .ds-input::placeholder { color: var(--input-placeholder, #a8a29e); } .ds-input:focus-visible { outline: none; border-color: var(--ring, #94a3b8); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #94a3b8) 50%, transparent); }"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "nav-bar",
+      "description": "64px surface bar: wordmark, links, utilities.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-brand\" href=\"#\">NullByte</a><a class=\"ds-nav-link\" href=\"#\">Home</a><a class=\"ds-nav-link\" href=\"#\">Posts</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 16px; height: 64px; padding: 0 16px; background: var(--background-secondary, #fdfcfa); border-bottom: 1px solid var(--border, #e8e6e0); box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(28,25,23,0.04)); font-family: var(--font-sans, Geist, system-ui, sans-serif); } .ds-nav-brand { margin-right: 16px; font-size: 1.25rem; font-weight: 700; color: var(--text-primary, #1f2024); text-decoration: none; } .ds-nav-link { color: var(--text-secondary, #57534e); text-decoration: none; transition: color 0.15s ease; } .ds-nav-link:hover { color: var(--text-primary, #1f2024); } .ds-nav-link:focus-visible, .ds-nav-brand:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; border-radius: 2px; }"
+    },
+    {
+      "name": "Category Chip",
+      "kind": "chip",
+      "refersTo": "chip-category",
+      "description": "Pill-shaped category link at the top of a post card.",
+      "html": "<a class=\"ds-chip-category\" href=\"#\">Next.js</a>",
+      "css": ".ds-chip-category { display: inline-block; padding: 4px 10px; border-radius: 9999px; background: var(--primary, #1f2024); color: var(--text-inverse, #ffffff); font: 500 0.75rem/1.4 var(--font-sans, Geist, system-ui, sans-serif); text-decoration: none; opacity: 0.9; transition: opacity 0.2s ease, transform 0.2s ease; } .ds-chip-category:hover { opacity: 1; transform: scale(1.05); } .ds-chip-category:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; }"
+    },
+    {
+      "name": "Tag Link",
+      "kind": "chip",
+      "refersTo": "link-tag",
+      "description": "The fuchsia margin mark: bold #tag text, the only saturated element.",
+      "html": "<span class=\"ds-tags\"><a class=\"ds-tag\" href=\"#\">#prisma</a><a class=\"ds-tag\" href=\"#\">#i18n</a><span class=\"ds-tag-more\">+2</span></span>",
+      "css": ".ds-tags { display: inline-flex; gap: 8px; font: 700 0.75rem/1.4 var(--font-sans, Geist, system-ui, sans-serif); } .ds-tag { color: var(--tag-background, #a21caf); text-decoration: none; transition: color 0.15s ease; } .ds-tag:hover { color: var(--tag-background-hover, #86198f); text-decoration: underline; } .ds-tag:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; border-radius: 2px; } .ds-tag-more { color: var(--tag-background, #a21caf); }"
+    },
+    {
+      "name": "Post Card",
+      "kind": "card",
+      "refersTo": "card-post",
+      "description": "Listing card: categories, title, excerpt, ruled meta footer with tags and Read link.",
+      "html": "<article class=\"ds-card\"><a class=\"ds-card-chip\" href=\"#\">Next.js</a><h3 class=\"ds-card-title\"><a href=\"#\">Upgrading to Next.js 16 without breaking i18n</a></h3><p class=\"ds-card-excerpt\">What actually changed in the App Router, and the three fixes this blog needed to keep both locales rendering.</p><div class=\"ds-card-meta\"><span>Nov 11, 2026 • 8 min read</span><div class=\"ds-card-foot\"><a class=\"ds-card-tag\" href=\"#\">#nextjs</a><a class=\"ds-card-read\" href=\"#\">Read →</a></div></div></article>",
+      "css": ".ds-card { display: flex; flex-direction: column; max-width: 360px; padding: 24px; border: 1px solid var(--border, #e8e6e0); border-radius: 8px; background: var(--background-secondary, #fdfcfa); box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(28,25,23,0.04)); font-family: var(--font-sans, Geist, system-ui, sans-serif); transition: box-shadow 0.2s ease, border-color 0.2s ease; } .ds-card:hover { box-shadow: var(--shadow-md, 0 2px 4px -1px rgba(28,25,23,0.06), 0 4px 8px -2px rgba(28,25,23,0.04)); border-color: var(--border-hover, #d4d1c8); } .ds-card-chip { align-self: flex-start; margin-bottom: 12px; padding: 4px 10px; border-radius: 9999px; background: var(--primary, #1f2024); color: var(--text-inverse, #ffffff); font-size: 0.75rem; font-weight: 500; text-decoration: none; } .ds-card-title { margin: 0 0 12px; font-size: 1.25rem; font-weight: 700; line-height: 1.25; } .ds-card-title a { color: var(--text-primary, #1f2024); text-decoration: none; } .ds-card-title a:hover { color: var(--primary, #1f2024); text-decoration: underline; } .ds-card-excerpt { margin: 0 0 16px; font-size: 0.875rem; line-height: 1.625; color: var(--text-secondary, #57534e); } .ds-card-meta { padding-top: 16px; border-top: 1px solid var(--border, #e8e6e0); font-size: 0.75rem; color: var(--text-tertiary, #6e6961); } .ds-card-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; } .ds-card-tag { font-weight: 700; color: var(--tag-background, #a21caf); text-decoration: none; } .ds-card-read { font-size: 0.875rem; font-weight: 500; color: var(--primary, #1f2024); text-decoration: none; } .ds-card-read:hover { color: var(--primary-hover, #2c2e34); } .ds-card a:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; border-radius: 2px; }"
+    },
+    {
+      "name": "Code Block",
+      "kind": "custom",
+      "refersTo": "code",
+      "description": "Signature recessed code surface with inline code lozenge.",
+      "html": "<div class=\"ds-code-wrap\"><p class=\"ds-code-p\">Run <code class=\"ds-code-inline\">prisma migrate deploy</code> before the build:</p><pre class=\"ds-code-block\"><code>\"vercel-build\": \"prisma generate &amp;&amp; prisma migrate deploy &amp;&amp; next build\"</code></pre></div>",
+      "css": ".ds-code-wrap { max-width: 560px; font-family: var(--font-sans, Geist, system-ui, sans-serif); color: var(--text-primary, #1f2024); } .ds-code-p { margin: 0 0 12px; line-height: 1.8; } .ds-code-inline { padding: 2px 6px; border: 1px solid var(--border, #e8e6e0); border-radius: 4px; background: var(--background-tertiary, #f1efe9); font: 400 0.875em var(--font-mono, 'Geist Mono', 'SF Mono', Monaco, monospace); white-space: nowrap; } .ds-code-block { margin: 0; padding: 16px; overflow-x: auto; border: 1px solid var(--border, #e8e6e0); border-radius: 8px; background: var(--background-tertiary, #f1efe9); font: 400 0.875rem/1.7 var(--font-mono, 'Geist Mono', 'SF Mono', Monaco, monospace); white-space: pre; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Engineer's Notebook",
+    "overview": "NullByte reads like a well-kept engineering notebook: warm paper, calm ink, and code given the same care as prose. The system exists to carry long, technical, hands-on tutorials, so almost everything recedes. Surfaces are tonal rather than outlined. Type is a single sans family (Geist) with its mono sibling for code. Color is held back until it means something.\n\nThe notebook has two lighting conditions. By day (light theme), it is warm off-white paper with dark-slate ink, and the primary action *is* the ink. By night (dark theme), it is layered slate with moonlight text, and a refined indigo takes over as the accent. Both themes share one grammar: page < surface < recessed, soft rules instead of hard borders, and shadows that only whisper.\n\nOne mark breaks the restraint on purpose. The fuchsia `#tag` is the margin annotation: the one saturated note on the page. It lets readers jump sideways to related work.",
+    "keyCharacteristics": [
+      "Warm-neutral paper (light) / layered cool slate (dark), never pure white or pure black.",
+      "Depth through surface tone first, soft shadow second.",
+      "Ink-as-primary in light mode; indigo-as-primary in dark mode.",
+      "A single accent of fuchsia, reserved for tags.",
+      "Reading comfort is the deciding factor: generous line-height (1.8 for paragraphs), a capped article width (`max-w-4xl`).",
+      "Code is a first-class surface: recessed background, soft rule, Geist Mono."
+    ],
+    "rules": [
+      {
+        "name": "The Two Lights Rule",
+        "body": "Primary means *ink* by day and *indigo* by night. Always use `var(--primary)`; never hard-code either hex in a component.",
+        "section": "colors"
+      },
+      {
+        "name": "The Margin Mark Rule",
+        "body": "Fuchsia belongs to tags and nothing else. A second fuchsia element on a screen dilutes the one thing it signals.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Pure Extremes Rule",
+        "body": "No `#ffffff` page or `#000000` text in either theme. Paper and slate are the floor and the ceiling.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Family Rule",
+        "body": "Geist and Geist Mono only. Hierarchy is weight and scale, never a second display face.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tone Before Shadow Rule",
+        "body": "Reach for a surface tier before reaching for a shadow. A shadow appears at rest only as a whisper (`shadow-sm`) and grows only in response to hover.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do drive every color from CSS custom properties (`var(--primary)`, `var(--background-secondary)` …) so both themes stay in sync.",
+      "Do express depth with the surface tiers (paper → surface → recessed / L0 → L1 → L2) before adding any shadow.",
+      "Do keep keyboard focus on `:focus-visible` with the `--ring` color, 2px, 2px offset.",
+      "Do cap article content at the `max-w-4xl` column with 1.8 paragraph line-height.",
+      "Do treat code as first-class: recessed surface, soft rule, Geist Mono."
+    ],
+    "donts": [
+      "Don't hard-code accent hexes or reach for raw Tailwind palette classes (`gray-*`, `blue-*`). Use the tokens; they already switch with the theme, so `dark:` overrides should be rare.",
+      "Don't use fuchsia for anything but tags.",
+      "Don't use pure `#ffffff` / `#000000` surfaces or text.",
+      "Don't introduce a second typeface. Geist and Geist Mono carry the whole system.",
+      "Don't put structural shadows on resting elements beyond `shadow-sm`. Lift is a hover response."
+    ]
+  }
+}
