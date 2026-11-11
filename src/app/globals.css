@@ -718,54 +718,6 @@ button:not(:disabled),
   color: var(--primary-hover) !important;
 }
 
-/* PostCard hover styles. Replaces per-element inline JS handlers so the
-   component can be server-rendered with no client JS. The base values stay
-   as inline `style` props on the elements; these rules only override on
-   :hover. CSS custom properties from :root supply the colors. */
-.post-card {
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
-}
-/* !important is needed here because the base box-shadow and border live in
-   the JSX inline `style` prop, which beats normal selector specificity. The
-   simpler long-term fix is to move those base values into this rule too;
-   doing it now would touch every PostCard render path and is out of scope. */
-.post-card:hover {
-  box-shadow: var(--shadow-md) !important;
-  border-color: var(--border-hover) !important;
-}
-
-/* Card title: the documented Title role (DESIGN.md: 700, 1.25rem, tight).
-   A class selector so it outranks the global h2/h3 rules whichever level the
-   card renders at (Tailwind utilities on the element would lose to them). */
-.post-card-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  text-wrap: balance;
-}
-
-.post-card-category {
-  opacity: 0.9;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.post-card-category:hover {
-  opacity: 1;
-  transform: scale(1.05);
-}
-
-.post-card-title-link:hover {
-  color: var(--primary) !important;
-}
-
-.post-card-tag:hover {
-  color: var(--tag-background-hover) !important;
-}
-
-.post-card-readmore:hover {
-  color: var(--primary-hover) !important;
-}
-
 /* Footer / Navigation link hover. Single rule, used everywhere we had inline
    onMouseEnter/Leave color flips. The base color stays as inline `style`
    on each link; this only kicks in on :hover. */
@@ -911,10 +863,10 @@ button:not(:disabled),
   color: var(--bl-ink);
   font-family: var(--font-display), system-ui, sans-serif;
 }
-.bl-chrome, .bl-home, .bl-article-page { --ring: var(--bl-accent); }
+.bl-chrome, .bl-logpage, .bl-article-page { --ring: var(--bl-accent); }
 .bl-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .bl-chrome ::selection,
-.bl-home ::selection,
+.bl-logpage ::selection,
 .bl-article-page ::selection { background: var(--bl-accent); color: var(--bl-on-accent); }
 
 .bl-wrap {
@@ -955,9 +907,9 @@ button:not(:disabled),
   .bl-nav__tools .nav-auth-button-primary { padding-inline: 12px; }
 }
 
-/* Home */
-main:has(> .bl-home), main:has(> .bl-article-page) { background: var(--bl-ground) !important; }
-.bl-home {
+/* Log pages: home, posts index, tag and category */
+main:has(> .bl-logpage), main:has(> .bl-article-page) { background: var(--bl-ground) !important; }
+.bl-logpage {
   --bl-gap: clamp(12px, 3.2vw, 56px);
   --bl-rail: clamp(8px, 1.3vw, 18px);
   --bl-node: clamp(18px, 3.4vw, 48px);
@@ -1154,30 +1106,64 @@ main:has(> .bl-home), main:has(> .bl-article-page) { background: var(--bl-ground
 .bl-topic { font-family: var(--font-display), system-ui, sans-serif; font-size: 0.875rem; color: var(--bl-ink-2) !important; text-decoration: none !important; display: inline-flex; align-items: center; gap: 6px; }
 .bl-topic::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--lane-color); }
 .bl-topic:hover { color: var(--bl-ink) !important; text-decoration: underline !important; }
+.bl-topic--plain::before { display: none; }
 
 .bl-row--end .bl-content { padding-bottom: 0; }
 .bl-end { font-size: 0.9375rem; font-weight: 600; color: var(--bl-ink-3); margin: 0; }
+.bl-end time { white-space: nowrap; }
+/* Branch view: the dots are the only carriers of the other topics' colours, so keep their cores readable at phone sizes. */
+.bl-log--branch {
+  /* A gap floor keeps an adjacent-lane dot clear of the node on phones; the graph width is restated so it resolves against it. */
+  --bl-gap: max(17px, 3.2vw);
+  --bl-graph: calc(var(--bl-x0) + 4 * var(--bl-gap) + var(--bl-node) / 2 + var(--bl-rail) / 2 + clamp(14px, 3vw, 44px));
+}
+.bl-log--branch .bl-node--dot { --dot: calc(var(--bl-node) * 0.6); border-width: max(1.5px, calc(var(--dot) * 0.17)); }
 .bl-empty { font-size: 1.25rem !important; color: var(--bl-ink-2); margin: 0 !important; }
 .bl-row--empty .bl-content { border-top: 0; padding-top: 18px; }
 
+/* Posts index: the repository line carries the post count beside the H1 */
+.bl-repo__line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; margin-bottom: 18px; }
+.bl-repo__line .bl-repo__title { margin: 0; }
+.bl-repo__count { font-size: 0.9375rem; font-weight: 600; color: var(--bl-ink-3); }
+
+/* Tag and category pages: the branch header */
+.bl-listhead { padding-top: clamp(28px, 5vw, 56px); }
+.bl-listhead__title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.28em;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(2.25rem, 4.6vw, 4rem) !important;
+  font-weight: 800 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.035em;
+  max-width: 20ch;
+  margin: 18px 0 12px !important;
+  color: var(--bl-ink) !important;
+}
+.bl-listhead__title > span:last-child { min-width: 0; text-wrap: balance; overflow-wrap: anywhere; }
+.bl-listhead__swatch { flex: none; width: 0.6em; height: 0.6em; border-radius: 3px; background: var(--lane-color); }
+.bl-listhead .bl-stats { margin: 0 !important; }
+.bl-logpage > .bl-wrap > .bl-back { display: inline-block; margin-top: clamp(28px, 4vw, 44px); }
+
 /* Branch filter (pure CSS: radio state via :has) and hover-lit rails */
 .bl-row--more { display: none; }
-.bl-home:has(#bl-b-0:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="0"]),
-.bl-home:has(#bl-b-1:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="1"]),
-.bl-home:has(#bl-b-2:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="2"]),
-.bl-home:has(#bl-b-3:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="3"]),
-.bl-home:has(#bl-b-4:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="4"]) { display: none; }
-.bl-home:has(#bl-b-0:checked) .bl-row--more[data-more="0"],
-.bl-home:has(#bl-b-1:checked) .bl-row--more[data-more="1"],
-.bl-home:has(#bl-b-2:checked) .bl-row--more[data-more="2"],
-.bl-home:has(#bl-b-3:checked) .bl-row--more[data-more="3"],
-.bl-home:has(#bl-b-4:checked) .bl-row--more[data-more="4"] { display: grid; }
+.bl-logpage:has(#bl-b-0:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="0"]),
+.bl-logpage:has(#bl-b-1:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="1"]),
+.bl-logpage:has(#bl-b-2:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="2"]),
+.bl-logpage:has(#bl-b-3:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="3"]),
+.bl-logpage:has(#bl-b-4:checked) .bl-row:not(.bl-row--end, .bl-row--more):not([data-lanes~="4"]) { display: none; }
+.bl-logpage:has(#bl-b-0:checked) .bl-row--more[data-more="0"],
+.bl-logpage:has(#bl-b-1:checked) .bl-row--more[data-more="1"],
+.bl-logpage:has(#bl-b-2:checked) .bl-row--more[data-more="2"],
+.bl-logpage:has(#bl-b-3:checked) .bl-row--more[data-more="3"],
+.bl-logpage:has(#bl-b-4:checked) .bl-row--more[data-more="4"] { display: grid; }
 ::view-transition-group(*) { animation-duration: 0.35s; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-.bl-home:has(#bl-b-0:checked) .bl-graph > :not(.bl-lane-0),
-.bl-home:has(#bl-b-1:checked) .bl-graph > :not(.bl-lane-1),
-.bl-home:has(#bl-b-2:checked) .bl-graph > :not(.bl-lane-2),
-.bl-home:has(#bl-b-3:checked) .bl-graph > :not(.bl-lane-3),
-.bl-home:has(#bl-b-4:checked) .bl-graph > :not(.bl-lane-4) { opacity: 0.16; }
+.bl-logpage:has(#bl-b-0:checked) .bl-graph > :not(.bl-lane-0),
+.bl-logpage:has(#bl-b-1:checked) .bl-graph > :not(.bl-lane-1),
+.bl-logpage:has(#bl-b-2:checked) .bl-graph > :not(.bl-lane-2),
+.bl-logpage:has(#bl-b-3:checked) .bl-graph > :not(.bl-lane-3),
+.bl-logpage:has(#bl-b-4:checked) .bl-graph > :not(.bl-lane-4) { opacity: 0.16; }
 .bl-log:has(.bl-row[data-lane="0"]:hover) .bl-seg.bl-lane-0,
 .bl-log:has(.bl-row[data-lane="1"]:hover) .bl-seg.bl-lane-1,
 .bl-log:has(.bl-row[data-lane="2"]:hover) .bl-seg.bl-lane-2,
@@ -1451,6 +1437,7 @@ main:has(> .bl-home), main:has(> .bl-article-page) { background: var(--bl-ground
 
 /* After the article */
 .bl-article-end { margin-top: clamp(40px, 6vw, 64px); padding-top: 24px; border-top: 2px solid var(--bl-ink); display: grid; gap: clamp(32px, 4vw, 48px); max-width: 760px; }
+.bl-article-labels { display: grid; gap: 12px; }
 .bl-article-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
 .bl-article-tags .bl-sections__label { margin: 0 4px 0 0 !important; }
 .bl-article-tags .bl-topic { font-size: 0.9375rem; font-weight: 600; }

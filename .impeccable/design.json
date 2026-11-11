@@ -690,7 +690,7 @@
       },
       {
         "name": "The Small H1 Rule",
-        "body": "The SEO H1 stays the page's real H1, set small as the repository line. The visual focus is the HEAD title, an h2. Never promote the visual focus to h1 or drop the H1 to fix the hierarchy.",
+        "body": "On the home page and the posts index, the SEO H1 stays the page's real H1, set small as the repository line. On the home page the visual focus is the HEAD title, an h2; on the index it is the log itself. Never promote the visual focus to h1 or drop the H1 to fix the hierarchy.",
         "section": "typography"
       },
       {
@@ -741,7 +741,7 @@
       "**Don't** use neon, glows or a dark-terminal costume.",
       "**Don't** present the short hash as a real git commit or invent history the posts don't have.",
       "**Don't** use the cobalt accent as a resting button or link colour.",
-      "**Don't** make the visual focus the H1; the SEO H1 stays the real H1, set small."
+      "**Don't** make the visual focus the H1 on the home page or the posts index; there the SEO H1 stays the real H1, set small."
     ]
   }
 }

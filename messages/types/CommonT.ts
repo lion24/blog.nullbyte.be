@@ -17,7 +17,6 @@ export class CommonT implements Translation {
   loading = ''
   error = ''
   search = ''
-  readMore = ''
   readMoreArrow = ''
   by = ''
   views = ''

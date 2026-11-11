@@ -282,18 +282,36 @@ export default async function PostPage({ params }: Props) {
           <div className="bl-article prose max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
 
           <footer className="bl-article-end">
-            {post.tags.length > 0 && (
-              <div className="bl-article-tags">
-                <span className="bl-sections__label">{t('posts.tags')}</span>
-                {post.tags.map((tag) => (
-                  <Link
-                    key={tag.id}
-                    href={`/${locale}/tags/${tag.slug}`}
-                    className={`bl-topic bl-lane-${laneOf.get(tag.slug) ?? OTHER_LANE}`}
-                  >
-                    {tag.name}
-                  </Link>
-                ))}
+            {(post.tags.length > 0 || post.categories.length > 0) && (
+              <div className="bl-article-labels">
+                {post.tags.length > 0 && (
+                  <div className="bl-article-tags">
+                    <span className="bl-sections__label">{t('posts.tags')}</span>
+                    {post.tags.map((tag) => (
+                      <Link
+                        key={tag.id}
+                        href={`/${locale}/tags/${tag.slug}`}
+                        className={`bl-topic bl-lane-${laneOf.get(tag.slug) ?? OTHER_LANE}`}
+                      >
+                        {tag.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+                {post.categories.length > 0 && (
+                  <div className="bl-article-tags">
+                    <span className="bl-sections__label">{t('posts.categories')}</span>
+                    {post.categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        href={`/${locale}/categories/${category.slug}`}
+                        className="bl-topic bl-topic--plain"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
