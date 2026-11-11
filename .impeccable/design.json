@@ -695,7 +695,7 @@
       },
       {
         "name": "The Class Selector Rule",
-        "body": "`globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose. The same file's global `body` and `code, pre` rules name `--font-sans` / `--font-mono`, which `@theme inline` never emits, so those declarations are dead: name `--font-display` and `--font-geist-mono` directly.",
+        "body": "`globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose. The global `body` and `code, pre` rules use `--font-sans` / `--font-mono` (Geist, for the legacy pages). Tailwind declares those on `:root`, so the `next/font` variable classes must sit on `<html>`, not `<body>`, or they resolve to nothing. In this world, name `--font-display` and `--font-geist-mono` directly.",
         "section": "typography"
       },
       {

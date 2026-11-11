@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { SessionProvider, useSession, signIn, signOut } from 'next-auth/react'
 import { useTranslations } from 'next-intl'
 import { Role } from '@prisma/client'
+import { LogInIcon } from 'lucide-react'
 
 type Props = {
   locale: string
@@ -63,8 +64,12 @@ function AuthMenuInner({ locale }: Props) {
         <button
           onClick={() => signIn()}
           className="nav-auth-button-primary text-sm px-4 py-2 rounded-md transition-colors"
+          aria-label={t('signIn')}
+          title={t('signIn')}
         >
-          {t('signIn')}
+          {/* Below 480px the bar has no room for the label, so the button shows the icon only. */}
+          <LogInIcon className="nav-auth-button__icon size-4" aria-hidden="true" />
+          <span className="nav-auth-button__label">{t('signIn')}</span>
         </button>
       )}
     </>

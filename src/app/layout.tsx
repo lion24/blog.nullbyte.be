@@ -43,10 +43,14 @@ export default function RootLayout({
   // (getLocale reads request state). Without this, every descendant route is
   // forced into dynamic rendering and the edge cannot cache HTML.
   return (
-    <html lang={routing.defaultLocale} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${schibstedGrotesk.variable} antialiased`}
-      >
+    // The font variables go on <html>: Tailwind declares --font-sans / --font-mono on :root,
+    // and a custom property resolves where it is declared, so they must exist there.
+    <html
+      lang={routing.defaultLocale}
+      className={`${geistSans.variable} ${geistMono.variable} ${schibstedGrotesk.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="antialiased">
         {children}
         {/* Analytics scripts loaded after content - already optimized with deferred loading */}
         <GoogleTagManager gtmId="GTM-MNVQRFQH" />
