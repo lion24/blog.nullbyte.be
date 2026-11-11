@@ -12,7 +12,7 @@ colors:
   paper-rule-hover: "#d4d1c8"
   input-rule: "#dcdad3"
   graphite: "#57534e"
-  pencil: "#78736b"
+  pencil: "#6e6961"
   placeholder: "#a8a29e"
   focus-ring: "#94a3b8"
   margin-fuchsia: "#a21caf"

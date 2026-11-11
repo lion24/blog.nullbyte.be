@@ -20,7 +20,7 @@
      warm-neutral to feel cohesive with the page tint. */
   --text-primary: #1f2024;
   --text-secondary: #57534e;
-  --text-tertiary: #78736b;
+  --text-tertiary: #6e6961;          /* 5.04:1 on page bg (AA) */
   --text-inverse: #ffffff;
 
   /* Interactive — restrained dark slate for primary CTA in light mode.
