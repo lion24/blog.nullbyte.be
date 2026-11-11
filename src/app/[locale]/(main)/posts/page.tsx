@@ -1,6 +1,8 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import PostCard from '@/components/PostCard'
+import BranchFilter from '@/components/BranchFilter'
+import BuildLog from '@/components/BuildLog'
 import { getPublishedPosts } from '@/lib/posts'
+import { buildBranches, isoDate, rankTopics } from '@/lib/build-log'
 import { getBaseUrl } from '@/lib/url'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
@@ -33,43 +35,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function PostsPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations({ locale, namespace: 'posts' })
-  const tCommon = await getTranslations({ locale, namespace: 'common' })
-  
-  // Fetch posts directly from database (Server Component)
+  const t = await getTranslations({ locale })
+
   const posts = await getPublishedPosts()
-
-  // Add formatted reading time to each post
-  const postsWithTranslations = posts.map(post => ({
-    ...post,
-    readingTimeText: tCommon('readingTime', { minutes: post.readingTime })
-  }))
-
-  const translations = {
-    readMore: tCommon('readMore'),
-  }
+  const { topics, laneOf, stats } = rankTopics(posts)
+  const branches = buildBranches(posts, topics, laneOf)
+  const first = posts[posts.length - 1]
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8" style={{ color: 'var(--text-primary)' }}>
-        {t('allPosts')}
-      </h1>
+    <div className="bl-logpage">
+      <div className="bl-wrap">
+        <header className="bl-repo">
+          <div className="bl-repo__body">
+            <div className="bl-repo__line">
+              <h1 className="bl-repo__title">{t('posts.allPosts')}</h1>
+              {posts.length > 0 && (
+                <span className="bl-repo__count bl-mono">{t('posts.postCount', { count: posts.length })}</span>
+              )}
+            </div>
+            <BranchFilter locale={locale} branches={branches} total={posts.length} />
+          </div>
+        </header>
 
-      {posts.length === 0 ? (
-        <div className="text-center py-12 rounded-lg" style={{
-          backgroundColor: 'var(--background-secondary)',
-          boxShadow: 'var(--shadow-sm)',
-          border: '1px solid var(--border)'
-        }}>
-          <p style={{ color: 'var(--text-tertiary)' }}>{t('noPostsPublished')}</p>
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {postsWithTranslations.map((post) => (
-            <PostCard key={post.id} post={post} locale={locale} translations={translations} headingLevel={2} />
-          ))}
-        </div>
-      )}
+        <BuildLog
+          locale={locale}
+          posts={posts}
+          laneOf={laneOf}
+          stats={stats}
+          emptyText={t('posts.noPostsPublished')}
+          end={
+            first && (
+              <p className="bl-end">
+                {t('home.logEnd')} ·{' '}
+                <time className="bl-mono" dateTime={first.createdAt}>{isoDate(first.createdAt)}</time>
+              </p>
+            )
+          }
+        />
+      </div>
     </div>
   )
 }

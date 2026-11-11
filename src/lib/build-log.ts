@@ -67,3 +67,23 @@ export function subjectOf<T extends TaggedPost>(
   const tag = named ?? topical ?? post.tags[0]
   return { tag, lane: tag ? laneOf.get(tag.slug) ?? OTHER_LANE : OTHER_LANE }
 }
+
+export type Branch = { lane: number; slug: string | null; name: string; count: number; latest: string }
+
+/** The lanes a post sits on: one per tag (extra topics fold into "other"); untagged posts sit on "other". */
+export function lanesOf(post: TaggedPost, laneOf: Map<string, number>): number[] {
+  const lanes = new Set<number>()
+  for (const tag of post.tags) lanes.add(laneOf.get(tag.slug) ?? OTHER_LANE)
+  if (lanes.size === 0) lanes.add(OTHER_LANE)
+  return [...lanes].sort((a, b) => a - b)
+}
+
+/** Branches for the switcher: the ranked topic lanes plus the folded "other" lane (posts newest first). */
+export function buildBranches(posts: TaggedPost[], topics: TopicStat[], laneOf: Map<string, number>): Branch[] {
+  const otherPosts = posts.filter((p) => lanesOf(p, laneOf).includes(OTHER_LANE))
+  const branches: Branch[] = [...topics]
+  if (otherPosts.length > 0) {
+    branches.push({ lane: OTHER_LANE, slug: null, name: '', count: otherPosts.length, latest: otherPosts[0].createdAt })
+  }
+  return branches
+}

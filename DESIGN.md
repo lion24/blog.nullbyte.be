@@ -272,7 +272,7 @@ Dark mode is `data-theme="dark"`, or `prefers-color-scheme: dark` when no explic
 - **Nav link** (600, 1rem): nav and footer links.
 - **Data** (Geist Mono 600, 0.9375rem, 1.9): the HEAD hash and stat line (reading time · words · code blocks · date).
 - **Data small** (Geist Mono 600, 0.8125rem): log-row meta, hunk lines, the code toolbar, and the counts and dates inside branch pills (0.75rem, 500 there).
-- **Article title** (800, `clamp(2.25rem, 4.6vw, 4rem)`, 1.02, -0.035em, balanced, max 17ch): the article page's h1, inside its commit header.
+- **Article title** (800, `clamp(2.25rem, 4.6vw, 4rem)`, 1.02, -0.035em, balanced, max 17ch): the article page's h1, inside its commit header. Tag and category pages set their h1 (the name) at the same scale, max 20ch.
 - **Article body** (400, 1.1875rem, 1.7, max 68ch): the article's reading column. The excerpt above it is a Lead.
 - **Section heading** (800, `clamp(1.625rem, 2.6vw, 2.125rem)`, 1.15, -0.025em, balanced): article h2s, each under its hunk line.
 - **Subsection heading** (750, 1.375rem, 1.25, -0.015em): article h3s.
@@ -283,7 +283,7 @@ Two control labels, the branch switcher's legend and the footer column headings,
 ### Named Rules
 **The Data Line Rule.** Geist Mono carries data and code: hashes, dates, counts and the units that belong to them, plus code blocks and inline code. Titles, excerpts, nav, footer and topic links are always Schibsted Grotesk, even when they sit inside a mono line (topic links reset the family).
 
-**The Small H1 Rule.** The SEO H1 stays the page's real H1, set small as the repository line. The visual focus is the HEAD title, an h2. Never promote the visual focus to h1 or drop the H1 to fix the hierarchy.
+**The Small H1 Rule.** On the home page and the posts index, the SEO H1 stays the page's real H1, set small as the repository line. On the home page the visual focus is the HEAD title, an h2; on the index it is the log itself. Never promote the visual focus to h1 or drop the H1 to fix the hierarchy.
 
 **The Class Selector Rule.** `globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose. The same file's global `body` and `code, pre` rules name `--font-sans` / `--font-mono`, which `@theme inline` never emits, so those declarations are dead: name `--font-display` and `--font-geist-mono` directly.
 
@@ -337,6 +337,8 @@ Heavy, inked and singular: one per page.
 - **HEAD commit block:** the first log row. A mono ref line (hash, HEAD chip), the Display title linking to the post (underline on hover at 0.06em), the Lead excerpt, the mono stat line with separator dots glued to the item before them, then the primary button. The HEAD node is the tip of its rail.
 - **Log row:** a 2px ink rule above, a Headline title link, a Body excerpt, then a mono meta line (hash, date, reading time) followed by the post's topic links. The node sits 34px down on the post's primary lane (the tag named in its title, else its least-used topic tag); its other lanes get filled dots.
 - **Rails:** each lane's rail starts at the newest row on that lane and runs to the root row at the end of the log. They draw up from the root to HEAD once on load (scaleY from the bottom, 0.9s, `cubic-bezier(0.16, 1, 0.3, 1)`, staggered 55ms per row). Hovering a row widens its primary rail 1.45×.
+- **Log pages:** the home page, the posts index, and the tag and category pages all draw the same log (`BuildLog`, page root `.bl-logpage`), with lanes always ranked over every published post so a topic keeps its colour everywhere. Home opens with the HEAD block and stops after 13 posts. The posts index has no HEAD: its repo line is the H1 ("All Posts") with a mono post count, then the branch filter and every post as a log row, ending with "Start of the log".
+- **Branch header (tag and category pages):** a mono breadcrumb (Home / Posts), the name as the h1 at Article title scale, then a mono stat line (post count · first → latest date). A tag page leads its h1 with a 0.6em square in the tag's lane colour and is a branch view: only that lane has a rail, every node sits on it, and the posts' other topics show as filled dots with no rail (dots at 60% of the node, lane gap at least 17px so they stay clear of the node on phones). A category has no lane, so its page has no swatch and its posts keep their own topic rails. Both end with "Start of the branch" / "First post in this category" and the date, then the back link.
 - **Branch filter:** checking a branch hides the rows that are not on it, shows a "More in {branch} →" row when the branch has posts beyond the log, and dims every other lane's rails and nodes to 16% opacity. The log ends with an all-posts link or "Start of the log" with the date of the first post.
 
 ### Article (signature)
@@ -345,7 +347,7 @@ Heavy, inked and singular: one per page.
 - **Sections index:** the numbered list of h2s (h3s indented, unnumbered). Sticky in the margin from 1100px on its own 2px ink rail, with the section in view marked in full ink weight and a 4px ink bar (`aria-current`); below 1100px it is a collapsible `<details>` with a 2px ink outline. Hidden when the post has fewer than two sections. Label: "Sections".
 - **Code block:** a 2px frame (`code-frame`) around a toolbar (`code-bar`, 40px: language label left, Copy button right) over Shiki's `github-dark` body. Copy confirms "Copied" (button turns green, a live region announces it) and resets after 2s. In dark mode the toolbar stays darker than the code body.
 - **Share buttons:** 40px circles with a 2px ink outline and an ink icon; hover and focus fill them with the brand colour (Facebook, Reddit) or ink (X, copy link).
-- **After the article:** tags, "More on {topic}" (up to three log-style rows and a link to the topic), then older / newer post side by side, then the back link.
+- **After the article:** tags, then categories (the same links with no lane square, since a category has no lane; this is the only place categories are linked), "More on {topic}" (up to three log-style rows and a link to the topic), then older / newer post side by side, then the back link.
 
 ### Named Rules
 **The Hunk Rule.** A hunk line opens a section only when it tells the reader something: position, total and code count, on posts with two or more sections. A one-section post gets no hunk line and no index. The line never grows past one small mono line, and diff colours (+/− green and red) never enter the prose.
@@ -375,11 +377,11 @@ Heavy, inked and singular: one per page.
 - **Don't** use neon, glows or a dark-terminal costume.
 - **Don't** present the short hash as a real git commit or invent history the posts don't have.
 - **Don't** use the cobalt accent as a resting button or link colour.
-- **Don't** make the visual focus the H1; the SEO H1 stays the real H1, set small.
+- **Don't** make the visual focus the H1 on the home page or the posts index; there the SEO H1 stays the real H1, set small.
 
 ## Legacy world (being retired)
 
-**Remove as each page migrates.** These pages still render in the previous system ("The Engineer's Notebook": warm paper, Geist, fuchsia tags, soft-shadowed cards): the posts index, tag and category pages, legal pages, auth pages, and admin/editor. The full description lives in git history (`DESIGN.md` at commit `c5dcd2a`). None of its tokens belong in the frontmatter above, and new surfaces must not use them.
+**Remove as each page migrates.** These pages still render in the previous system ("The Engineer's Notebook": warm paper, Geist, fuchsia tags, soft-shadowed cards): legal pages, auth pages, and admin/editor. The full description lives in git history (`DESIGN.md` at commit `c5dcd2a`). None of its tokens belong in the frontmatter above, and new surfaces must not use them.
 
 The tokens those pages still rely on, defined in the upper part of `globals.css`:
 - **Surfaces:** `--background`, `--background-secondary`, `--background-tertiary`, `--border`, `--input-background`, `--input-border`.
