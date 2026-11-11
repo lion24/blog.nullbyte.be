@@ -1,6 +1,6 @@
 // Deletes this PR's ci/design-detector review comments from an earlier run,
 // so a fresh push doesn't pile duplicate comments on top of the old ones.
-// Loaded by actions/github-script's `script-path` (see ci.yml); it supplies
+// Required from an actions/github-script step (see ci.yml), which passes in
 // `github`, `context` and `core` already authenticated with GITHUB_TOKEN.
 //
 // Keep this literal in sync with impeccable-to-rdjson.mjs if either changes.
