@@ -5,6 +5,10 @@ import { useEffect, useState } from 'react'
 type ViewCounterProps = {
   postId: string
   initialViews: number
+  locale: string
+  /** Localized templates with "#" for the number, e.g. { one: '# view', other: '# views' }. */
+  templates: { one: string; other: string }
+  className?: string
 }
 
 /**
@@ -12,7 +16,7 @@ type ViewCounterProps = {
  * server and fires a one-shot POST to increment it. Keeping the increment
  * out of the page render is what lets the post route be ISR-cached.
  */
-export function ViewCounter({ postId, initialViews }: ViewCounterProps) {
+export function ViewCounter({ postId, initialViews, locale, templates, className }: ViewCounterProps) {
   const [views, setViews] = useState(initialViews)
 
   useEffect(() => {
@@ -30,9 +34,6 @@ export function ViewCounter({ postId, initialViews }: ViewCounterProps) {
       .catch(() => {})
   }, [postId])
 
-  return (
-    <span className="text-sm text-[var(--text-secondary)]">
-      {views.toLocaleString()} {views === 1 ? 'view' : 'views'}
-    </span>
-  )
+  const form = new Intl.PluralRules(locale).select(views) === 'one' ? templates.one : templates.other
+  return <span className={className}>{form.replace('#', views.toLocaleString(locale))}</span>
 }

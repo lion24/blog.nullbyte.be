@@ -1,13 +1,15 @@
+import { Fragment } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import ContentRenderer from '@/components/ContentRenderer'
 import SocialShare from '@/components/SocialShare'
-import InteractiveLink from '@/components/InteractiveLink'
+import ArticleEnhancer from '@/components/ArticleEnhancer'
 import { ViewCounter } from '@/components/ViewCounter'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
-import { calculateReadingTime } from '@/lib/reading-time'
+import { calculateReadingTime, countCodeBlocks, countWords } from '@/lib/reading-time'
+import { renderArticle } from '@/lib/markdown'
+import { OTHER_LANE, isoDate, rankTopics, shortId, subjectOf } from '@/lib/build-log'
 import { getFullUrl } from '@/lib/url'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
@@ -130,13 +132,41 @@ export default async function PostPage({ params }: Props) {
   setRequestLocale(locale)
   const t = await getTranslations({ locale })
   const tSocial = await getTranslations({ locale, namespace: 'social' })
-  
+
   // Fetch post directly from database
   const post = await getPostBySlug(slug)
-  
+
   if (!post) {
     notFound()
   }
+
+  // One light query (no bodies) feeds topic colours, neighbours and "more on this topic".
+  const log = (
+    await prisma.post.findMany({
+      where: { published: true },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, title: true, slug: true, createdAt: true, tags: { select: { name: true, slug: true } } },
+    })
+  ).map((p) => ({ ...p, createdAt: p.createdAt.toISOString() }))
+  const { laneOf, stats } = rankTopics(log)
+  const subject = subjectOf(post, laneOf, stats)
+  const lane = subject.lane
+  const index = log.findIndex((p) => p.id === post.id)
+  const newer = index > 0 ? log[index - 1] : null
+  const older = index >= 0 && index < log.length - 1 ? log[index + 1] : null
+  const sameTopic = subject.tag
+    ? log.filter((p) => p.id !== post.id && p.tags.some((tag) => tag.slug === subject.tag!.slug))
+    : []
+
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const { html, sections } = await renderArticle(post.content, {
+    hunk: (n, total, count) => t('posts.hunk', { n: pad(n), total: pad(total), count }),
+    anchor: t('posts.linkToSection'),
+    copy: t('posts.copyCode'),
+    title: post.title,
+  })
+  const showIndex = sections.filter((s) => s.level === 2).length >= 2
+  const nf = new Intl.NumberFormat(locale)
 
   // Get full URL for sharing
   const postUrl = getFullUrl(`/${locale}/posts/${slug}`)
@@ -148,102 +178,172 @@ export default async function PostPage({ params }: Props) {
     shareOnReddit: tSocial('shareOnReddit'),
     copyLink: tSocial('copyLink'),
   }
+  const viewTemplates = {
+    one: t('posts.viewCount', { count: 1 }).replace('1', '#'),
+    other: t('posts.viewCount', { count: 2 }).replace('2', '#'),
+  }
+
+  const statLine = [
+    <time key="d" dateTime={post.createdAt}>{isoDate(post.createdAt)}</time>,
+    <span key="rt">{t('common.readingTime', { minutes: post.readingTime })}</span>,
+    <span key="w">{t('home.words', { count: nf.format(countWords(post.content)) })}</span>,
+    <span key="c">{t('home.codeBlocks', { count: countCodeBlocks(post.content) })}</span>,
+    <ViewCounter key="v" postId={post.id} initialViews={post.views} locale={locale} templates={viewTemplates} />,
+  ]
+
+  const sectionList = (
+    <ol className="bl-sections__list">
+      {sections.map((s) => (
+        <li key={s.id} className={s.level === 3 ? 'bl-sections__sub' : undefined}>
+          <a href={`#${s.id}`} data-section-link="">
+            {s.n !== undefined && <span className="bl-sections__n bl-mono">{pad(s.n)}</span>}
+            <span>{s.text}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  )
+
+  const neighbour = (p: (typeof log)[number] | null, label: string, dir: 'older' | 'newer') =>
+    p ? (
+      <Link href={`/${locale}/posts/${p.slug}`} className={`bl-nextprev__link bl-nextprev__link--${dir}`}>
+        <span className="bl-nextprev__label bl-mono">
+          {dir === 'older' ? `← ${label}` : `${label} →`}
+        </span>
+        <span className="bl-nextprev__title">{p.title}</span>
+      </Link>
+    ) : (
+      <span aria-hidden="true" />
+    )
 
   return (
-    <article className="container mx-auto px-4 py-8 max-w-4xl">
-      <header className="mb-8">
-        <div className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-          <Link href={`/${locale}`} className="hover:text-primary transition-colors">{t('breadcrumb.home')}</Link>
-          <span>→</span>
-          <Link href={`/${locale}/posts`} className="hover:text-primary transition-colors">{t('breadcrumb.posts')}</Link>
-          <span>→</span>
-          <span style={{ color: 'var(--text-primary)' }}>{post.title}</span>
-        </div>
+    <div className={`bl-article-page bl-lane-${lane}`}>
+      <div className="bl-wrap bl-article-grid">
+        <article className="bl-article-main">
+          <header className="bl-article-head">
+            <nav aria-label={t('breadcrumb.posts')} className="bl-crumb bl-mono">
+              <Link href={`/${locale}`}>{t('breadcrumb.home')}</Link>
+              <span aria-hidden="true">/</span>
+              <Link href={`/${locale}/posts`}>{t('breadcrumb.posts')}</Link>
+              {subject.tag && (
+                <>
+                  <span aria-hidden="true">/</span>
+                  <Link href={`/${locale}/tags/${subject.tag.slug}`}>{subject.tag.name}</Link>
+                </>
+              )}
+            </nav>
 
-        <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>{post.title}</h1>
+            <div className="bl-ref bl-mono">
+              <span className="bl-branch__swatch" aria-hidden="true" />
+              <span className="bl-hash">{shortId(post.id)}</span>
+              {subject.tag && <span className="bl-chip">{subject.tag.name}</span>}
+            </div>
+            <p className="bl-stats bl-mono">
+              {statLine.map((item, i) => (
+                <Fragment key={i}>
+                  <span className="bl-stats__item">
+                    {item}
+                    {i < statLine.length - 1 && <span className="bl-stats__sep" aria-hidden="true">{' ·'}</span>}
+                  </span>
+                  {i < statLine.length - 1 && ' '}
+                </Fragment>
+              ))}
+            </p>
 
-        <div className="flex items-center justify-between flex-wrap gap-4 text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span>{t('posts.byAuthor', { author: post.author.name || t('admin.anonymous') })}</span>
-            <span>•</span>
-            <time dateTime={post.createdAt}>{new Date(post.createdAt).toLocaleDateString(locale)}</time>
-            <span>•</span>
-            <span>{t('common.readingTime', { minutes: post.readingTime })}</span>
-            <span>•</span>
-            <ViewCounter postId={post.id} initialViews={post.views} />
-          </div>
+            <h1 className="bl-article-title">{post.title}</h1>
+            {post.excerpt && <p className="bl-article-lede">{post.excerpt}</p>}
 
-          <div className="flex flex-wrap items-center gap-2">
-            {post.categories.map((category) => (
-              <Link
-                key={category.id}
-                href={`/${locale}/categories/${category.slug}`}
-                className="post-card-category px-3 py-1 rounded-full text-xs font-medium"
-                style={{
-                  backgroundColor: 'var(--primary)',
-                  color: 'var(--text-inverse)',
-                }}
-              >
-                {category.name}
-              </Link>
-            ))}
-          </div>
-        </div>
+            <div className="bl-article-byline">
+              <span>{t('posts.byAuthor', { author: post.author.name || t('admin.anonymous') })}</span>
+              <SocialShare url={postUrl} title={post.title} translations={socialTranslations} />
+            </div>
+          </header>
 
-        <div className="pb-6 mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-          <SocialShare url={postUrl} title={post.title} translations={socialTranslations} />
-        </div>
-      </header>
+          {post.featuredImage && (
+            <figure className="bl-article-figure">
+              <Image
+                src={post.featuredImage}
+                alt=""
+                fill
+                sizes="(min-width: 1100px) 760px, 100vw"
+                className="object-cover"
+                priority
+              />
+            </figure>
+          )}
 
-      {post.featuredImage && (
-        <div className="mb-8 -mx-4 md:mx-0">
-          <div className="relative w-full h-[400px] md:h-[500px] md:rounded-lg overflow-hidden">
-            <Image
-              src={post.featuredImage}
-              alt={post.title}
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
-      )}
+          {showIndex && (
+            <details className="bl-sections bl-sections--inline">
+              <summary className="bl-sections__label">{t('posts.sections')}</summary>
+              {sectionList}
+            </details>
+          )}
 
-      {post.excerpt && (
-        <div className="text-xl mb-8 italic" style={{ color: 'var(--text-secondary)' }}>
-          {post.excerpt}
-        </div>
-      )}
+          <div className="bl-article prose max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
 
-      <div className="mb-8">
-        <ContentRenderer content={post.content} />
+          <footer className="bl-article-end">
+            {post.tags.length > 0 && (
+              <div className="bl-article-tags">
+                <span className="bl-sections__label">{t('posts.tags')}</span>
+                {post.tags.map((tag) => (
+                  <Link
+                    key={tag.id}
+                    href={`/${locale}/tags/${tag.slug}`}
+                    className={`bl-topic bl-lane-${laneOf.get(tag.slug) ?? OTHER_LANE}`}
+                  >
+                    {tag.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {subject.tag && sameTopic.length > 0 && (
+              <section className="bl-more" aria-labelledby="bl-more-title">
+                <h2 id="bl-more-title" className="bl-more__title">
+                  {t('posts.moreOnTopic', { topic: subject.tag.name })}
+                </h2>
+                <ul className="bl-more__list">
+                  {sameTopic.slice(0, 3).map((p) => (
+                    <li key={p.id}>
+                      <Link href={`/${locale}/posts/${p.slug}`} className="bl-title-link bl-more__link">
+                        {p.title}
+                      </Link>
+                      <span className="bl-meta bl-mono">
+                        <span>{shortId(p.id)}</span>
+                        <time dateTime={p.createdAt}>{isoDate(p.createdAt)}</time>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <Link href={`/${locale}/tags/${subject.tag.slug}`} className="bl-end bl-title-link">
+                  {t('posts.allInTopic', { topic: subject.tag.name })} →
+                </Link>
+              </section>
+            )}
+
+            {(older || newer) && (
+              <nav className="bl-nextprev" aria-label={`${t('posts.olderPost')} / ${t('posts.newerPost')}`}>
+                {neighbour(older, t('posts.olderPost'), 'older')}
+                {neighbour(newer, t('posts.newerPost'), 'newer')}
+              </nav>
+            )}
+
+            <Link href={`/${locale}/posts`} className="bl-back">
+              {t('common.backToAllPosts')}
+            </Link>
+          </footer>
+        </article>
+
+        {showIndex && (
+          <aside className="bl-sections bl-sections--margin">
+            <nav aria-label={t('posts.sections')}>
+              <p className="bl-sections__label">{t('posts.sections')}</p>
+              {sectionList}
+            </nav>
+          </aside>
+        )}
       </div>
-
-      <footer className="pt-8" style={{ borderTop: '1px solid var(--border)' }}>
-        <div className="flex items-center flex-wrap gap-2 mb-8">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('posts.tagsLabel')}</span>
-          {post.tags.map((tag) => (
-            <InteractiveLink
-              key={tag.id}
-              href={`/${locale}/tags/${tag.slug}`}
-              className="text-sm font-bold transition-colors hover:underline"
-              baseColor="var(--tag-background)"
-              hoverColor="var(--tag-background-hover)"
-            >
-              #{tag.name}
-            </InteractiveLink>
-          ))}
-        </div>
-
-        <InteractiveLink
-          href={`/${locale}/posts`}
-          className="inline-flex items-center transition-colors"
-          baseColor="var(--primary)"
-          hoverColor="var(--primary-hover)"
-        >
-          {t('common.backToAllPosts')}
-        </InteractiveLink>
-      </footer>
-    </article>
+      <ArticleEnhancer copyLabel={t('posts.copyCode')} copiedLabel={t('posts.copiedCode')} />
+    </div>
   )
 }

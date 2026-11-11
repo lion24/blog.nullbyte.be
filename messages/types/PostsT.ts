@@ -25,4 +25,13 @@ export class PostsT implements Translation {
   foundCount = ''
   noPostsWithTag = ''
   noPostsInCategory = ''
+  sections = ''
+  olderPost = ''
+  newerPost = ''
+  moreOnTopic = ''
+  allInTopic = ''
+  copyCode = ''
+  copiedCode = ''
+  linkToSection = ''
+  hunk = ''
 }

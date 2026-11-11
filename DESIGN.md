@@ -14,6 +14,9 @@ colors:
   lane-green: "#1b8a4b"
   lane-violet: "#7b3fe4"
   lane-other: "#78818e"
+  code-bar: "#0d1117"
+  code-bar-ink: "#e9edf1"
+  code-frame: "#0d1117"
   ground-dark: "#171819"
   ground-pressed-dark: "#222325"
   ink-dark: "#eaeef3"
@@ -26,6 +29,9 @@ colors:
   lane-green-dark: "#2fbf6e"
   lane-violet-dark: "#a678ff"
   lane-other-dark: "#6b7480"
+  code-bar-dark: "#0e0f10"
+  code-bar-ink-dark: "#eaeef3"
+  code-frame-dark: "#34363a"
 typography:
   display:
     fontFamily: "Schibsted Grotesk, system-ui, sans-serif"
@@ -85,6 +91,33 @@ typography:
     fontSize: "0.8125rem"
     fontWeight: 600
     fontFeature: "tnum"
+  article-title:
+    fontFamily: "Schibsted Grotesk, system-ui, sans-serif"
+    fontSize: "4rem"
+    fontWeight: 800
+    lineHeight: 1.02
+    letterSpacing: "-0.035em"
+  article-body:
+    fontFamily: "Schibsted Grotesk, system-ui, sans-serif"
+    fontSize: "1.1875rem"
+    fontWeight: 400
+    lineHeight: 1.7
+  section-heading:
+    fontFamily: "Schibsted Grotesk, system-ui, sans-serif"
+    fontSize: "2.125rem"
+    fontWeight: 800
+    lineHeight: 1.15
+    letterSpacing: "-0.025em"
+  subsection-heading:
+    fontFamily: "Schibsted Grotesk, system-ui, sans-serif"
+    fontSize: "1.375rem"
+    fontWeight: 750
+    lineHeight: 1.25
+    letterSpacing: "-0.015em"
+  code:
+    fontFamily: "Geist Mono, ui-monospace, SF Mono, Menlo, monospace"
+    fontSize: "0.875rem"
+    fontWeight: 400
 rounded:
   mark: "2px"
   swatch: "3px"
@@ -152,6 +185,22 @@ components:
     backgroundColor: "{colors.ground}"
     textColor: "{colors.ink-secondary}"
     typography: "{typography.body}"
+  article-title:
+    textColor: "{colors.ink}"
+    typography: "{typography.article-title}"
+  hunk-line:
+    textColor: "{colors.ink-secondary}"
+    typography: "{typography.data-sm}"
+  code-toolbar:
+    backgroundColor: "{colors.code-bar}"
+    textColor: "{colors.code-bar-ink}"
+    typography: "{typography.data-sm}"
+    padding: "5px 6px 5px 14px"
+    height: "40px"
+  share-button:
+    textColor: "{colors.ink}"
+    rounded: "{rounded.node}"
+    size: "40px"
 ---
 
 # Design System: NullByte
@@ -222,16 +271,21 @@ Dark mode is `data-theme="dark"`, or `prefers-color-scheme: dark` when no explic
 - **Body** (400, 1rem, 1.5, max 70ch): log-row excerpts and the footer tagline (max 44ch). Topic links take 0.875rem.
 - **Nav link** (600, 1rem): nav and footer links.
 - **Data** (Geist Mono 600, 0.9375rem, 1.9): the HEAD hash and stat line (reading time · words · code blocks · date).
-- **Data small** (Geist Mono 600, 0.8125rem): log-row meta, and the counts and dates inside branch pills (0.75rem, 500 there).
+- **Data small** (Geist Mono 600, 0.8125rem): log-row meta, hunk lines, the code toolbar, and the counts and dates inside branch pills (0.75rem, 500 there).
+- **Article title** (800, `clamp(2.25rem, 4.6vw, 4rem)`, 1.02, -0.035em, balanced, max 17ch): the article page's h1, inside its commit header.
+- **Article body** (400, 1.1875rem, 1.7, max 68ch): the article's reading column. The excerpt above it is a Lead.
+- **Section heading** (800, `clamp(1.625rem, 2.6vw, 2.125rem)`, 1.15, -0.025em, balanced): article h2s, each under its hunk line.
+- **Subsection heading** (750, 1.375rem, 1.25, -0.015em): article h3s.
+- **Code** (Geist Mono 400, 0.875rem; inline code 0.875em): code blocks and inline code in the article.
 
 Two control labels, the branch switcher's legend and the footer column headings, are set at 700, 0.8125rem, uppercase with 0.08em tracking in ink tertiary. That treatment belongs to those two labels only.
 
 ### Named Rules
-**The Data Line Rule.** Geist Mono carries data: hashes, dates, counts and the units that belong to them. Titles, excerpts, nav, footer and topic links are always Schibsted Grotesk, even when they sit inside a mono line (topic links reset the family).
+**The Data Line Rule.** Geist Mono carries data and code: hashes, dates, counts and the units that belong to them, plus code blocks and inline code. Titles, excerpts, nav, footer and topic links are always Schibsted Grotesk, even when they sit inside a mono line (topic links reset the family).
 
 **The Small H1 Rule.** The SEO H1 stays the page's real H1, set small as the repository line. The visual focus is the HEAD title, an h2. Never promote the visual focus to h1 or drop the H1 to fix the hierarchy.
 
-**The Class Selector Rule.** `globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose.
+**The Class Selector Rule.** `globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose. The same file's global `body` and `code, pre` rules name `--font-sans` / `--font-mono`, which `@theme inline` never emits, so those declarations are dead: name `--font-display` and `--font-geist-mono` directly.
 
 ## Layout
 
@@ -239,11 +293,14 @@ A single centred wrap, max 1440px, with a fluid gutter (`clamp(16px, 3.5vw, 48px
 
 Rhythm: the repository header opens at `clamp(28px, 5vw, 56px)`, the log starts `clamp(24px, 4vw, 44px)` below it, and each row is 18px over 26px between 2px ink rules. The HEAD row has no top rule and closes with `clamp(36px, 5vw, 64px)`. The page ends with `clamp(48px, 8vw, 112px)` before the footer.
 
+The article page is a reading column plus a margin: below 1100px one column; from 1100px a `minmax(0, 760px)` column and a `minmax(220px, 280px)` margin, `clamp(48px, 6vw, 96px)` apart, inset `clamp(0px, 5vw, 72px)` from the wrap. Prose holds a 68ch measure inside the column; code blocks and the featured figure (2:1) take the full column width. The Sections index sits in the margin, sticky 24px from the top.
+
 Breakpoints:
 - **Below 480px:** tighter nav gaps, smaller wordmark, narrower sign-in button.
 - **Below 640px:** branch pills drop their last-post date and keep the count.
 - **Below 768px:** the branch pill row stops wrapping and becomes a bleed-to-edge horizontal scroller with scroll-snap and a hidden scrollbar; the nav hides its Home link (the wordmark is home); the footer is one column.
 - **768px and up:** the footer becomes a 2fr / 1fr / 1fr grid.
+- **1100px and up:** the article's Sections index moves from an inline collapsible block into the sticky margin.
 
 ## Elevation & Depth
 
@@ -282,7 +339,19 @@ Heavy, inked and singular: one per page.
 - **Rails:** each lane's rail starts at the newest row on that lane and runs to the root row at the end of the log. They draw up from the root to HEAD once on load (scaleY from the bottom, 0.9s, `cubic-bezier(0.16, 1, 0.3, 1)`, staggered 55ms per row). Hovering a row widens its primary rail 1.45×.
 - **Branch filter:** checking a branch hides the rows that are not on it, shows a "More in {branch} →" row when the branch has posts beyond the log, and dims every other lane's rails and nodes to 16% opacity. The log ends with an all-posts link or "Start of the log" with the date of the first post.
 
+### Article (signature)
+- **Commit header:** a mono breadcrumb (Home / Posts / topic), the ref line (lane swatch, hash, topic chip), the mono stat line (date · reading time · words · code blocks · views), the Article title, the excerpt as a Lead, then author and share buttons above a 2px ink rule.
+- **Hunk line:** a Data small line in ink secondary, led by a 10px lane-coloured square, above each section heading: `@@ 01 / 04 · 2 code blocks @@` (position, total, that section's code-block count). Every h2 and h3 carries a `#` self-link that appears on hover or focus.
+- **Sections index:** the numbered list of h2s (h3s indented, unnumbered). Sticky in the margin from 1100px on its own 2px ink rail, with the section in view marked in full ink weight and a 4px ink bar (`aria-current`); below 1100px it is a collapsible `<details>` with a 2px ink outline. Hidden when the post has fewer than two sections. Label: "Sections".
+- **Code block:** a 2px frame (`code-frame`) around a toolbar (`code-bar`, 40px: language label left, Copy button right) over Shiki's `github-dark` body. Copy confirms "Copied" (button turns green, a live region announces it) and resets after 2s. In dark mode the toolbar stays darker than the code body.
+- **Share buttons:** 40px circles with a 2px ink outline and an ink icon; hover and focus fill them with the brand colour (Facebook, Reddit) or ink (X, copy link).
+- **After the article:** tags, "More on {topic}" (up to three log-style rows and a link to the topic), then older / newer post side by side, then the back link.
+
 ### Named Rules
+**The Hunk Rule.** A hunk line opens a section only when it tells the reader something: position, total and code count, on posts with two or more sections. A one-section post gets no hunk line and no index. The line never grows past one small mono line, and diff colours (+/− green and red) never enter the prose.
+
+**The One Title Rule.** The commit header owns the page's only h1. A body h1 that repeats the post title is dropped; any other body h1 is demoted to h2 and becomes a hunk section.
+
 **The Draw Once Rule.** Rails draw once, on load, from the root up to HEAD. Under `prefers-reduced-motion` they appear already drawn, and the rail, node, row, pill and button transitions are off.
 
 **The CSS-First Filter Rule.** The branch filter is radio inputs read by `:has()` selectors and works without JavaScript. A client wrapper only adds a view transition (0.35s, same easing) where `startViewTransition` exists and reduced motion is off; otherwise the change snaps.
@@ -297,6 +366,7 @@ Heavy, inked and singular: one per page.
 - **Do** keep keyboard focus cobalt: the world remaps `--ring` to the accent, so links take the global 2px outline and the branch pill and primary button take a 3px outline.
 - **Do** style world elements through their own class selectors, since the global element rules outrank utilities.
 - **Do** honour reduced motion: no rail draw, no view transition, no rail, pill or button transitions.
+- **Do** keep the article's reading column calm: Article body at a 68ch measure; the world shows in the commit header, hunk lines, rules, code and links.
 
 ### Don't:
 - **Don't** add cards, shadows or rounded panels to this world.
@@ -309,7 +379,7 @@ Heavy, inked and singular: one per page.
 
 ## Legacy world (being retired)
 
-**Remove as each page migrates.** These pages still render in the previous system ("The Engineer's Notebook": warm paper, Geist, fuchsia tags, soft-shadowed cards): the article page `/posts/[slug]`, the posts index, tag and category pages, legal pages, auth pages, and admin/editor. The full description lives in git history (`DESIGN.md` at commit `c5dcd2a`). None of its tokens belong in the frontmatter above, and new surfaces must not use them.
+**Remove as each page migrates.** These pages still render in the previous system ("The Engineer's Notebook": warm paper, Geist, fuchsia tags, soft-shadowed cards): the posts index, tag and category pages, legal pages, auth pages, and admin/editor. The full description lives in git history (`DESIGN.md` at commit `c5dcd2a`). None of its tokens belong in the frontmatter above, and new surfaces must not use them.
 
 The tokens those pages still rely on, defined in the upper part of `globals.css`:
 - **Surfaces:** `--background`, `--background-secondary`, `--background-tertiary`, `--border`, `--input-background`, `--input-border`.
@@ -317,4 +387,4 @@ The tokens those pages still rely on, defined in the upper part of `globals.css`
 - **Accent:** `--primary`, `--primary-hover`, `--tag-background`, `--tag-background-hover`, `--tag-text`.
 - **shadcn / editor:** `--card`, `--muted`, `--accent`, `--foreground`, `--ring`, `--brand`, `--highlight`.
 
-The shared nav and footer bridge the two worlds: their chrome remaps the legacy surface, text, border, primary, accent and ring tokens onto the `--bl-*` values, so the legacy language switcher, theme toggle and auth menu render in Build Log colours without being rewritten. That remap is transitional. Delete it once those widgets are restyled on `--bl-*` directly.
+The shared nav and footer, and the article page (for the prose, Plate and inline-code rules it still inherits), bridge the two worlds: they remap the legacy surface, text, border, primary, accent and ring tokens onto the `--bl-*` values, so the legacy language switcher, theme toggle and auth menu render in Build Log colours without being rewritten. That remap is transitional. Delete it once those widgets are restyled on `--bl-*` directly.

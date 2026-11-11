@@ -3,6 +3,7 @@ import { Fragment, type CSSProperties } from 'react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { getPublishedPosts, type PostSummary } from '@/lib/posts'
 import BranchSwitcher from '@/components/BranchSwitcher'
+import { OTHER_LANE, isoDate, rankTopics, shortId, subjectOf as subjectFor } from '@/lib/build-log'
 import { getBaseUrl, getFullUrl } from '@/lib/url'
 import type { Metadata } from 'next'
 
@@ -15,9 +16,6 @@ type Props = {
   params: Promise<{ locale: string }>
 }
 
-/** Rails: the four busiest tags get their own lane; every other tag folds into lane 4. */
-const TOPIC_LANES = 4
-const OTHER_LANE = 4
 /** Older posts shown in the log before it hands off to the full posts index. */
 const LOG_LIMIT = 12
 
@@ -33,37 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-/** Short display id derived from the post id (FNV-1a). Not a git commit hash. */
-function shortId(id: string): string {
-  let h = 0x811c9dc5
-  for (let i = 0; i < id.length; i++) {
-    h ^= id.charCodeAt(i)
-    h = Math.imul(h, 0x01000193)
-  }
-  return (h >>> 0).toString(16).padStart(8, '0').slice(0, 7)
-}
-
-const isoDate = (iso: string) => iso.slice(0, 10)
-
-/** Rank tags by post count (ties: most recently used first) and assign lanes. */
+/** Branches for the switcher: the ranked topic lanes plus the folded "other" lane. */
 function buildBranches(posts: PostSummary[]) {
-  const stats = new Map<string, Branch>()
-  for (const post of posts) {
-    for (const tag of post.tags) {
-      const s = stats.get(tag.slug)
-      if (s) {
-        s.count++
-        if (post.createdAt > s.latest) s.latest = post.createdAt
-      } else {
-        stats.set(tag.slug, { lane: -1, slug: tag.slug, name: tag.name, count: 1, latest: post.createdAt })
-      }
-    }
-  }
-  const topics = [...stats.values()]
-    .sort((a, b) => b.count - a.count || b.latest.localeCompare(a.latest))
-    .slice(0, TOPIC_LANES)
-    .map((b, i) => ({ ...b, lane: i }))
-  const laneOf = new Map(topics.map((b) => [b.slug, b.lane]))
+  const { topics, laneOf, stats } = rankTopics(posts)
 
   const lanesFor = (post: PostSummary): number[] => {
     const lanes = new Set<number>()
@@ -72,20 +42,7 @@ function buildBranches(posts: PostSummary[]) {
     return [...lanes].sort((a, b) => a - b)
   }
 
-  /**
-   * The post's own subject: a tag named in its title wins; otherwise its most
-   * specific (least-used) topic tag; otherwise its first tag. Never just the
-   * site's busiest tag.
-   */
-  const subjectOf = (post: PostSummary) => {
-    const title = post.title.toLowerCase()
-    const named = post.tags.find((tag) => title.includes(tag.name.toLowerCase()))
-    const topical = post.tags
-      .filter((tag) => laneOf.has(tag.slug))
-      .sort((a, b) => (stats.get(a.slug)?.count ?? 0) - (stats.get(b.slug)?.count ?? 0))[0]
-    const tag = named ?? topical ?? post.tags[0]
-    return { tag, lane: tag ? laneOf.get(tag.slug) ?? OTHER_LANE : OTHER_LANE }
-  }
+  const subjectOf = (post: PostSummary) => subjectFor(post, laneOf, stats)
 
   const otherPosts = posts.filter((p) => lanesFor(p).includes(OTHER_LANE))
   const branches: Branch[] = [...topics]
