@@ -8,7 +8,7 @@ export default async function VerifyRequestPage() {
       style={{
         backgroundColor: 'var(--background-secondary)',
         border: '1px solid var(--border)',
-        borderRadius: '12px',
+        borderRadius: 'calc(var(--radius) + 4px)',
         boxShadow: 'var(--shadow-sm)',
       }}
     >

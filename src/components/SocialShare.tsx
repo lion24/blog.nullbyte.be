@@ -89,13 +89,13 @@ export default function SocialShare({ url, title, translations }: SocialSharePro
         <button
           onClick={copyToClipboard}
           className={buttonClass}
-          style={{ backgroundColor: copied ? '#10B981' : 'var(--background-secondary)' }}
+          style={{ backgroundColor: copied ? 'var(--success)' : 'var(--background-secondary)' }}
           aria-label={translations.copyLink}
         >
           <FontAwesomeIcon
             icon={copied ? faCheck : faLink}
             className="text-lg"
-            style={{ color: copied ? 'white' : 'var(--text-primary)' }}
+            style={{ color: copied ? 'var(--text-inverse)' : 'var(--text-primary)' }}
           />
         </button>
       </div>

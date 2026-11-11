@@ -42,6 +42,21 @@ typography:
     fontSize: "2.25rem"
     fontWeight: 600
     lineHeight: 1.3
+  headline-md:
+    fontFamily: "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    fontSize: "1.875rem"
+    fontWeight: 600
+    lineHeight: 1.3
+  headline-sm:
+    fontFamily: "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    fontSize: "1.5rem"
+    fontWeight: 600
+    lineHeight: 1.3
+  subhead:
+    fontFamily: "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    fontSize: "1.125rem"
+    fontWeight: 600
+    lineHeight: 1.3
   title:
     fontFamily: "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
     fontSize: "1.25rem"
@@ -194,8 +209,8 @@ Dark mode is `data-theme="dark"`, or `prefers-color-scheme: dark` when no explic
 
 ### Hierarchy
 - **Display** (700, 3rem, ~1.1): the home hero headline only.
-- **Headline** (600, 2.25rem h1 → 1.875rem h2 → 1.5rem h3, 1.3): post titles and section headings. Headings are 600; card titles step up to 700.
-- **Title** (700, 1.25rem, tight): post-card titles.
+- **Headline** (600, 1.3): h1 2.25rem → h2 1.875rem (`headline-md`) → h3 1.5rem (`headline-sm`) → h4 1.25rem → h5 1.125rem (`subhead`) → h6 1rem. Set globally on the elements in `globals.css`; those unlayered rules outrank Tailwind `text-*` utilities, so a heading that needs a different size takes a class selector (see Post card).
+- **Title** (700, 1.25rem, 1.25, -0.01em, `text-wrap: balance`): post-card titles, via `.post-card-title` so it holds at either heading level.
 - **Body** (400, 1rem, 1.8 for paragraphs; 1.6 base): article prose, capped by the `max-w-4xl` article column. Excerpts drop to 0.875rem.
 - **Label** (500, 0.75rem): category chips, dates, reading time. Tags use the same size at 700.
 - **Code** (400, 0.875rem / 0.875em inline, 1.7): code blocks and inline code.
@@ -223,7 +238,7 @@ Mostly flat. Depth is carried by surface tone: page → surface → recessed in 
 
 ## Shapes
 
-Gently rounded everywhere, never sharp and never bubbly. The base radius is 10px (`--radius`), stepping 6 / 8 / 10 / 14px. Cards and buttons sit at 8px, hero CTAs at 10px, and the home hero panel at 16px. Inline code gets a 4px corner and code blocks 8px. Category chips are full pills, the only fully round form. Borders are 1px soft rules in the rule color. The blockquote's 4px primary-colored left rule is the one heavy stroke in the system.
+Gently rounded everywhere, never sharp and never bubbly. The base radius is 10px (`--radius`), stepping 6 / 8 / 10 / 14px. Cards and buttons sit at 8px, hero CTAs at 10px, auth panels at 14px, and the home hero panel at 16px. Inline code gets a 4px corner and code blocks 8px. Category chips are full pills, the only fully round form. Borders are 1px soft rules in the rule color. The blockquote's 4px primary-colored left rule is the one heavy stroke in the system.
 
 ## Components
 
@@ -240,7 +255,7 @@ Refined and restrained.
 - **Tag link:** not a chip. Bold 0.75rem fuchsia `#name` text, underlined on hover. At most 3 per card, then `+N`.
 
 ### Cards / Containers
-- **Post card:** surface background, 1px rule border, 8px radius, 24px padding, `shadow-sm`. Inside, top to bottom: categories, then a title (1.25rem/700) that turns primary on hover, then a 0.875rem graphite excerpt (150-char cap), then a ruled footer with pencil meta and tags plus a "Read →" link.
+- **Post card:** surface background, 1px rule border, 8px radius, 24px padding, `shadow-sm`. Inside, top to bottom: categories, then a title (`.post-card-title`, 1.25rem/700, balanced; rendered as h2 under a page h1 and h3 under a section h2 via `headingLevel`) that turns primary on hover, then a 0.875rem graphite excerpt (150-char cap), then a ruled footer with pencil meta and tags plus a "Read →" link.
 - **Hover:** `shadow-md` and rule-hover border, 200ms ease.
 
 ### Inputs / Fields

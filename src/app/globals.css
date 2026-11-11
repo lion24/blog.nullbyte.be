@@ -518,7 +518,7 @@ input::placeholder, textarea::placeholder {
 *:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 /* Link styles */
@@ -732,6 +732,17 @@ button:not(:disabled),
 .post-card:hover {
   box-shadow: var(--shadow-md) !important;
   border-color: var(--border-hover) !important;
+}
+
+/* Card title: the documented Title role (DESIGN.md: 700, 1.25rem, tight).
+   A class selector so it outranks the global h2/h3 rules whichever level the
+   card renders at (Tailwind utilities on the element would lose to them). */
+.post-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .post-card-category {

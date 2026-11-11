@@ -66,7 +66,7 @@ export default async function PostsPage({ params }: Props) {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {postsWithTranslations.map((post) => (
-            <PostCard key={post.id} post={post} locale={locale} translations={translations} />
+            <PostCard key={post.id} post={post} locale={locale} translations={translations} headingLevel={2} />
           ))}
         </div>
       )}
