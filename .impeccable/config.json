@@ -105,6 +105,12 @@
         ],
         "createdAt": "2026-11-11T12:31:44.796Z",
         "reason": "Agent: Facebook / Reddit brand fill on the share buttons' hover state (article page)"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "geist",
+        "createdAt": "2026-11-11T13:05:00.000Z",
+        "reason": "Agent: Geist is the incumbent family, recorded in DESIGN.md as The One Family Rule; replacing it is a redesign, not a fix (same basis as the overused-font ignore above)"
       }
     ]
   }
