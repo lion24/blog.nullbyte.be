@@ -4,286 +4,602 @@
   "title": "Design System: NullByte",
   "extensions": {
     "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Pale Steel",
+        "canonical": "#e9edf1",
+        "tonalRamp": [
+          "#090b0e",
+          "#222528",
+          "#3f4246",
+          "#5e6265",
+          "#7f8386",
+          "#a2a5a9",
+          "#c6cacd",
+          "#ebeff2"
+        ]
+      },
+      "ground-pressed": {
+        "role": "neutral",
+        "displayName": "Pressed Steel",
+        "canonical": "#dde2e8",
+        "tonalRamp": [
+          "#090b0f",
+          "#22252a",
+          "#3e4247",
+          "#5d6267",
+          "#7e8388",
+          "#a1a5ab",
+          "#c5cacf",
+          "#eaeff4"
+        ]
+      },
       "ink": {
         "role": "primary",
         "displayName": "Ink",
-        "canonical": "#1f2024",
+        "canonical": "#0d1117",
         "tonalRamp": [
-          "#0e0f11",
-          "#1f2024",
-          "#2c2e34",
-          "#3b3e46",
-          "#5a5d66",
-          "#80838b",
-          "#b4b6bc",
-          "#e6e7ea"
+          "#080b11",
+          "#21252c",
+          "#3d424a",
+          "#5c6269",
+          "#7d838b",
+          "#a0a5ae",
+          "#c4cad2",
+          "#e9eff7"
         ]
       },
-      "night-indigo": {
+      "ink-secondary": {
+        "role": "neutral",
+        "displayName": "Ink Secondary",
+        "canonical": "#363d48",
+        "tonalRamp": [
+          "#090b10",
+          "#20252e",
+          "#3b424e",
+          "#5a626e",
+          "#7b838f",
+          "#9ea6b1",
+          "#c4c9d2",
+          "#edeef1"
+        ]
+      },
+      "ink-tertiary": {
+        "role": "neutral",
+        "displayName": "Ink Tertiary",
+        "canonical": "#555e6b",
+        "tonalRamp": [
+          "#080b10",
+          "#1f252e",
+          "#3b434e",
+          "#59626f",
+          "#7a8390",
+          "#9ea6b1",
+          "#c4cad2",
+          "#edeff1"
+        ]
+      },
+      "on-accent": {
+        "role": "neutral",
+        "displayName": "On Accent",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "accent": {
         "role": "primary",
-        "displayName": "Night Indigo (dark-theme primary)",
-        "canonical": "#7891f6",
+        "displayName": "Cobalt Accent",
+        "canonical": "#1f4fd8",
         "tonalRamp": [
-          "#1e2a5c",
-          "#2f3f8a",
-          "#4a5fc4",
-          "#6178e6",
-          "#7891f6",
-          "#93a8f8",
-          "#aebcfa",
-          "#dde3fd"
+          "#000134",
+          "#010b74",
+          "#072bab",
+          "#2050d9",
+          "#4277fb",
+          "#78a2fd",
+          "#b0c9fd",
+          "#e7efff"
         ]
       },
-      "margin-fuchsia": {
+      "lane-vermilion": {
         "role": "secondary",
-        "displayName": "Margin Fuchsia (tags only)",
-        "canonical": "#a21caf",
+        "displayName": "Vermilion Rail (lane 0)",
+        "canonical": "#e8432a",
         "tonalRamp": [
-          "#4a044e",
-          "#701a75",
-          "#a21caf",
-          "#c026d3",
-          "#d946ef",
-          "#e879f9",
-          "#f0abfc",
-          "#fae8ff"
+          "#1e0000",
+          "#4b0500",
+          "#7d1101",
+          "#b21e05",
+          "#e33e25",
+          "#fc7760",
+          "#fdb4a6",
+          "#ffe9e4"
         ]
       },
-      "paper": {
-        "role": "neutral",
-        "displayName": "Paper",
-        "canonical": "#f7f6f3",
+      "lane-cobalt": {
+        "role": "secondary",
+        "displayName": "Cobalt Rail (lane 1)",
+        "canonical": "#1f4fd8",
         "tonalRamp": [
-          "#57534e",
-          "#6e6961",
-          "#a8a29e",
-          "#d4d1c8",
-          "#e8e6e0",
-          "#f1efe9",
-          "#f7f6f3",
-          "#fdfcfa"
+          "#000134",
+          "#010b74",
+          "#072bab",
+          "#2050d9",
+          "#4277fb",
+          "#78a2fd",
+          "#b0c9fd",
+          "#e7efff"
         ]
       },
-      "slate-page": {
-        "role": "neutral",
-        "displayName": "Slate Page (dark L0)",
-        "canonical": "#13161c",
+      "lane-green": {
+        "role": "secondary",
+        "displayName": "Green Rail (lane 2)",
+        "canonical": "#1b8a4b",
         "tonalRamp": [
-          "#0b0d11",
-          "#13161c",
-          "#1c1f27",
-          "#262a33",
-          "#2a2f3a",
-          "#3a4051",
-          "#878d99",
-          "#e6e8ee"
+          "#001004",
+          "#012e14",
+          "#065028",
+          "#10743d",
+          "#35985a",
+          "#6cb983",
+          "#a4d8b2",
+          "#e3f3e7"
+        ]
+      },
+      "lane-violet": {
+        "role": "secondary",
+        "displayName": "Violet Rail (lane 3)",
+        "canonical": "#7b3fe4",
+        "tonalRamp": [
+          "#0f002a",
+          "#2d0460",
+          "#4f01a2",
+          "#6f2dd4",
+          "#8e5bf8",
+          "#ab90fb",
+          "#cbbeff",
+          "#efecfe"
+        ]
+      },
+      "lane-other": {
+        "role": "secondary",
+        "displayName": "Other Rail (lane 4)",
+        "canonical": "#78818e",
+        "tonalRamp": [
+          "#080b10",
+          "#20252e",
+          "#3b434e",
+          "#59626e",
+          "#7a8390",
+          "#9ea6b1",
+          "#c4cad2",
+          "#edeff1"
+        ]
+      },
+      "ground-dark": {
+        "role": "neutral",
+        "displayName": "Pale Steel (dark theme)",
+        "canonical": "#171819",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#242526",
+          "#414243",
+          "#606163",
+          "#818284",
+          "#a4a5a6",
+          "#c8c9cb",
+          "#edeff0"
+        ]
+      },
+      "ground-pressed-dark": {
+        "role": "neutral",
+        "displayName": "Pressed Steel (dark theme)",
+        "canonical": "#222325",
+        "tonalRamp": [
+          "#0a0b0d",
+          "#242527",
+          "#414244",
+          "#606164",
+          "#818285",
+          "#a4a5a8",
+          "#c8c9cc",
+          "#edeef1"
+        ]
+      },
+      "ink-dark": {
+        "role": "primary",
+        "displayName": "Ink (dark theme)",
+        "canonical": "#eaeef3",
+        "tonalRamp": [
+          "#090b0e",
+          "#222529",
+          "#3f4246",
+          "#5e6266",
+          "#7f8387",
+          "#a2a5aa",
+          "#c6c9ce",
+          "#ebeff3"
+        ]
+      },
+      "ink-secondary-dark": {
+        "role": "neutral",
+        "displayName": "Ink Secondary (dark theme)",
+        "canonical": "#bcc3ce",
+        "tonalRamp": [
+          "#070b12",
+          "#20252e",
+          "#3d424b",
+          "#5b626b",
+          "#7c838d",
+          "#9fa5b0",
+          "#c3cad5",
+          "#e8eff9"
+        ]
+      },
+      "ink-tertiary-dark": {
+        "role": "neutral",
+        "displayName": "Ink Tertiary (dark theme)",
+        "canonical": "#9aa3b0",
+        "tonalRamp": [
+          "#080b10",
+          "#1f252f",
+          "#3b434e",
+          "#5a626e",
+          "#7a8390",
+          "#9da6b3",
+          "#c3cad3",
+          "#edeff1"
+        ]
+      },
+      "on-accent-dark": {
+        "role": "neutral",
+        "displayName": "On Accent (dark theme)",
+        "canonical": "#171819",
+        "tonalRamp": [
+          "#0a0b0c",
+          "#242526",
+          "#414243",
+          "#606163",
+          "#818284",
+          "#a4a5a6",
+          "#c8c9cb",
+          "#edeff0"
+        ]
+      },
+      "accent-dark": {
+        "role": "primary",
+        "displayName": "Cobalt Accent (dark theme)",
+        "canonical": "#5b85ff",
+        "tonalRamp": [
+          "#010232",
+          "#080d70",
+          "#172ea3",
+          "#3254c9",
+          "#5078f1",
+          "#7da1fd",
+          "#b2c8fd",
+          "#e7eeff"
+        ]
+      },
+      "lane-vermilion-dark": {
+        "role": "secondary",
+        "displayName": "Vermilion Rail (lane 0) (dark theme)",
+        "canonical": "#ff5a3d",
+        "tonalRamp": [
+          "#1d0100",
+          "#4a0600",
+          "#7a1705",
+          "#af260d",
+          "#e33e21",
+          "#fe755b",
+          "#ffb4a4",
+          "#fee9e4"
+        ]
+      },
+      "lane-cobalt-dark": {
+        "role": "secondary",
+        "displayName": "Cobalt Rail (lane 1) (dark theme)",
+        "canonical": "#5b85ff",
+        "tonalRamp": [
+          "#010232",
+          "#080d70",
+          "#172ea3",
+          "#3254c9",
+          "#5078f1",
+          "#7da1fd",
+          "#b2c8fd",
+          "#e7eeff"
+        ]
+      },
+      "lane-green-dark": {
+        "role": "secondary",
+        "displayName": "Green Rail (lane 2) (dark theme)",
+        "canonical": "#2fbf6e",
+        "tonalRamp": [
+          "#001004",
+          "#012e15",
+          "#035028",
+          "#0a743e",
+          "#139b55",
+          "#39c272",
+          "#8edfa7",
+          "#def6e4"
+        ]
+      },
+      "lane-violet-dark": {
+        "role": "secondary",
+        "displayName": "Violet Rail (lane 3) (dark theme)",
+        "canonical": "#a678ff",
+        "tonalRamp": [
+          "#100029",
+          "#2f025f",
+          "#510f99",
+          "#703cbf",
+          "#9061e6",
+          "#b08dfd",
+          "#cebdfd",
+          "#f0ebff"
+        ]
+      },
+      "lane-other-dark": {
+        "role": "secondary",
+        "displayName": "Other Rail (lane 4) (dark theme)",
+        "canonical": "#6b7480",
+        "tonalRamp": [
+          "#080b0f",
+          "#20262d",
+          "#3b434d",
+          "#59626e",
+          "#7a838f",
+          "#9ea6b0",
+          "#c4cad1",
+          "#edeff1"
         ]
       }
     },
     "typographyMeta": {
       "display": {
         "displayName": "Display",
-        "purpose": "Home hero headline only."
+        "purpose": "HEAD post title only (h2), clamp(2.25rem, 6.2vw, 5.5rem)."
       },
       "headline": {
         "displayName": "Headline",
-        "purpose": "Post titles and section headings (h1 2.25rem → h3 1.5rem, weight 600)."
+        "purpose": "Log-row titles (h2), clamp(1.375rem, 2.3vw, 2rem)."
       },
-      "title": {
-        "displayName": "Title",
-        "purpose": "Post-card titles."
+      "footer-mark": {
+        "displayName": "Footer Mark",
+        "purpose": "The mark that closes the log in the footer, clamp(2.25rem, 4vw, 3.25rem)."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Nav brand; 1.3125rem below 480px."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "HEAD excerpt, clamp(1.125rem, 1.6vw, 1.375rem), max 60ch."
+      },
+      "action": {
+        "displayName": "Action",
+        "purpose": "Primary button label."
+      },
+      "repo-line": {
+        "displayName": "Repo line",
+        "purpose": "The real SEO H1, set small as a repository description."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Article prose; 1.8 paragraph line-height inside a max-w-4xl column."
+        "purpose": "Log-row excerpts (max 70ch) and footer tagline."
       },
-      "label": {
-        "displayName": "Label",
-        "purpose": "Category chips, dates, reading time; tags at weight 700."
+      "nav-link": {
+        "displayName": "Nav link",
+        "purpose": "Nav and footer links."
       },
-      "code": {
-        "displayName": "Code",
-        "purpose": "Code blocks and inline code in Geist Mono."
+      "data": {
+        "displayName": "Data",
+        "purpose": "HEAD hash and stat line; Geist Mono, tabular numerals."
+      },
+      "data-sm": {
+        "displayName": "Data small",
+        "purpose": "Log-row meta, pill counts and dates."
       }
     },
-    "shadows": [
-      {
-        "name": "shadow-sm",
-        "value": "0 1px 2px 0 rgba(28, 25, 23, 0.04)",
-        "purpose": "Rest: nav bar and post cards. Dark: 0 1px 2px 0 rgba(0,0,0,0.4)."
-      },
-      {
-        "name": "shadow-md",
-        "value": "0 2px 4px -1px rgba(28, 25, 23, 0.06), 0 4px 8px -2px rgba(28, 25, 23, 0.04)",
-        "purpose": "Post-card hover lift only."
-      },
-      {
-        "name": "shadow-lg",
-        "value": "0 8px 16px -4px rgba(28, 25, 23, 0.08), 0 4px 8px -2px rgba(28, 25, 23, 0.04)",
-        "purpose": "Hero call-to-action buttons."
-      }
-    ],
+    "shadows": [],
     "motion": [
       {
-        "name": "link-color",
-        "value": "color 0.15s ease",
-        "purpose": "Link color change on hover."
+        "name": "rail-draw",
+        "value": "bl-draw 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; scaleY(0) from transform-origin bottom; delay (rows - rowIndex) * 55ms",
+        "purpose": "Rails draw up from the root to HEAD once on load. Off under prefers-reduced-motion."
       },
       {
-        "name": "card-lift",
-        "value": "box-shadow 0.2s ease, border-color 0.2s ease",
-        "purpose": "Post-card hover lift."
+        "name": "branch-filter-transition",
+        "value": "::view-transition-group(*) 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Log re-flow when a branch radio changes, via document.startViewTransition where supported; snaps under reduced motion."
       },
       {
-        "name": "chip-pop",
-        "value": "opacity 0.2s ease, transform 0.2s ease",
-        "purpose": "Category chip hover (scale 1.05, opacity 0.9 → 1)."
+        "name": "rail-hover-widen",
+        "value": "transform: scaleX(1.45); transition 0.25s ease-out",
+        "purpose": "Hovering a log row widens its primary lane's rail."
+      },
+      {
+        "name": "branch-dim",
+        "value": "opacity: 0.16; transition 0.25s ease-out",
+        "purpose": "Rails and nodes of lanes outside the selected branch recede."
+      },
+      {
+        "name": "cta-hover",
+        "value": "background-color, color 0.18s ease-out; arrow translateX(4px) 0.18s ease-out",
+        "purpose": "Primary button hover: ink to cobalt, arrow slides right."
+      },
+      {
+        "name": "pill-hover",
+        "value": "background-color, color 0.18s ease-out",
+        "purpose": "Branch pill hover and checked state changes."
       }
     ],
     "breakpoints": [
       {
+        "name": "xs",
+        "value": "480px",
+        "purpose": "Below: tighter nav gaps, smaller wordmark, narrower sign-in."
+      },
+      {
         "name": "sm",
-        "value": "640px"
+        "value": "640px",
+        "purpose": "Below: branch pills drop the last-post date."
       },
       {
         "name": "md",
-        "value": "768px"
+        "value": "768px",
+        "purpose": "Below: pill row becomes a horizontal scroller, nav hides Home; at and above: 3-column footer."
       },
       {
-        "name": "lg",
-        "value": "1024px"
-      },
-      {
-        "name": "xl",
-        "value": "1280px"
+        "name": "fluid",
+        "value": "clamp() ranges up to the 1440px wrap",
+        "purpose": "Gutter clamp(16px, 3.5vw, 48px); lane gap clamp(12px, 3.2vw, 56px); rail clamp(8px, 1.3vw, 18px); node clamp(18px, 3.4vw, 48px); display clamp(2.25rem, 6.2vw, 5.5rem). Wrap max 1440px."
       }
     ]
   },
   "components": [
     {
-      "name": "Primary Button",
-      "kind": "button",
-      "refersTo": "button-primary",
-      "description": "Default action. Ink by day, indigo by night.",
-      "html": "<button class=\"ds-btn-primary\">Publish post</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 8px 16px; border: none; border-radius: 8px; background: var(--primary, #1f2024); color: var(--primary-foreground, #fdfcfa); font: 500 0.875rem/1 var(--font-sans, Geist, system-ui, sans-serif); cursor: pointer; transition: background-color 0.15s ease; } .ds-btn-primary:hover { background: var(--primary-hover, #2c2e34); } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; }"
-    },
-    {
-      "name": "Secondary Button",
-      "kind": "button",
-      "refersTo": "button-secondary",
-      "description": "Quiet alternative action on a recessed fill.",
-      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
-      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; height: 36px; padding: 8px 16px; border: 1px solid var(--border, #e8e6e0); border-radius: 8px; background: var(--background-tertiary, #f1efe9); color: var(--text-primary, #1f2024); font: 500 0.875rem/1 var(--font-sans, Geist, system-ui, sans-serif); cursor: pointer; transition: background-color 0.15s ease; } .ds-btn-secondary:hover { background: var(--border, #e8e6e0); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; }"
-    },
-    {
-      "name": "Hero CTA",
-      "kind": "button",
-      "refersTo": "button-cta",
-      "description": "Larger raised call-to-action used in the home hero.",
-      "html": "<a class=\"ds-btn-cta\" href=\"#\">All Posts</a>",
-      "css": ".ds-btn-cta { display: inline-block; padding: 12px 24px; border-radius: 10px; background: var(--primary, #1f2024); color: var(--text-inverse, #ffffff); font: 500 1rem/1.5 var(--font-sans, Geist, system-ui, sans-serif); text-decoration: none; box-shadow: var(--shadow-lg, 0 8px 16px -4px rgba(28,25,23,0.08), 0 4px 8px -2px rgba(28,25,23,0.04)); transition: background-color 0.2s ease; } .ds-btn-cta:hover { background: var(--primary-hover, #2c2e34); } .ds-btn-cta:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; }"
-    },
-    {
-      "name": "Text Input",
-      "kind": "input",
-      "refersTo": "input",
-      "description": "Single-line field on the surface tone.",
-      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Search posts…\" />",
-      "css": ".ds-input { height: 36px; width: 280px; padding: 4px 12px; border: 1px solid var(--input-border, #dcdad3); border-radius: 8px; background: var(--input-background, #fdfcfa); color: var(--text-primary, #1f2024); font: 400 0.875rem/1.4 var(--font-sans, Geist, system-ui, sans-serif); transition: border-color 0.15s ease, box-shadow 0.15s ease; } .ds-input::placeholder { color: var(--input-placeholder, #a8a29e); } .ds-input:focus-visible { outline: none; border-color: var(--ring, #94a3b8); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #94a3b8) 50%, transparent); }"
-    },
-    {
       "name": "Navigation Bar",
       "kind": "nav",
       "refersTo": "nav-bar",
-      "description": "64px surface bar: wordmark, links, utilities.",
-      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-brand\" href=\"#\">NullByte</a><a class=\"ds-nav-link\" href=\"#\">Home</a><a class=\"ds-nav-link\" href=\"#\">Posts</a></nav>",
-      "css": ".ds-nav { display: flex; align-items: center; gap: 16px; height: 64px; padding: 0 16px; background: var(--background-secondary, #fdfcfa); border-bottom: 1px solid var(--border, #e8e6e0); box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(28,25,23,0.04)); font-family: var(--font-sans, Geist, system-ui, sans-serif); } .ds-nav-brand { margin-right: 16px; font-size: 1.25rem; font-weight: 700; color: var(--text-primary, #1f2024); text-decoration: none; } .ds-nav-link { color: var(--text-secondary, #57534e); text-decoration: none; transition: color 0.15s ease; } .ds-nav-link:hover { color: var(--text-primary, #1f2024); } .ds-nav-link:focus-visible, .ds-nav-brand:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; border-radius: 2px; }"
+      "description": "64px bar on the ground with a 2px ink rule beneath; wordmark, Home/Posts links, tools at right.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-wordmark\" href=\"#\">NullByte</a><div class=\"ds-nav-links\"><a class=\"ds-nav-link\" href=\"#\">Home</a><a class=\"ds-nav-link\" href=\"#\">Posts</a></div><div class=\"ds-nav-tools\"><a class=\"ds-nav-link\" href=\"#\">EN</a></div></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 32px; min-height: 64px; padding: 0 24px; background: var(--bl-ground, #e9edf1); color: var(--bl-ink, #0d1117); border-bottom: 2px solid var(--bl-ink, #0d1117); font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; } .ds-nav-wordmark { font-weight: 800; font-size: 1.5rem; letter-spacing: -0.03em; color: var(--bl-ink, #0d1117); text-decoration: none; } .ds-nav-links { display: flex; gap: 24px; } .ds-nav-link { font-size: 1rem; font-weight: 600; color: var(--bl-ink-2, #363d48); text-decoration: none; padding-block: 4px; border-bottom: 2px solid transparent; } .ds-nav-link:hover { color: var(--bl-ink, #0d1117); border-bottom-color: var(--bl-ink, #0d1117); } .ds-nav-link:focus-visible, .ds-nav-wordmark:focus-visible { outline: 2px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; border-radius: 4px; } .ds-nav-tools { margin-left: auto; display: flex; align-items: center; gap: 16px; }"
     },
     {
-      "name": "Category Chip",
+      "name": "Branch Pill",
       "kind": "chip",
-      "refersTo": "chip-category",
-      "description": "Pill-shaped category link at the top of a post card.",
-      "html": "<a class=\"ds-chip-category\" href=\"#\">Next.js</a>",
-      "css": ".ds-chip-category { display: inline-block; padding: 4px 10px; border-radius: 9999px; background: var(--primary, #1f2024); color: var(--text-inverse, #ffffff); font: 500 0.75rem/1.4 var(--font-sans, Geist, system-ui, sans-serif); text-decoration: none; opacity: 0.9; transition: opacity 0.2s ease, transform 0.2s ease; } .ds-chip-category:hover { opacity: 1; transform: scale(1.05); } .ds-chip-category:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; }"
+      "refersTo": "branch-pill",
+      "description": "Topic filter radio as a 2px-outlined capsule: swatch, name, mono count and last date. Checked inverts to ink.",
+      "html": "<div class=\"ds-branches\"><span class=\"ds-branch\"><input type=\"radio\" name=\"ds-branch-demo\" id=\"ds-branch-all\" checked><label for=\"ds-branch-all\">all <span class=\"ds-branch-stat\">13</span></label></span><span class=\"ds-branch\"><input type=\"radio\" name=\"ds-branch-demo\" id=\"ds-branch-0\"><label for=\"ds-branch-0\"><span class=\"ds-branch-swatch ds-lane-0\"></span>JavaScript <span class=\"ds-branch-stat\">6 · 2026-05-03</span></label></span><span class=\"ds-branch\"><input type=\"radio\" name=\"ds-branch-demo\" id=\"ds-branch-1\"><label for=\"ds-branch-1\"><span class=\"ds-branch-swatch ds-lane-1\"></span>PostgreSQL <span class=\"ds-branch-stat\">6 · 2026-04-26</span></label></span></div>",
+      "css": ".ds-branches { display: flex; flex-wrap: wrap; gap: 6px; font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; } .ds-branch { position: relative; } .ds-branch input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; } .ds-branch label { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 11px 4px 8px; white-space: nowrap; border: 2px solid var(--bl-ink, #0d1117); border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 0.9375rem; color: var(--bl-ink, #0d1117); background: var(--bl-ground, #e9edf1); transition: background-color 0.18s ease-out, color 0.18s ease-out; } .ds-branch label:hover { background: var(--bl-ground-2, #dde2e8); } .ds-branch input:checked + label { background: var(--bl-ink, #0d1117); color: var(--bl-ground, #e9edf1); } .ds-branch input:focus-visible + label { outline: 3px solid var(--bl-accent, #1f4fd8); outline-offset: 3px; } .ds-branch-swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; } .ds-lane-0 { background: var(--bl-lane-0, #e8432a); } .ds-lane-1 { background: var(--bl-lane-1, #1f4fd8); } .ds-branch-stat { font-family: var(--font-geist-mono, 'Geist Mono'), ui-monospace, 'SF Mono', Menlo, monospace; font-variant-numeric: tabular-nums; font-weight: 500; font-size: 0.75rem; opacity: 0.85; }"
     },
     {
-      "name": "Tag Link",
-      "kind": "chip",
-      "refersTo": "link-tag",
-      "description": "The fuchsia margin mark: bold #tag text, the only saturated element.",
-      "html": "<span class=\"ds-tags\"><a class=\"ds-tag\" href=\"#\">#prisma</a><a class=\"ds-tag\" href=\"#\">#i18n</a><span class=\"ds-tag-more\">+2</span></span>",
-      "css": ".ds-tags { display: inline-flex; gap: 8px; font: 700 0.75rem/1.4 var(--font-sans, Geist, system-ui, sans-serif); } .ds-tag { color: var(--tag-background, #a21caf); text-decoration: none; transition: color 0.15s ease; } .ds-tag:hover { color: var(--tag-background-hover, #86198f); text-decoration: underline; } .ds-tag:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; border-radius: 2px; } .ds-tag-more { color: var(--tag-background, #a21caf); }"
-    },
-    {
-      "name": "Post Card",
-      "kind": "card",
-      "refersTo": "card-post",
-      "description": "Listing card: categories, title, excerpt, ruled meta footer with tags and Read link.",
-      "html": "<article class=\"ds-card\"><a class=\"ds-card-chip\" href=\"#\">Next.js</a><h3 class=\"ds-card-title\"><a href=\"#\">Upgrading to Next.js 16 without breaking i18n</a></h3><p class=\"ds-card-excerpt\">What actually changed in the App Router, and the three fixes this blog needed to keep both locales rendering.</p><div class=\"ds-card-meta\"><span>Nov 11, 2026 • 8 min read</span><div class=\"ds-card-foot\"><a class=\"ds-card-tag\" href=\"#\">#nextjs</a><a class=\"ds-card-read\" href=\"#\">Read →</a></div></div></article>",
-      "css": ".ds-card { display: flex; flex-direction: column; max-width: 360px; padding: 24px; border: 1px solid var(--border, #e8e6e0); border-radius: 8px; background: var(--background-secondary, #fdfcfa); box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(28,25,23,0.04)); font-family: var(--font-sans, Geist, system-ui, sans-serif); transition: box-shadow 0.2s ease, border-color 0.2s ease; } .ds-card:hover { box-shadow: var(--shadow-md, 0 2px 4px -1px rgba(28,25,23,0.06), 0 4px 8px -2px rgba(28,25,23,0.04)); border-color: var(--border-hover, #d4d1c8); } .ds-card-chip { align-self: flex-start; margin-bottom: 12px; padding: 4px 10px; border-radius: 9999px; background: var(--primary, #1f2024); color: var(--text-inverse, #ffffff); font-size: 0.75rem; font-weight: 500; text-decoration: none; } .ds-card-title { margin: 0 0 12px; font-size: 1.25rem; font-weight: 700; line-height: 1.25; } .ds-card-title a { color: var(--text-primary, #1f2024); text-decoration: none; } .ds-card-title a:hover { color: var(--primary, #1f2024); text-decoration: underline; } .ds-card-excerpt { margin: 0 0 16px; font-size: 0.875rem; line-height: 1.625; color: var(--text-secondary, #57534e); } .ds-card-meta { padding-top: 16px; border-top: 1px solid var(--border, #e8e6e0); font-size: 0.75rem; color: var(--text-tertiary, #6e6961); } .ds-card-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; } .ds-card-tag { font-weight: 700; color: var(--tag-background, #a21caf); text-decoration: none; } .ds-card-read { font-size: 0.875rem; font-weight: 500; color: var(--primary, #1f2024); text-decoration: none; } .ds-card-read:hover { color: var(--primary-hover, #2c2e34); } .ds-card a:focus-visible { outline: 2px solid var(--ring, #94a3b8); outline-offset: 2px; border-radius: 2px; }"
-    },
-    {
-      "name": "Code Block",
+      "name": "HEAD Commit Block",
       "kind": "custom",
-      "refersTo": "code",
-      "description": "Signature recessed code surface with inline code lozenge.",
-      "html": "<div class=\"ds-code-wrap\"><p class=\"ds-code-p\">Run <code class=\"ds-code-inline\">prisma migrate deploy</code> before the build:</p><pre class=\"ds-code-block\"><code>\"vercel-build\": \"prisma generate &amp;&amp; prisma migrate deploy &amp;&amp; next build\"</code></pre></div>",
-      "css": ".ds-code-wrap { max-width: 560px; font-family: var(--font-sans, Geist, system-ui, sans-serif); color: var(--text-primary, #1f2024); } .ds-code-p { margin: 0 0 12px; line-height: 1.8; } .ds-code-inline { padding: 2px 6px; border: 1px solid var(--border, #e8e6e0); border-radius: 4px; background: var(--background-tertiary, #f1efe9); font: 400 0.875em var(--font-mono, 'Geist Mono', 'SF Mono', Monaco, monospace); white-space: nowrap; } .ds-code-block { margin: 0; padding: 16px; overflow-x: auto; border: 1px solid var(--border, #e8e6e0); border-radius: 8px; background: var(--background-tertiary, #f1efe9); font: 400 0.875rem/1.7 var(--font-mono, 'Geist Mono', 'SF Mono', Monaco, monospace); white-space: pre; }"
+      "refersTo": "head-title",
+      "description": "The latest post at poster scale: mono ref line with HEAD chip, display title, lead excerpt, mono stat line.",
+      "html": "<article class=\"ds-head\"><div class=\"ds-head-ref\"><span class=\"ds-head-hash\">d74a470</span><span class=\"ds-head-chip\">HEAD → Node.js</span></div><h2 class=\"ds-head-title\"><a href=\"#\">Building Scalable APIs with Node.js</a></h2><p class=\"ds-head-excerpt\">Best practices for building production-ready APIs with Node.js.</p><p class=\"ds-head-stats\">1 min read <span class=\"ds-head-sep\">·</span> 56 words <span class=\"ds-head-sep\">·</span> 1 code block <span class=\"ds-head-sep\">·</span> 2026-05-03</p></article>",
+      "css": ".ds-head { font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; color: var(--bl-ink, #0d1117); background: var(--bl-ground, #e9edf1); padding: 12px 24px 36px; } .ds-head-ref { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; font-family: var(--font-geist-mono, 'Geist Mono'), ui-monospace, 'SF Mono', Menlo, monospace; font-variant-numeric: tabular-nums; } .ds-head-hash { font-size: 0.9375rem; font-weight: 700; color: var(--bl-ink-2, #363d48); } .ds-head-chip { font-size: 0.8125rem; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: var(--bl-ink, #0d1117); color: var(--bl-ground, #e9edf1); } .ds-head-title { font-size: clamp(2.25rem, 6.2vw, 5.5rem); font-weight: 800; line-height: 0.98; letter-spacing: -0.035em; margin: 0 0 24px; max-width: 16ch; text-wrap: balance; } .ds-head-title a { color: var(--bl-ink, #0d1117); text-decoration: none; } .ds-head-title a:hover { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.12em; } .ds-head-title a:focus-visible { outline: 2px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; } .ds-head-excerpt { font-size: clamp(1.125rem, 1.6vw, 1.375rem); line-height: 1.45; color: var(--bl-ink-2, #363d48); max-width: 60ch; margin: 0 0 18px; } .ds-head-stats { font-family: var(--font-geist-mono, 'Geist Mono'), ui-monospace, 'SF Mono', Menlo, monospace; font-variant-numeric: tabular-nums; font-size: 0.9375rem; font-weight: 600; line-height: 1.9; color: var(--bl-ink-2, #363d48); margin: 0; } .ds-head-sep { color: var(--bl-ink-3, #555e6b); }"
+    },
+    {
+      "name": "Primary Button (Read the latest)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one ink action per page; hover swaps to cobalt and slides the arrow.",
+      "html": "<a class=\"ds-cta\" href=\"#\">Read the latest <span class=\"ds-cta-arrow\" aria-hidden=\"true\">→</span></a>",
+      "css": ".ds-cta { display: inline-flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 26px; border-radius: 8px; background: var(--bl-ink, #0d1117); color: var(--bl-ground, #e9edf1); font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; text-decoration: none; transition: background-color 0.18s ease-out, color 0.18s ease-out; } .ds-cta:hover { background: var(--bl-accent, #1f4fd8); color: var(--bl-on-accent, #ffffff); } .ds-cta:focus-visible { outline: 3px solid var(--bl-accent, #1f4fd8); outline-offset: 4px; } .ds-cta-arrow { transition: transform 0.18s ease-out; } .ds-cta:hover .ds-cta-arrow { transform: translateX(4px); } @media (prefers-reduced-motion: reduce) { .ds-cta, .ds-cta-arrow { transition: none; } }"
+    },
+    {
+      "name": "Log Row with Rails",
+      "kind": "custom",
+      "refersTo": "log-row",
+      "description": "A commit row: graph cell with rails and an ink-ring node, 2px ink rule, headline title, excerpt, mono meta and topic links. Hover widens the row's rail.",
+      "html": "<ol class=\"ds-log\"><li class=\"ds-row\"><div class=\"ds-graph\" aria-hidden=\"true\"><span class=\"ds-seg ds-l0\"></span><span class=\"ds-seg ds-l1 ds-primary\"></span><span class=\"ds-node ds-l1\"></span><span class=\"ds-node ds-dot ds-l0\"></span></div><article class=\"ds-row-content\"><h2 class=\"ds-row-title\"><a href=\"#\">Understanding Prisma ORM</a></h2><p class=\"ds-row-excerpt\">Deep dive into Prisma ORM and how it simplifies database operations.</p><div class=\"ds-row-meta\"><span>c5e0f83</span><span>2026-05-03</span><span>1 min read</span><a class=\"ds-row-topic ds-l1\" href=\"#\">PostgreSQL</a><a class=\"ds-row-topic ds-l0\" href=\"#\">JavaScript</a></div></article></li></ol>",
+      "css": ".ds-log { list-style: none; margin: 0; padding: 0; background: var(--bl-ground, #e9edf1); color: var(--bl-ink, #0d1117); font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; } .ds-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); } .ds-graph { position: relative; } .ds-seg, .ds-node { position: absolute; } .ds-seg { top: 0; bottom: 0; width: 12px; background: var(--ds-lane); transform-origin: bottom; animation: ds-draw 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; transition: transform 0.25s ease-out; } .ds-l0 { --ds-lane: var(--bl-lane-0, #e8432a); --ds-x: 16px; } .ds-l1 { --ds-lane: var(--bl-lane-1, #1f4fd8); --ds-x: 56px; } .ds-seg { left: var(--ds-x); } .ds-row:hover .ds-seg.ds-primary { transform: scaleX(1.45); } .ds-node { top: calc(34px - 18px); left: calc(var(--ds-x) + 6px - 18px); width: 36px; height: 36px; border-radius: 50%; background: var(--bl-ground, #e9edf1); border: 7px solid var(--bl-ink, #0d1117); z-index: 1; } .ds-dot { top: calc(34px - 9px); left: calc(var(--ds-x) + 6px - 9px); width: 18px; height: 18px; border-width: 3px; background: var(--ds-lane); } @keyframes ds-draw { from { transform: scaleY(0); } } .ds-row-content { min-width: 0; padding: 18px 0 26px; border-top: 2px solid var(--bl-ink, #0d1117); } .ds-row-title { font-size: clamp(1.375rem, 2.3vw, 2rem); font-weight: 750; line-height: 1.12; letter-spacing: -0.025em; margin: 0 0 10px; } .ds-row-title a { color: var(--bl-ink, #0d1117); text-decoration: none; } .ds-row-title a:hover { text-decoration: underline; text-decoration-thickness: 0.06em; text-underline-offset: 0.12em; } .ds-row-title a:focus-visible { outline: 2px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; } .ds-row-excerpt { font-size: 1rem; line-height: 1.5; color: var(--bl-ink-2, #363d48); margin: 0 0 10px; max-width: 70ch; } .ds-row-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-family: var(--font-geist-mono, 'Geist Mono'), ui-monospace, 'SF Mono', Menlo, monospace; font-variant-numeric: tabular-nums; font-size: 0.8125rem; font-weight: 600; color: var(--bl-ink-3, #555e6b); } .ds-row-topic { font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; font-size: 0.875rem; color: var(--bl-ink-2, #363d48); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; } .ds-row-topic::before { content: \"\"; width: 9px; height: 9px; border-radius: 2px; background: var(--ds-lane); } .ds-row-topic:hover { color: var(--bl-ink, #0d1117); text-decoration: underline; } .ds-row-topic:focus-visible { outline: 2px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; } @media (prefers-reduced-motion: reduce) { .ds-seg { animation: none; transition: none; } }"
+    },
+    {
+      "name": "Topic Link",
+      "kind": "chip",
+      "refersTo": "topic-link",
+      "description": "A tag named in text, led by a small lane-coloured square. Never a filled chip.",
+      "html": "<span class=\"ds-topics\"><a class=\"ds-topic ds-topic-2\" href=\"#\">Node.js</a><a class=\"ds-topic ds-topic-3\" href=\"#\">Database</a><a class=\"ds-topic ds-topic-4\" href=\"#\">React</a></span>",
+      "css": ".ds-topics { display: inline-flex; gap: 14px; background: var(--bl-ground, #e9edf1); padding: 8px; } .ds-topic { font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; font-size: 0.875rem; color: var(--bl-ink-2, #363d48); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; } .ds-topic::before { content: \"\"; width: 9px; height: 9px; border-radius: 2px; background: var(--ds-lane); } .ds-topic-2 { --ds-lane: var(--bl-lane-2, #1b8a4b); } .ds-topic-3 { --ds-lane: var(--bl-lane-3, #7b3fe4); } .ds-topic-4 { --ds-lane: var(--bl-lane-4, #78818e); } .ds-topic:hover { color: var(--bl-ink, #0d1117); text-decoration: underline; } .ds-topic:focus-visible { outline: 2px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; border-radius: 4px; }"
+    },
+    {
+      "name": "Footer",
+      "kind": "custom",
+      "refersTo": "footer",
+      "description": "The log's close: 2px ink rule, footer mark and tagline, link columns, ruled copyright line.",
+      "html": "<footer class=\"ds-footer\"><div class=\"ds-footer-grid\"><div><p class=\"ds-footer-mark\">NullByte</p><p class=\"ds-footer-tagline\">Tutorials and engineering insights from things actually built.</p></div><div><h2 class=\"ds-footer-heading\">Quick Links</h2><ul class=\"ds-footer-links\"><li><a class=\"ds-footer-link\" href=\"#\">Home</a></li><li><a class=\"ds-footer-link\" href=\"#\">All posts</a></li></ul></div></div><div class=\"ds-footer-base\">© 2026 NullByte</div></footer>",
+      "css": ".ds-footer { background: var(--bl-ground, #e9edf1); color: var(--bl-ink, #0d1117); border-top: 2px solid var(--bl-ink, #0d1117); font-family: var(--font-display, 'Schibsted Grotesk'), system-ui, sans-serif; padding: 0 24px; } .ds-footer-grid { display: grid; gap: 32px; grid-template-columns: 2fr 1fr; padding: 48px 0 28px; } .ds-footer-mark { font-size: clamp(2.25rem, 4vw, 3.25rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin: 0 0 14px; } .ds-footer-tagline { font-size: 1rem; line-height: 1.5; color: var(--bl-ink-2, #363d48); max-width: 44ch; margin: 0; } .ds-footer-heading { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--bl-ink-3, #555e6b); margin: 0 0 12px; } .ds-footer-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; } .ds-footer-link { font-size: 1rem; font-weight: 600; color: var(--bl-ink-2, #363d48); text-decoration: none; } .ds-footer-link:hover { color: var(--bl-ink, #0d1117); text-decoration: underline; text-underline-offset: 0.15em; } .ds-footer-link:focus-visible { outline: 2px solid var(--bl-accent, #1f4fd8); outline-offset: 2px; border-radius: 4px; } .ds-footer-base { border-top: 2px solid var(--bl-ink, #0d1117); padding: 16px 0 24px; font-size: 0.875rem; color: var(--bl-ink-3, #555e6b); }"
     }
   ],
   "narrative": {
-    "northStar": "The Engineer's Notebook",
-    "overview": "NullByte reads like a well-kept engineering notebook: warm paper, calm ink, and code given the same care as prose. The system exists to carry long, technical, hands-on tutorials, so almost everything recedes. Surfaces are tonal rather than outlined. Type is a single sans family (Geist) with its mono sibling for code. Color is held back until it means something.\n\nThe notebook has two lighting conditions. By day (light theme), it is warm off-white paper with dark-slate ink, and the primary action *is* the ink. By night (dark theme), it is layered slate with moonlight text, and a refined indigo takes over as the accent. Both themes share one grammar: page < surface < recessed, soft rules instead of hard borders, and shadows that only whisper.\n\nOne mark breaks the restraint on purpose. The fuchsia `#tag` is the margin annotation: the one saturated note on the page. It lets readers jump sideways to related work.",
+    "northStar": "The Build Log",
+    "overview": "NullByte is a build log: every post is a commit in the history of something actually built, newest first, drawn as `git log --graph` at poster scale. Topics are branches. Each branch is a full-saturation rail that owns its column from the root of the log up to the newest post on it, and every post sits on its rails as a thick ink-ring node. The latest post is HEAD and is set at headline scale with its real stats; older posts follow as log rows separated by 2px ink rules.\n\nThe material is paper-flat. A pale steel ground by day and deep graphite by night, near-black (or near-white) ink, and colour reserved for the rails. Commit messages are set in a heavy, tightly tracked grotesk (Schibsted Grotesk). Monospace (Geist Mono) appears only on the data line: hashes, dates and counts. Nothing floats: there are no cards, no shadows and no rounded panels. Structure comes from ink rules and the rails themselves.\n\nThe world refuses the blog template of a hero image over a row of equal cards. It also refuses the dark-terminal costume: no neon, no glow, no monospace headlines, and no fake git history (the short hash is a display id derived from the post id).",
     "keyCharacteristics": [
-      "Warm-neutral paper (light) / layered cool slate (dark), never pure white or pure black.",
-      "Depth through surface tone first, soft shadow second.",
-      "Ink-as-primary in light mode; indigo-as-primary in dark mode.",
-      "A single accent of fuchsia, reserved for tags.",
-      "Reading comfort is the deciding factor: generous line-height (1.8 for paragraphs), a capped article width (`max-w-4xl`).",
-      "Code is a first-class surface: recessed background, soft rule, Geist Mono."
+      "Pale steel ground (light) / deep graphite ground (dark), with ink rather than tinted surfaces.",
+      "Four full-saturation topic rails (vermilion, cobalt, green, violet) plus one neutral \"other\" rail.",
+      "Heavy, tightly tracked Schibsted Grotesk for titles; Geist Mono only for the data line.",
+      "2px ink rules as the only structure; no cards, no shadows, no rounded panels.",
+      "Rails draw up from the root to HEAD once on load; hovering a row widens its rail.",
+      "The branch switcher filters the log by topic with pure CSS, enhanced by a view transition."
     ],
     "rules": [
       {
-        "name": "The Two Lights Rule",
-        "body": "Primary means *ink* by day and *indigo* by night. Always use `var(--primary)`; never hard-code either hex in a component.",
+        "name": "The Rail Rule",
+        "body": "There are exactly four topic rails and one \"other\" rail. Lane colour follows tag rank (the four busiest tags), not tag identity, so a tag can change colour as the log grows. A fifth colour is never added; extra topics fold into \"other\".",
         "section": "colors"
       },
       {
-        "name": "The Margin Mark Rule",
-        "body": "Fuchsia belongs to tags and nothing else. A second fuchsia element on a screen dilutes the one thing it signals.",
+        "name": "The Named Topic Rule",
+        "body": "Colour never identifies a topic alone. Every swatch sits beside the topic's name in text: the branch pill names its branch, the topic link names its tag, the HEAD chip names the post's subject.",
         "section": "colors"
       },
       {
-        "name": "The No Pure Extremes Rule",
-        "body": "No `#ffffff` page or `#000000` text in either theme. Paper and slate are the floor and the ceiling.",
+        "name": "The Ink First Rule",
+        "body": "Resting actions and selected states are ink. The cobalt accent appears on actions and links only as a response (hover, focus, selection), never as a resting button or link colour.",
         "section": "colors"
       },
       {
-        "name": "The One Family Rule",
-        "body": "Geist and Geist Mono only. Hierarchy is weight and scale, never a second display face.",
+        "name": "The Data Line Rule",
+        "body": "Geist Mono carries data: hashes, dates, counts and the units that belong to them. Titles, excerpts, nav, footer and topic links are always Schibsted Grotesk, even when they sit inside a mono line (topic links reset the family).",
         "section": "typography"
       },
       {
-        "name": "The Tone Before Shadow Rule",
-        "body": "Reach for a surface tier before reaching for a shadow. A shadow appears at rest only as a whisper (`shadow-sm`) and grows only in response to hover.",
+        "name": "The Small H1 Rule",
+        "body": "The SEO H1 stays the page's real H1, set small as the repository line. The visual focus is the HEAD title, an h2. Never promote the visual focus to h1 or drop the H1 to fix the hierarchy.",
+        "section": "typography"
+      },
+      {
+        "name": "The Class Selector Rule",
+        "body": "`globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Log Rule",
+        "body": "No cards, no shadows, no rounded panels. If content needs separating, use a 2px ink rule; if it needs grouping, put it on the log.",
         "section": "elevation"
+      },
+      {
+        "name": "The Draw Once Rule",
+        "body": "Rails draw once, on load, from the root up to HEAD. Under `prefers-reduced-motion` they appear already drawn, and the rail, node, row, pill and button transitions are off.",
+        "section": "components"
+      },
+      {
+        "name": "The CSS-First Filter Rule",
+        "body": "The branch filter is radio inputs read by `:has()` selectors and works without JavaScript. A client wrapper only adds a view transition (0.35s, same easing) where `startViewTransition` exists and reduced motion is off; otherwise the change snaps.",
+        "section": "components"
       }
     ],
     "dos": [
-      "Do drive every color from CSS custom properties (`var(--primary)`, `var(--background-secondary)` …) so both themes stay in sync.",
-      "Do express depth with the surface tiers (paper → surface → recessed / L0 → L1 → L2) before adding any shadow.",
-      "Do keep keyboard focus on `:focus-visible` with the `--ring` color, 2px, 2px offset.",
-      "Do cap article content at the `max-w-4xl` column with 1.8 paragraph line-height.",
-      "Do treat code as first-class: recessed surface, soft rule, Geist Mono."
+      "**Do** read every colour from the `--bl-*` custom properties so the light and dark values switch together.",
+      "**Do** separate content with 2px ink rules and let the rails carry the structure.",
+      "**Do** name the topic in text next to every lane colour.",
+      "**Do** keep Geist Mono to hashes, dates and counts, with tabular numerals.",
+      "**Do** keep keyboard focus cobalt: the world remaps `--ring` to the accent, so links take the global 2px outline and the branch pill and primary button take a 3px outline.",
+      "**Do** style world elements through their own class selectors, since the global element rules outrank utilities.",
+      "**Do** honour reduced motion: no rail draw, no view transition, no rail, pill or button transitions."
     ],
     "donts": [
-      "Don't hard-code accent hexes or reach for raw Tailwind palette classes (`gray-*`, `blue-*`). Use the tokens; they already switch with the theme, so `dark:` overrides should be rare.",
-      "Don't use fuchsia for anything but tags.",
-      "Don't use pure `#ffffff` / `#000000` surfaces or text.",
-      "Don't introduce a second typeface. Geist and Geist Mono carry the whole system.",
-      "Don't put structural shadows on resting elements beyond `shadow-sm`. Lift is a hover response."
+      "**Don't** add cards, shadows or rounded panels to this world.",
+      "**Don't** add a fifth topic colour; fold extra topics into the \"other\" rail.",
+      "**Don't** set titles, excerpts, navigation or topic names in monospace.",
+      "**Don't** use neon, glows or a dark-terminal costume.",
+      "**Don't** present the short hash as a real git commit or invent history the posts don't have.",
+      "**Don't** use the cobalt accent as a resting button or link colour.",
+      "**Don't** make the visual focus the H1; the SEO H1 stays the real H1, set small."
     ]
   }
 }

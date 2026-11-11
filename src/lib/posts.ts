@@ -4,7 +4,7 @@
  */
 
 import { prisma } from './prisma'
-import { calculateReadingTime } from './reading-time'
+import { calculateReadingTime, countWords, countCodeBlocks } from './reading-time'
 
 export type PostSummary = {
   id: string
@@ -14,6 +14,9 @@ export type PostSummary = {
   featuredImage: string | null
   createdAt: string
   readingTime: number
+  /** Word count and code-block count of the body (used by the home build log). */
+  wordCount?: number
+  codeBlocks?: number
   author: {
     name: string | null
     image: string | null
@@ -79,6 +82,8 @@ export async function getPublishedPosts(limit?: number): Promise<PostSummary[]> 
       ...post,
       createdAt: post.createdAt.toISOString(),
       readingTime: calculateReadingTime(post.content),
+      wordCount: countWords(post.content as string | object),
+      codeBlocks: countCodeBlocks(post.content as string | object),
       content: undefined as never, // Remove from response
     }))
   } catch (err) {
