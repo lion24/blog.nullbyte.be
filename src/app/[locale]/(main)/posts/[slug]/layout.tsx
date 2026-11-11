@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { findPostBySlug } from '@/lib/post-queries'
 import { getFullUrl } from '@/lib/url'
 
 type Props = {
@@ -8,20 +8,8 @@ type Props = {
 
 async function getPost(slug: string) {
   try {
-    const post = await prisma.post.findUnique({
-      where: { slug },
-      include: {
-        author: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-        tags: {
-          select: { name: true },
-        },
-      },
-    })
+    // Shared with the page and its generateMetadata (one query per request).
+    const post = await findPostBySlug(slug)
 
     if (!post) {
       return null
