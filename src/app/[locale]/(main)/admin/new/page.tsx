@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
 import { PlateEditor, plateValueToMarkdown } from '@/components/PlateEditor'
 import { Role } from '@prisma/client'
 import type { Value } from 'platejs'
@@ -108,35 +109,49 @@ export default function NewPostPage() {
         <h1 className="text-3xl font-bold">{t('admin.createNewPost')}</h1>
         <Link
           href={`/${locale}/admin`}
-          className="text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-secondary hover:text-primary transition-colors"
         >
           {t('admin.backToAdmin')}
         </Link>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+      <form onSubmit={handleSubmit} className="space-y-6 p-6 rounded-lg" style={{
+        backgroundColor: 'var(--background-secondary)',
+        boxShadow: 'var(--shadow-md)',
+        border: '1px solid var(--border)'
+      }}>
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="title" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
             {t('admin.title')}
           </label>
           <input
             type="text"
             id="title"
             required
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            className="w-full px-3 py-2 rounded-md transition-colors"
+            style={{
+              backgroundColor: 'var(--input-background)',
+              border: '1px solid var(--input-border)',
+              color: 'var(--text-primary)'
+            }}
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           />
         </div>
 
         <div>
-          <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="excerpt" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
             {t('admin.excerpt')}
           </label>
           <textarea
             id="excerpt"
             rows={2}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+            className="w-full px-3 py-2 rounded-md transition-colors"
+            style={{
+              backgroundColor: 'var(--input-background)',
+              border: '1px solid var(--input-border)',
+              color: 'var(--text-primary)'
+            }}
             value={formData.excerpt}
             onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
             placeholder={t('admin.excerptPlaceholder')}
@@ -144,7 +159,7 @@ export default function NewPostPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
             {t('admin.featuredImageOptional')}
           </label>
           <div className="space-y-2">
@@ -158,20 +173,16 @@ export default function NewPostPage() {
                 }
               }}
               disabled={isUploading}
-              className="block w-full text-sm text-gray-500 dark:text-gray-400
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0
-                file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100
-                dark:file:bg-gray-700 dark:file:text-gray-300
-                dark:hover:file:bg-gray-600"
+              className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-secondary file:text-secondary-foreground hover:file:bg-accent"
+              style={{
+                color: 'var(--text-secondary)'
+              }}
             />
             {isUploading && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t('admin.uploadingImage')}</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('admin.uploadingImage')}</p>
             )}
             {(formData.featuredImage || uploadedFile) && (
-              <div className="relative w-full h-48 rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
+              <div className="relative w-full h-48 rounded-md overflow-hidden" style={{ border: '1px solid var(--border)' }}>
                 <Image
                   src={formData.featuredImage || uploadedFile?.url || ''}
                   alt="Featured image preview"
@@ -193,7 +204,7 @@ export default function NewPostPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-primary)' }}>
             {t('admin.content')}
           </label>
           <PlateEditor
@@ -207,13 +218,18 @@ export default function NewPostPage() {
         </div>
 
         <div>
-          <label htmlFor="categories" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="categories" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
             {t('admin.categoriesLabel')}
           </label>
           <input
             type="text"
             id="categories"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+            className="w-full px-3 py-2 rounded-md transition-colors"
+            style={{
+              backgroundColor: 'var(--input-background)',
+              border: '1px solid var(--input-border)',
+              color: 'var(--text-primary)'
+            }}
             value={formData.categories}
             onChange={(e) => setFormData({ ...formData, categories: e.target.value })}
             placeholder={t('admin.categoriesPlaceholder')}
@@ -221,13 +237,18 @@ export default function NewPostPage() {
         </div>
 
         <div>
-          <label htmlFor="tags" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="tags" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
             {t('admin.tagsLabel')}
           </label>
           <input
             type="text"
             id="tags"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+            className="w-full px-3 py-2 rounded-md transition-colors"
+            style={{
+              backgroundColor: 'var(--input-background)',
+              border: '1px solid var(--input-border)',
+              color: 'var(--text-primary)'
+            }}
             value={formData.tags}
             onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
             placeholder={t('admin.tagsPlaceholder')}
@@ -238,29 +259,28 @@ export default function NewPostPage() {
           <input
             type="checkbox"
             id="published"
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+            className="h-4 w-4 rounded transition-colors"
+            style={{
+              accentColor: 'var(--primary)',
+              borderColor: 'var(--input-border)'
+            }}
             checked={formData.published}
             onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
           />
-          <label htmlFor="published" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+          <label htmlFor="published" className="ml-2 block text-sm" style={{ color: 'var(--text-primary)' }}>
             {t('admin.publishImmediately')}
           </label>
         </div>
 
         <div className="flex gap-3">
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
+          <Button type="submit" size="lg" disabled={loading}>
             {loading ? t('admin.creating') : t('admin.createPost')}
-          </button>
-          <Link
-            href={`/${locale}/admin`}
-            className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-          >
-            {t('admin.cancel')}
-          </Link>
+          </Button>
+          <Button asChild variant="secondary" size="lg">
+            <Link href={`/${locale}/admin`}>
+              {t('admin.cancel')}
+            </Link>
+          </Button>
         </div>
       </form>
     </div>

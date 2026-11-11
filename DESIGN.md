@@ -173,10 +173,16 @@ A warm-paper / cool-slate pair with a single ink-or-indigo accent and one fuchsi
 
 **The No Pure Extremes Rule.** No `#ffffff` page or `#000000` text in either theme. Paper and slate are the floor and the ceiling.
 
+### Editor tokens
+- **Brand** (`--brand`): Plate editor selection, selection-area and suggestion marks only. Not a page accent.
+- **Highlight** (`--highlight`): Plate comment marks and comment-thread rule only.
+
+### Theme mechanism
+Dark mode is `data-theme="dark"`, or `prefers-color-scheme: dark` when no explicit light theme is set. Every dark token lives in those two blocks in `globals.css` (keep them identical), and Tailwind's `dark:` variant targets the same two conditions. There is no `.dark` class.
+
 ### Known drift (fix, don't copy)
-- Tailwind's `dark:` variant is bound to a `.dark` class, but the theme switch sets `data-theme` / follows `prefers-color-scheme`. `dark:` utilities never fire. Theme through the CSS variables instead.
-- The shadcn `--brand`, `--chart-*`, `--sidebar-*` and `--highlight` tokens are scaffold defaults with no confirmed role. Don't build on them.
-- `globals.css` forcibly remaps any `bg-white`/`bg-black`/`text-white`/`text-black` class. Don't rely on those utilities. Use the tokens.
+- `.prose { max-width: none }` in `globals.css` outranks `max-w-*` utilities on the same element, so the legal pages' `max-w-3xl` is ignored and their prose runs nearly full width.
+- `admin/edit` puts `focus:outline-none` on its inputs and buttons, which removes the global `:focus-visible` ring for keyboard users.
 
 ## Typography
 
@@ -259,7 +265,7 @@ Refined and restrained.
 - **Do** treat code as first-class: recessed surface, soft rule, Geist Mono.
 
 ### Don't:
-- **Don't** hard-code accent hexes or reach for raw Tailwind palette classes (`gray-*`, `blue-*`). Use the tokens, and never rely on `dark:` utilities.
+- **Don't** hard-code accent hexes or reach for raw Tailwind palette classes (`gray-*`, `blue-*`). Use the tokens; they already switch with the theme, so `dark:` overrides should be rare.
 - **Don't** use fuchsia for anything but tags.
 - **Don't** use pure `#ffffff` / `#000000` surfaces or text.
 - **Don't** introduce a second typeface. Geist and Geist Mono carry the whole system.

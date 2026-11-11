@@ -279,7 +279,7 @@
       "Do treat code as first-class: recessed surface, soft rule, Geist Mono."
     ],
     "donts": [
-      "Don't hard-code accent hexes or reach for raw Tailwind palette classes (`gray-*`, `blue-*`). Use the tokens, and never rely on `dark:` utilities.",
+      "Don't hard-code accent hexes or reach for raw Tailwind palette classes (`gray-*`, `blue-*`). Use the tokens; they already switch with the theme, so `dark:` overrides should be rare.",
       "Don't use fuchsia for anything but tags.",
       "Don't use pure `#ffffff` / `#000000` surfaces or text.",
       "Don't introduce a second typeface. Geist and Geist Mono carry the whole system.",
