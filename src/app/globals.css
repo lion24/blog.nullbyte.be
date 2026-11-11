@@ -1467,6 +1467,3 @@ main:has(> .bl-logpage), main:has(> .bl-article-page) { background: var(--bl-gro
 @media (prefers-reduced-motion: reduce) {
   .bl-anchor, .bl-share__btn, .bl-code__copy { transition: none; }
 }
-
-/* TEMP: CI comment probe, reverted in the next commits. */
-.bl-ci-probe { font-size: 1.5625rem; }
