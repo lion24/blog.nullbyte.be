@@ -88,3 +88,32 @@ jobs:
 
       - name: Verify build output
         run: test -d .next
+
+  design:
+    name: ci/design-detector
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Pinned to the major version: picks up fixes without a new ruleset
+      # landing mid-PR and silently failing an unrelated change.
+      # https://impeccable.style/docs/detector/
+      #
+      # Findings are scored against .impeccable/config.json (committed) and
+      # DESIGN.md. Exit codes: 0 = clean (advisories may remain), 1 = scan
+      # failure (a target could not be read), 2 = primary findings — fail
+      # the job either way and let the uploaded JSON say which.
+      - name: Run Impeccable design detector
+        run: npx impeccable@4 detect --json src > impeccable-findings.json
+
+      - name: Upload findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: impeccable-findings
+          path: impeccable-findings.json
