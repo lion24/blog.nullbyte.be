@@ -7,6 +7,7 @@ import ArticleEnhancer from '@/components/ArticleEnhancer'
 import { ViewCounter } from '@/components/ViewCounter'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
+import { findPostBySlug, getPostLog } from '@/lib/post-queries'
 import { calculateReadingTime, countCodeBlocks, countWords } from '@/lib/reading-time'
 import { renderArticle } from '@/lib/markdown'
 import { OTHER_LANE, isoDate, rankTopics, shortId, subjectOf } from '@/lib/build-log'
@@ -59,14 +60,7 @@ type Post = {
 }
 
 async function getPostBySlug(slug: string): Promise<Post | null> {
-  const post = await prisma.post.findUnique({
-    where: { slug },
-    include: {
-      author: true,
-      tags: true,
-      categories: true,
-    },
-  })
+  const post = await findPostBySlug(slug)
 
   if (!post || !post.published) {
     return null
@@ -141,13 +135,7 @@ export default async function PostPage({ params }: Props) {
   }
 
   // One light query (no bodies) feeds topic colours, neighbours and "more on this topic".
-  const log = (
-    await prisma.post.findMany({
-      where: { published: true },
-      orderBy: { createdAt: 'desc' },
-      select: { id: true, title: true, slug: true, createdAt: true, tags: { select: { name: true, slug: true } } },
-    })
-  ).map((p) => ({ ...p, createdAt: p.createdAt.toISOString() }))
+  const log = await getPostLog()
   const { laneOf, stats } = rankTopics(log)
   const subject = subjectOf(post, laneOf, stats)
   const lane = subject.lane
