@@ -34,8 +34,8 @@
   --warning: #b45309;
 
   /* Tag colors for light theme */
-  --tag-background: #d946ef; /* Fuchsia-500 */
-  --tag-background-hover: #c026d3; /* Fuchsia-600 */
+  --tag-background: #a21caf; /* Fuchsia-700 — 5.85:1 on page bg (AA for small text) */
+  --tag-background-hover: #86198f; /* Fuchsia-800 — hover deepens */
   --tag-text: #ffffff;
   --tag-count-background: #78736b;
 
@@ -480,11 +480,12 @@ h6 { font-size: 1rem; } /* 16px */
 
 /* Links */
 .prose :where(a) {
-  color: #3b82f6;
-  text-decoration: none;
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 .prose :where(a:hover) {
-  text-decoration: underline;
+  color: var(--primary-hover);
 }
 
 p {
