@@ -25,7 +25,7 @@ export default function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="sm" className="gap-2">
-          <LanguagesIcon className="size-4" />
+          <LanguagesIcon className="nav-lang__icon size-4" aria-hidden="true" />
           <span className="uppercase">{locale}</span>
         </Button>
       </DropdownMenuTrigger>

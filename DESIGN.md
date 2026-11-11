@@ -285,7 +285,7 @@ Two control labels, the branch switcher's legend and the footer column headings,
 
 **The Small H1 Rule.** On the home page and the posts index, the SEO H1 stays the page's real H1, set small as the repository line. On the home page the visual focus is the HEAD title, an h2; on the index it is the log itself. Never promote the visual focus to h1 or drop the H1 to fix the hierarchy.
 
-**The Class Selector Rule.** `globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose. The same file's global `body` and `code, pre` rules name `--font-sans` / `--font-mono`, which `@theme inline` never emits, so those declarations are dead: name `--font-display` and `--font-geist-mono` directly.
+**The Class Selector Rule.** `globals.css` sets unlayered rules on `h1`–`h6`, `p` and `a` (size, weight, margin, line-height, colour, hover underline). Unlayered CSS outranks Tailwind's layered utilities, and `a:hover` outranks a single class. Style every element in this world through its own class selector, and expect to restate margin, line-height, colour and decoration that the globals would otherwise impose. The global `body` and `code, pre` rules use `--font-sans` / `--font-mono` (Geist, for the legacy pages). Tailwind declares those on `:root`, so the `next/font` variable classes must sit on `<html>`, not `<body>`, or they resolve to nothing. In this world, name `--font-display` and `--font-geist-mono` directly.
 
 ## Layout
 
@@ -296,7 +296,7 @@ Rhythm: the repository header opens at `clamp(28px, 5vw, 56px)`, the log starts 
 The article page is a reading column plus a margin: below 1100px one column; from 1100px a `minmax(0, 760px)` column and a `minmax(220px, 280px)` margin, `clamp(48px, 6vw, 96px)` apart, inset `clamp(0px, 5vw, 72px)` from the wrap. Prose holds a 68ch measure inside the column; code blocks and the featured figure (2:1) take the full column width. The Sections index sits in the margin, sticky 24px from the top.
 
 Breakpoints:
-- **Below 480px:** tighter nav gaps, smaller wordmark, narrower sign-in button.
+- **Below 480px:** tighter nav gaps, smaller wordmark; the sign-in button becomes a 38px icon button (its label stays as the accessible name and tooltip) and the language switcher drops its globe icon, so the bar fits down to 320px in both locales.
 - **Below 640px:** branch pills drop their last-post date and keep the count.
 - **Below 768px:** the branch pill row stops wrapping and becomes a bleed-to-edge horizontal scroller with scroll-snap and a hidden scrollbar; the nav hides its Home link (the wordmark is home); the footer is one column.
 - **768px and up:** the footer becomes a 2fr / 1fr / 1fr grid.
@@ -328,7 +328,7 @@ Heavy, inked and singular: one per page.
 
 ### Navigation
 - **Style:** a 64px bar on the ground with a 2px ink rule beneath. The wordmark sits left; Home and Posts links (600, ink secondary) follow and take ink plus a 2px ink underline on hover. Language switcher, theme toggle and sign-in sit right.
-- **Mobile:** below 768px the Home link hides; below 480px gaps tighten and the wordmark shrinks.
+- **Mobile:** below 768px the Home link hides; below 480px gaps tighten, the wordmark shrinks, sign-in becomes an icon button and the language switcher shows only its locale code.
 
 ### Footer
 - **Style:** the log's close. A 2px ink rule on top, then the footer mark and tagline, a Quick Links column and a Connect column of brand icons. Links are 600 ink secondary and turn ink with an underline on hover. A second 2px rule sets off the copyright line (0.875rem, ink tertiary).
