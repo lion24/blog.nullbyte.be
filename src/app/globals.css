@@ -1469,4 +1469,4 @@ main:has(> .bl-logpage), main:has(> .bl-article-page) { background: var(--bl-gro
 }
 
 /* TEMP: CI comment probe, reverted in the next commits. */
-.bl-ci-probe { font-size: 1.4375rem; }
+.bl-ci-probe { font-size: 1.5625rem; }
