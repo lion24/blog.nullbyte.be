@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl'
 const card: React.CSSProperties = {
   backgroundColor: 'var(--background-secondary)',
   border: '1px solid var(--border)',
-  borderRadius: '12px',
+  borderRadius: 'calc(var(--radius) + 4px)',
   boxShadow: 'var(--shadow-sm)',
 }
 

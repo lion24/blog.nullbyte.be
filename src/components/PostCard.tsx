@@ -19,6 +19,8 @@ type PostCardProps = {
   translations: {
     readMore: string;
   };
+  /** Heading level for the title, so it follows the page outline (h2 under an h1, h3 under an h2). */
+  headingLevel?: 2 | 3;
 };
 
 function truncate(text: string | null, maxLength = 150): string {
@@ -27,7 +29,8 @@ function truncate(text: string | null, maxLength = 150): string {
   return text.slice(0, maxLength).trim() + '...';
 }
 
-export default function PostCard({ post, locale, translations }: PostCardProps) {
+export default function PostCard({ post, locale, translations, headingLevel = 3 }: PostCardProps) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
   return (
     <article
       className="post-card p-6 rounded-lg flex flex-col h-full"
@@ -57,7 +60,7 @@ export default function PostCard({ post, locale, translations }: PostCardProps) 
       )}
 
       {/* Title */}
-      <h3 className="text-xl font-bold mb-3 leading-tight" style={{ color: 'var(--text-primary)' }}>
+      <Heading className="post-card-title mb-3" style={{ color: 'var(--text-primary)' }}>
         <Link
           href={`/${locale}/posts/${post.slug}`}
           className="post-card-title-link transition-colors hover:underline"
@@ -65,7 +68,7 @@ export default function PostCard({ post, locale, translations }: PostCardProps) 
         >
           {post.title}
         </Link>
-      </h3>
+      </Heading>
 
       {/* Excerpt */}
       {post.excerpt && (

@@ -59,3 +59,35 @@ function extractTextFromPlateJS(node: PlateNode): string {
 
   return ''
 }
+
+/**
+ * Word count for post content (PlateJS JSON or plain/Markdown text).
+ */
+export function countWords(content: string | object): number {
+  const text = typeof content === 'string' ? content : extractTextFromPlateJS(content as PlateNode)
+  const trimmed = text.trim()
+  return trimmed ? trimmed.split(/\s+/).length : 0
+}
+
+/**
+ * Number of code blocks in post content: `code_block` nodes in PlateJS JSON,
+ * or fenced (```) blocks in a Markdown string.
+ */
+export function countCodeBlocks(content: string | object): number {
+  if (typeof content === 'string') {
+    const fences = content.match(/^\s*```/gm)
+    return fences ? Math.floor(fences.length / 2) : 0
+  }
+  let count = 0
+  const walk = (node: unknown) => {
+    if (Array.isArray(node)) {
+      node.forEach(walk)
+    } else if (node && typeof node === 'object') {
+      const n = node as { type?: string; children?: unknown }
+      if (n.type === 'code_block') count++
+      if (n.children) walk(n.children)
+    }
+  }
+  walk(content)
+  return count
+}

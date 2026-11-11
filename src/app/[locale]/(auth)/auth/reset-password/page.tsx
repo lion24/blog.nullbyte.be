@@ -49,7 +49,7 @@ function ResetPasswordForm() {
         className="w-full px-3 py-2 rounded-md border"
         style={{ backgroundColor: 'var(--background)', color: 'var(--text-primary)', borderColor: 'var(--border)' }}
       />
-      {error && <p className="text-sm" style={{ color: '#dc2626' }}>{error}</p>}
+      {error && <p className="text-sm" style={{ color: 'var(--danger)' }}>{error}</p>}
       <button
         type="submit"
         disabled={submitting}
@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
       style={{
         backgroundColor: 'var(--background-secondary)',
         border: '1px solid var(--border)',
-        borderRadius: '12px',
+        borderRadius: 'calc(var(--radius) + 4px)',
         boxShadow: 'var(--shadow-sm)',
       }}
     >

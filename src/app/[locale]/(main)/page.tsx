@@ -1,8 +1,8 @@
-import Image from 'next/image'
+import Link from 'next/link'
+import { Fragment, type CSSProperties } from 'react'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
-import PostCard from '@/components/PostCard'
-import InteractiveLink from '@/components/InteractiveLink'
-import { getPublishedPosts } from '@/lib/posts'
+import { getPublishedPosts, type PostSummary } from '@/lib/posts'
+import BranchSwitcher from '@/components/BranchSwitcher'
 import { getBaseUrl, getFullUrl } from '@/lib/url'
 import type { Metadata } from 'next'
 
@@ -15,6 +15,14 @@ type Props = {
   params: Promise<{ locale: string }>
 }
 
+/** Rails: the four busiest tags get their own lane; every other tag folds into lane 4. */
+const TOPIC_LANES = 4
+const OTHER_LANE = 4
+/** Older posts shown in the log before it hands off to the full posts index. */
+const LOG_LIMIT = 12
+
+type Branch = { lane: number; slug: string | null; name: string; count: number; latest: string }
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   const tMeta = await getTranslations({ locale, namespace: 'metadata' })
@@ -25,24 +33,89 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+/** Short display id derived from the post id (FNV-1a). Not a git commit hash. */
+function shortId(id: string): string {
+  let h = 0x811c9dc5
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return (h >>> 0).toString(16).padStart(8, '0').slice(0, 7)
+}
+
+const isoDate = (iso: string) => iso.slice(0, 10)
+
+/** Rank tags by post count (ties: most recently used first) and assign lanes. */
+function buildBranches(posts: PostSummary[]) {
+  const stats = new Map<string, Branch>()
+  for (const post of posts) {
+    for (const tag of post.tags) {
+      const s = stats.get(tag.slug)
+      if (s) {
+        s.count++
+        if (post.createdAt > s.latest) s.latest = post.createdAt
+      } else {
+        stats.set(tag.slug, { lane: -1, slug: tag.slug, name: tag.name, count: 1, latest: post.createdAt })
+      }
+    }
+  }
+  const topics = [...stats.values()]
+    .sort((a, b) => b.count - a.count || b.latest.localeCompare(a.latest))
+    .slice(0, TOPIC_LANES)
+    .map((b, i) => ({ ...b, lane: i }))
+  const laneOf = new Map(topics.map((b) => [b.slug, b.lane]))
+
+  const lanesFor = (post: PostSummary): number[] => {
+    const lanes = new Set<number>()
+    for (const tag of post.tags) lanes.add(laneOf.get(tag.slug) ?? OTHER_LANE)
+    if (lanes.size === 0) lanes.add(OTHER_LANE)
+    return [...lanes].sort((a, b) => a - b)
+  }
+
+  /**
+   * The post's own subject: a tag named in its title wins; otherwise its most
+   * specific (least-used) topic tag; otherwise its first tag. Never just the
+   * site's busiest tag.
+   */
+  const subjectOf = (post: PostSummary) => {
+    const title = post.title.toLowerCase()
+    const named = post.tags.find((tag) => title.includes(tag.name.toLowerCase()))
+    const topical = post.tags
+      .filter((tag) => laneOf.has(tag.slug))
+      .sort((a, b) => (stats.get(a.slug)?.count ?? 0) - (stats.get(b.slug)?.count ?? 0))[0]
+    const tag = named ?? topical ?? post.tags[0]
+    return { tag, lane: tag ? laneOf.get(tag.slug) ?? OTHER_LANE : OTHER_LANE }
+  }
+
+  const otherPosts = posts.filter((p) => lanesFor(p).includes(OTHER_LANE))
+  const branches: Branch[] = [...topics]
+  if (otherPosts.length > 0) {
+    branches.push({ lane: OTHER_LANE, slug: null, name: '', count: otherPosts.length, latest: otherPosts[0].createdAt })
+  }
+  return { branches, laneOf, lanesFor, subjectOf }
+}
+
 export default async function HomePage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations({ locale })
-  const tCommon = await getTranslations({ locale, namespace: 'common' })
 
-  // Fetch latest 3 posts directly from database
-  const latestPosts = await getPublishedPosts(3)
+  const posts = await getPublishedPosts()
+  const { branches, laneOf, lanesFor, subjectOf } = buildBranches(posts)
+  const nf = new Intl.NumberFormat(locale)
 
-  // Add formatted reading time to each post
-  const postsWithTranslations = latestPosts.map(post => ({
-    ...post,
-    readingTimeText: tCommon('readingTime', { minutes: post.readingTime })
-  }))
-
-  const translations = {
-    readMore: tCommon('readMore'),
-  }
+  const shown = posts.slice(0, LOG_LIMIT + 1)
+  const rows = shown.map((post) => {
+    const lanes = lanesFor(post)
+    const subject = subjectOf(post)
+    return { post, lanes, primary: subject.lane, subject: subject.tag }
+  })
+  // A lane's rail starts at the newest row that belongs to it and runs to the end of the log.
+  const firstRow = new Map<number, number>()
+  rows.forEach((row, i) => row.lanes.forEach((l) => { if (!firstRow.has(l)) firstRow.set(l, i) }))
+  const activeLanes = [...firstRow.keys()].sort((a, b) => a - b)
+  const hasMore = posts.length > shown.length
+  const shownPerLane = (lane: number) => rows.filter((r) => r.lanes.includes(lane)).length
 
   const baseUrl = getBaseUrl()
   const author = {
@@ -73,93 +146,204 @@ export default async function HomePage({ params }: Props) {
     ],
   }
 
+  const graphCell = (rowIndex: number, nodeLanes: number[], primary: number | null, isEnd = false) => (
+    <div className="bl-graph" aria-hidden="true">
+      {activeLanes
+        .filter((l) => (firstRow.get(l) ?? Infinity) <= rowIndex)
+        .map((l) => {
+          const tip = firstRow.get(l) === rowIndex
+          const cls = ['bl-seg', `bl-lane-${l}`, tip && 'bl-seg--tip', isEnd && 'bl-seg--root'].filter(Boolean).join(' ')
+          return <span key={`s${l}`} className={cls} style={{ '--rev': rows.length - rowIndex } as CSSProperties} />
+        })}
+      {nodeLanes.map((l) =>
+        l === primary ? (
+          <span key={`n${l}`} className={`bl-node bl-lane-${l}`} />
+        ) : (
+          <span key={`n${l}`} className={`bl-node bl-node--dot bl-lane-${l}`} />
+        ),
+      )}
+    </div>
+  )
+
+  const topicLinks = (post: PostSummary) =>
+    post.tags.map((tag) => (
+      <Link
+        key={tag.id}
+        href={`/${locale}/tags/${tag.slug}`}
+        className={`bl-topic bl-lane-${laneOf.get(tag.slug) ?? OTHER_LANE}`}
+      >
+        {tag.name}
+      </Link>
+    ))
+
+  const [head, ...older] = rows
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="bl-home">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="relative text-center py-16 mb-8 rounded-2xl overflow-hidden">
-        {/* Background Image - 16:9 aspect ratio */}
-        <div className="absolute inset-0 w-full h-full">
-          <Image
-            src="/hero.jpg"
-            alt="Hero background"
-            fill
-            className="object-cover opacity-30"
-            priority
-          />
-          {/* Theme-aware overlay for better text readability */}
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundColor: 'var(--background)',
-              opacity: 0.6
-            }}
-          />
-        </div>
-
-        {/* Content - positioned above background */}
-        <div className="relative z-10 px-4 py-12">
-          <h1
-            className="text-5xl font-bold mb-4"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            {t('home.title')}
-          </h1>
-          <p
-            className="text-xl mb-8 max-w-2xl mx-auto"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            {t('home.subtitle')}
-          </p>
-          <div className="flex justify-center space-x-4 flex-wrap gap-4">
-            <InteractiveLink
-              href={`/${locale}/posts`}
-              className="px-6 py-3 rounded-lg inline-block shadow-lg"
-              baseColor="var(--text-inverse)"
-              hoverColor="var(--text-inverse)"
-              backgroundColor="var(--primary)"
-              hoverBackgroundColor="var(--primary-hover)"
-            >
-              {t('posts.allPosts')}
-            </InteractiveLink>
-            <InteractiveLink
-              href="https://github.com/lion24"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 rounded-lg inline-block shadow-lg"
-              baseColor="var(--text-primary)"
-              hoverColor="var(--text-primary)"
-              backgroundColor="var(--background-secondary)"
-              hoverBackgroundColor="var(--background-tertiary)"
-              border="1px solid var(--border)"
-              hoverBorder="1px solid var(--border-hover)"
-            >
-              {t('home.githubProfile')}
-            </InteractiveLink>
+      <div className="bl-wrap">
+        <header className="bl-repo">
+          <div className="bl-repo__body">
+            <h1 className="bl-repo__title">{t('home.title')}</h1>
+            {branches.length > 0 && (
+              <BranchSwitcher>
+              <fieldset className="bl-branches">
+                <legend className="bl-branches__legend">{t('home.branchesLabel')}</legend>
+                <div className="bl-branches__list">
+                  <div className="bl-branch">
+                    <input type="radio" name="bl-branch" id="bl-b-all" defaultChecked />
+                    <label htmlFor="bl-b-all">
+                      {t('home.allBranches')}
+                      <span className="bl-branch__stat bl-mono">{nf.format(posts.length)}</span>
+                    </label>
+                  </div>
+                  {branches.map((b) => (
+                    <div className="bl-branch" key={b.lane}>
+                      <input type="radio" name="bl-branch" id={`bl-b-${b.lane}`} />
+                      <label htmlFor={`bl-b-${b.lane}`} className={`bl-lane-${b.lane}`}>
+                        <span className="bl-branch__swatch" aria-hidden="true" />
+                        {b.slug ? b.name : t('home.otherBranch')}
+                        <span className="bl-branch__stat bl-mono">
+                          {nf.format(b.count)}
+                          <span className="bl-branch__when">
+                            <span className="bl-branch__dot" aria-hidden="true">·</span>
+                            <time dateTime={b.latest}>{isoDate(b.latest)}</time>
+                          </span>
+                        </span>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </fieldset>
+              </BranchSwitcher>
+            )}
           </div>
-        </div>
-      </section>
+        </header>
 
-      <section className="py-16">
-        <h2 className="text-3xl font-bold mb-8" style={{ color: 'var(--text-primary)' }}>{t('home.latestPosts')}</h2>
-        {latestPosts.length === 0 ? (
-          <div className="text-center py-12 rounded-lg" style={{
-            backgroundColor: 'var(--background-secondary)',
-            boxShadow: 'var(--shadow-sm)',
-            border: '1px solid var(--border)'
-          }}>
-            <p style={{ color: 'var(--text-tertiary)' }}>{t('home.noPosts')}</p>
-          </div>
+        {!head ? (
+          <ol className="bl-log">
+            <li className="bl-row bl-row--empty">
+              <div className="bl-graph" aria-hidden="true">
+                <span className={`bl-node bl-lane-${OTHER_LANE}`} />
+              </div>
+              <div className="bl-content">
+                <p className="bl-empty">{t('home.noPosts')}</p>
+              </div>
+            </li>
+          </ol>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {postsWithTranslations.map((post) => (
-              <PostCard key={post.id} post={post} locale={locale} translations={translations} />
+          <ol className="bl-log">
+            <li className="bl-row bl-row--head" data-lane={head.primary} data-lanes={head.lanes.join(' ')} style={{ viewTransitionName: 'bl-row-0' } as CSSProperties}>
+              {graphCell(0, head.lanes, head.primary)}
+              <article className="bl-content">
+                <div className="bl-ref bl-mono">
+                  <span className="bl-hash">{shortId(head.post.id)}</span>
+                  <span className="bl-chip">
+                    HEAD → {head.subject?.name ?? t('home.otherBranch')}
+                  </span>
+                  <span className="bl-sr-only">{t('home.latestLabel')}</span>
+                </div>
+                <h2 className="bl-head__title">
+                  <Link href={`/${locale}/posts/${head.post.slug}`} className="bl-title-link">
+                    {head.post.title}
+                  </Link>
+                </h2>
+                {head.post.excerpt && <p className="bl-head__excerpt">{head.post.excerpt}</p>}
+                <p className="bl-stats bl-mono">
+                  {[
+                    <span key="rt">{t('common.readingTime', { minutes: head.post.readingTime })}</span>,
+                    head.post.wordCount !== undefined && (
+                      <span key="w">{t('home.words', { count: nf.format(head.post.wordCount) })}</span>
+                    ),
+                    head.post.codeBlocks !== undefined && (
+                      <span key="c">{t('home.codeBlocks', { count: head.post.codeBlocks })}</span>
+                    ),
+                    <time key="d" dateTime={head.post.createdAt}>{isoDate(head.post.createdAt)}</time>,
+                  ]
+                    .filter(Boolean)
+                    .map((item, i, all) => (
+                      <Fragment key={i}>
+                        {/* The dot stays glued to its item; the plain space after it is the break point. */}
+                        <span className="bl-stats__item">
+                          {item}
+                          {i < all.length - 1 && <span className="bl-stats__sep" aria-hidden="true">{'\u00a0·'}</span>}
+                        </span>
+                        {i < all.length - 1 && ' '}
+                      </Fragment>
+                    ))}
+                </p>
+                <Link href={`/${locale}/posts/${head.post.slug}`} className="bl-cta">
+                  {t('home.readLatest')}
+                  <span className="bl-cta__arrow" aria-hidden="true">→</span>
+                </Link>
+              </article>
+            </li>
+
+            {older.map((row, i) => (
+              <li
+                key={row.post.id}
+                className="bl-row"
+                data-lane={row.primary}
+                data-lanes={row.lanes.join(' ')}
+                style={{ viewTransitionName: `bl-row-${i + 1}` } as CSSProperties}
+              >
+                {graphCell(i + 1, row.lanes, row.primary)}
+                <article className="bl-content">
+                  <h2 className="bl-row__title">
+                    <Link href={`/${locale}/posts/${row.post.slug}`} className="bl-title-link">
+                      {row.post.title}
+                    </Link>
+                  </h2>
+                  {row.post.excerpt && <p className="bl-row__excerpt">{row.post.excerpt}</p>}
+                  <div className="bl-meta bl-mono">
+                    <span>{shortId(row.post.id)}</span>
+                    <time dateTime={row.post.createdAt}>{isoDate(row.post.createdAt)}</time>
+                    <span>{t('common.readingTime', { minutes: row.post.readingTime })}</span>
+                    {topicLinks(row.post)}
+                  </div>
+                </article>
+              </li>
             ))}
-          </div>
+
+            {branches
+              .filter((b) => b.count > shownPerLane(b.lane))
+              .map((b) => (
+                <li key={`more-${b.lane}`} className="bl-row bl-row--more" data-more={b.lane}>
+                  {graphCell(rows.length, [], null)}
+                  <div className="bl-content">
+                    <Link
+                      href={b.slug ? `/${locale}/tags/${b.slug}` : `/${locale}/posts`}
+                      className="bl-end bl-title-link"
+                    >
+                      {t('home.moreInBranch', { branch: b.slug ? b.name : t('home.otherBranch') })} →
+                    </Link>
+                  </div>
+                </li>
+              ))}
+
+            <li className="bl-row bl-row--end" data-lanes={activeLanes.join(' ')}>
+              {graphCell(rows.length, [], null, true)}
+              <div className="bl-content">
+                {hasMore ? (
+                  <Link href={`/${locale}/posts`} className="bl-end bl-title-link">
+                    {t('posts.allPosts')} →
+                  </Link>
+                ) : (
+                  <p className="bl-end">
+                    {t('home.logEnd')} ·{' '}
+                    <time className="bl-mono" dateTime={posts[posts.length - 1].createdAt}>
+                      {isoDate(posts[posts.length - 1].createdAt)}
+                    </time>
+                  </p>
+                )}
+              </div>
+            </li>
+          </ol>
         )}
-      </section>
+      </div>
     </div>
-  );
+  )
 }

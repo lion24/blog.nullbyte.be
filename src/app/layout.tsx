@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Schibsted_Grotesk } from "next/font/google";
 import "./globals.css";
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config as faConfig } from '@fortawesome/fontawesome-svg-core';
@@ -21,6 +21,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Build Log world: display face for commit messages, nav and footer.
+const schibstedGrotesk = Schibsted_Grotesk({
+  variable: "--font-display",
+  subsets: ["latin", "latin-ext"],
+});
+
 export const metadata: Metadata = {
   verification: {
     google: 'AlxH2V-DIUqc-nQG8GL_kobCYjVil7obsQYp3XiolOs',
@@ -39,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang={routing.defaultLocale} suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${schibstedGrotesk.variable} antialiased`}
       >
         {children}
         {/* Analytics scripts loaded after content - already optimized with deferred loading */}

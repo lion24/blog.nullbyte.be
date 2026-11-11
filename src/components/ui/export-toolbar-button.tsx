@@ -119,15 +119,15 @@ export function ExportToolbarButton(props: DropdownMenuProps) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..700&display=swap"
           rel="stylesheet"
         />
         ${tailwindCss}
         ${katexCss}
         <style>
           :root {
-            --font-sans: 'Inter', 'Inter Fallback';
-            --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback';
+            --font-sans: 'Geist', 'Geist Fallback';
+            --font-mono: 'Geist Mono', 'Geist Mono Fallback';
           }
         </style>
       </head>

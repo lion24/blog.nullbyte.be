@@ -43,7 +43,7 @@ export default function SignInPage() {
   const card: React.CSSProperties = {
     backgroundColor: 'var(--background-secondary)',
     border: '1px solid var(--border)',
-    borderRadius: '12px',
+    borderRadius: 'calc(var(--radius) + 4px)',
     boxShadow: 'var(--shadow-sm)',
   }
 
@@ -193,7 +193,7 @@ export default function SignInPage() {
         )}
 
         {error && (
-          <p className="text-sm" style={{ color: '#dc2626' }}>{error}</p>
+          <p className="text-sm" style={{ color: 'var(--danger)' }}>{error}</p>
         )}
 
         <button
